@@ -1,0 +1,197 @@
+#-------------------------
+# CodeIgniter 4 アプリケーション
+#-------------------------
+
+# システムディレクトリをGitから除外
+system/*
+
+# アプリケーションディレクトリのキャッシュ
+writable/cache/*
+!writable/cache/index.html
+
+# アプリケーションディレクトリのログ
+writable/logs/*
+!writable/logs/index.html
+
+# アプリケーションディレクトリのセッション
+writable/session/*
+!writable/session/index.html
+
+# アプリケーションディレクトリのアップロード
+writable/uploads/*
+!writable/uploads/index.html
+
+# CodeIgniter 4 Environmental Files
+.env
+.env.backup
+.env.development
+.env.production
+.env.testing
+
+# Composer
+vendor/
+composer.lock
+
+# PHPUnit
+build/
+phpunit*.xml
+.phpunit.*.cache
+
+# Shield 認証ライブラリ
+writable/shield/*
+!writable/shield/index.html
+
+# mPDF 一時フォルダとキャッシュ
+writable/mpdf/*
+!writable/mpdf/index.html
+writable/tmp/*
+!writable/tmp/index.html
+
+#-------------------------
+# Windows関連
+#-------------------------
+# Windows サムネイルキャッシュファイル
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+
+# フォルダ設定ファイル
+Desktop.ini
+
+# Windows ショートカット
+*.lnk
+
+# Windows レジストリファイル
+*.reg
+
+#-------------------------
+# Linux関連
+#-------------------------
+# 一時ファイル
+*~
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder
+.Trash-*
+
+#-------------------------
+# WSL関連
+#-------------------------
+# WSL メタデータ
+*.wslconfig
+.wslgd
+.wsl/
+
+#-------------------------
+# macOS関連（チームメンバーでmacOS使用する可能性がある場合）
+#-------------------------
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# アイコン
+Icon
+
+# サムネイル
+._*
+
+# ボリュームルートに現れる可能性のあるファイル
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+#-------------------------
+# IDE／エディタ関連
+#-------------------------
+# VSCode
+.vscode/
+*.code-workspace
+
+# PhpStorm
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Eclipse
+.settings/
+.classpath
+.project
+.metadata
+
+# NetBeans
+nbproject/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+
+#-------------------------
+# Docker関連
+#-------------------------
+.docker/data/
+docker-compose.override.yml
+
+#-------------------------
+# JavaScript／フロントエンド関連
+#-------------------------
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnpm-debug.log
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Bootstrap (コンパイル済みファイルは含める場合、次の行をコメントアウト)
+# public/assets/bootstrap/
+
+# Flatpickr (コンパイル済みファイルは含める場合、次の行をコメントアウト)
+# public/assets/flatpickr/
+
+#-------------------------
+# その他
+#-------------------------
+# バックアップファイル
+*.bak
+*.gho
+*.ori
+*.orig
+*.tmp
+
+# Log files
+*.log
+
+# キャッシュファイル
+*.cache
+
+# パッチ
+*.patch
+*.diff
+
+# 一時データベースファイル
+*.sqlite
+*.sqlite3
+*.db
+
+# 一般的な設定ファイル
+*.conf
+*.config
+config.php

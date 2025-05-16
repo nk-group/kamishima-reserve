@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # PHP (PHP-FPM) サービス
+  php:
+    build:
+      context: ./.docker/php
+      args:
+        PHP_VERSION: '8.1' # PHPバージョン指定
+        NODE_MAJOR: '20'   # Node.jsメジャーバージョン指定 (Vite用)
+    container_name: kamishima_php
+    volumes:
+      - ./src:/var/www/html # ホストの src をコンテナの /var/www/html にマウント
+      - ./.docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini # PHP設定
+    working_dir: /var/www/html # コンテナ内でのデフォルト作業場所
+    environment:
+      TZ: 'Asia/Tokyo'
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  # Webサーバー (Nginx) サービス
+  nginx:
+    image: nginx:1.25 # Nginxバージョン指定
+    container_name: kamishima_nginx
+    ports:
+      - "8080:80" # ホストの8080番ポートをコンテナの80番ポートにマッピング
+    volumes:
+      - ./src:/var/www/html # ホストの src をコンテナの /var/www/html にマウント
+      - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf # Nginx設定
+    depends_on:
+      - php
+    networks:
+      - app-network
+
+  # データベース (MySQL) サービス
+  db:
+    image: mysql:5.7 # MySQLバージョン指定
+    container_name: kamishima_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-kamishima_db}
+      MYSQL_USER: ${DB_USERNAME:-user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./.docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf # MySQL設定
+    ports:
+      - "33066:3306" # ホストからMySQLに接続する場合 (例: 127.0.0.1:33066)
+    networks:
+      - app-network
+
+  # phpMyAdmin サービス
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:5.2 # phpMyAdminバージョン指定
+    container_name: kamishima_phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root # phpMyAdminログイン用ユーザー (MySQLのroot)
+      PMA_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword} # phpMyAdminログイン用パスワード (MySQLのroot)
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword} # MySQLのrootパスワード
+      UPLOAD_LIMIT: 1G # 必要に応じてアップロードサイズ上限を調整
+      MEMORY_LIMIT: 512M # 必要に応じてメモリ上限を調整
+    ports:
+      - "8081:80" # ホストの8081番ポートをコンテナの80番ポートにマッピング
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+# 名前付きボリューム (DBデータ永続化用)
+volumes:
+  db-data:
+
+# ネットワーク定義
+networks:
+  app-network:
+    driver: bridge
