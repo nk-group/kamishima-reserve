@@ -7,47 +7,49 @@ use CodeIgniter\Router\RouteCollection;
  */
 $routes->get('/', 'Home::index'); // CodeIgniterのデフォルトWelcomeページはそのまま残す場合
 
+
 // Shieldが提供する認証ルート (ログイン、ログアウト、登録など)
 // これを呼び出すことで、ShieldのAuthControllerが処理を担当します。
 // Auth.phpの$viewsで指定したビューが使われます。
 service('auth')->routes($routes);
 
+
 // 管理者/スタッフ向けルート
 // 'sessionauth' フィルタで認証を要求
 // 'group:admin,staff' フィルタで admin または staff グループに所属しているかチェック
 $routes->group('admin', ['filter' => 'sessionauth', 'namespace' => 'App\Controllers\Admin'], static function ($routes) {
-  /** @var RouteCollection $routes */
-  $routes->get('', 'DashboardController::index', ['as' => 'admin.home']);
-  $routes->get('dashboard', 'DashboardController::index', ['as' => 'admin.dashboard']);
+    /** @var RouteCollection $routes */
+    $routes->get('', 'DashboardController::index', ['as' => 'admin.home']);
+    $routes->get('dashboard', 'DashboardController::index', ['as' => 'admin.dashboard']);
 
 
-  // --- ユーザー管理ルート ---
-  // 'group:admin' フィルターを追加して、adminグループのユーザーのみアクセスを許可
-  $routes->group('users', ['filter' => 'group:admin'], static function ($routes) {
-      /** @var RouteCollection $routes */
-      $routes->get('', 'UserController::index', ['as' => 'admin.users.index']); // ユーザー一覧表示 (GET /admin/users)
-      $routes->get('new', 'UserController::new', ['as' => 'admin.users.new']);         // 新規作成フォーム表示 (GET /admin/users/new) (後で追加)
-      $routes->post('create', 'UserController::create', ['as' => 'admin.users.create']); // 新規作成処理 (POST /admin/users/create) (後で追加)
-      $routes->get('edit/(:num)', 'UserController::edit/$1', ['as' => 'admin.users.edit']); // 編集フォーム表示 (GET /admin/users/edit/1) (後で追加)
-      $routes->post('update/(:num)', 'UserController::update/$1', ['as' => 'admin.users.update']); // 更新処理 (POST /admin/users/update/1) (後で追加)
-      $routes->get('delete/(:num)', 'UserController::delete/$1', ['as' => 'admin.users.delete']); // 削除処理 (GET /admin/users/delete/1) (後で追加、POST推奨)
-  });
+    // --- ユーザー管理ルート ---
+    // 'group:admin' フィルターを追加して、adminグループのユーザーのみアクセスを許可
+    $routes->group('users', ['filter' => 'group:admin'], static function ($routes) {
+        /** @var RouteCollection $routes */
+        $routes->get('', 'UserController::index', ['as' => 'admin.users.index']); // ユーザー一覧表示 (GET /admin/users)
+        $routes->get('new', 'UserController::new', ['as' => 'admin.users.new']);         // 新規作成フォーム表示 (GET /admin/users/new) (後で追加)
+        $routes->post('create', 'UserController::create', ['as' => 'admin.users.create']); // 新規作成処理 (POST /admin/users/create) (後で追加)
+        $routes->get('edit/(:num)', 'UserController::edit/$1', ['as' => 'admin.users.edit']); // 編集フォーム表示 (GET /admin/users/edit/1) (後で追加)
+        $routes->post('update/(:num)', 'UserController::update/$1', ['as' => 'admin.users.update']); // 更新処理 (POST /admin/users/update/1) (後で追加)
+        $routes->get('delete/(:num)', 'UserController::delete/$1', ['as' => 'admin.users.delete']); // 削除処理 (GET /admin/users/delete/1) (後で追加、POST推奨)
+    });
 
+
+    // --- 車両種別マスタ管理ルート ---
+    // 'group:admin' フィルターを追加して、adminグループのユーザーのみアクセスを許可
+    $routes->group('vehicle-types', ['filter' => 'group:admin'], static function ($routes) {
+        /** @var RouteCollection $routes */
+        $routes->get('', 'VehicleTypeController::index', ['as' => 'admin.vehicle-types.index']);    // 一覧表示
+        $routes->get('new', 'VehicleTypeController::new', ['as' => 'admin.vehicle-types.new']);     // 新規作成フォーム
+        $routes->post('create', 'VehicleTypeController::create', ['as' => 'admin.vehicle-types.create']); // 新規作成処理
+        $routes->get('edit/(:num)', 'VehicleTypeController::edit/$1', ['as' => 'admin.vehicle-types.edit']); // 編集フォーム
+        $routes->post('update/(:num)', 'VehicleTypeController::update/$1', ['as' => 'admin.vehicle-types.update']); // 更新処理
+        $routes->post('delete/(:num)', 'VehicleTypeController::delete/$1', ['as' => 'admin.vehicle-types.delete']); // 削除処理
+    });
 
 });
 
-
-
-// ルートの優先順位を考慮して、Shieldのルート定義の後にカスタムルートを定義するか、
-// Shieldのルートで不要なものをコメントアウト/上書きすることも可能です。
-// 今回は service('auth')->routes($routes); を利用し、
-// /login, /logout などはShieldのコントローラに任せます。
-
-// Filters.php で 'admin/*' に 'sessionauth' をかけていますが、
-// Shieldのデフォルトのログインページは /login なので、
-// /admin/login のようなパスにしない限りはフィルタの影響を受けません。
-// もし /admin/login のようなパスにしたい場合は、Filters.phpの適用除外設定が必要です。
-// 今回は /login を使うため、そのままで問題ありません。
 
 
 // --- 利用者向けページ ---
