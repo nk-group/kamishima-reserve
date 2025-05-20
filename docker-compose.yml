@@ -38,7 +38,7 @@ services:
   db:
     image: mysql:5.7 # MySQLバージョン指定
     container_name: kamishima_db
-    restart: always
+    #restart: always
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-kamishima_db}
       MYSQL_USER: ${DB_USERNAME:-user}
@@ -57,7 +57,7 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:5.2 # phpMyAdminバージョン指定
     container_name: kamishima_phpmyadmin
-    restart: always
+    #restart: always
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
