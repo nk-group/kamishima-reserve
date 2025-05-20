@@ -61,11 +61,19 @@ class TestController extends BaseController
 
         $executedCodeDescription = "サンプル: 現在時刻の表示とShopModelの簡単なテスト";
 
-        // 例1: 簡単な変数の値を確認
+        // 簡単な変数の値を確認
         $outputResults['current_datetime'] = Time::now()->toDateTimeString();
         $outputResults['php_version'] = phpversion();
 
-        // 例2: モデルを使ったDBアクセステスト
+        // timezoneの確認
+        $outputResults['timezone_test'] =
+            "デフォルトタイムゾーン: " . date_default_timezone_get() . "\n" .
+            "現在時刻 (date関数): " . date('Y-m-d H:i:s e P') . "\n" .
+            "php.iniのdate.timezone設定: " . ini_get('date.timezone') . "\n";
+
+
+
+        // モデルを使ったDBアクセステスト
         try {
             $shopModel = model(ShopModel::class);
             $outputResults['active_shops_count'] = count($shopModel->findActiveShops());

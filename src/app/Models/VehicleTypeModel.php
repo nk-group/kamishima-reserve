@@ -35,9 +35,14 @@ class VehicleTypeModel extends Model
 
     // バリデーションルール
     protected $validationRules = [
+        'id' => [
+            'label' => 'ID',
+            'rules' => 'permit_empty|integer',
+        ],        
         'code'   => [
             'label' => '車両種別コード', // エラーメッセージ表示用のラベル
             'rules' => 'required|string|exact_length[4]|is_unique[vehicle_types.code,id,{id}]',
+            //'rules' => 'required|string|exact_length[4]',
             // 「数値4桁のコード」というDBコメントでしたが、VARCHAR型なので文字列として扱い、
             // 桁数とユニーク性をチェックします。数値のみに限定する場合は 'numeric' も追加できます。
             // 例: 'required|numeric|exact_length[4]|is_unique[vehicle_types.code,id,{id}]'
