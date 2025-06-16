@@ -31,25 +31,33 @@
 
 
 // 変数定義など (必要に応じて)
-$primary-color: #3498db;
-$secondary-color: #2ecc71;
-$text-color: #333;
-$background-color: #f4f6f8;
-$header-bg: #2c3e50;
-$header-text-color: #ecf0f1;
-$nav-bg: #34495e;
-$nav-text-color: #ecf0f1;
-$nav-hover-bg: #46627f;
-$footer-bg: #343a40;
-$footer-text-color: #f8f9fa;
-$container-max-width: 1200px;
-$border-color: #ddd;
+$primary-color: #3498db;    // アクセントカラー
+$secondary-color: #2ecc71;  // サブカラー (緑系)
+$text-color: #333;          // 基本テキストカラー
+$background-color: #f8f9fa; // ボディ背景色 (Bootstrapの$gray-100に近い)
+$header-bg: #2c3e50;        // ヘッダー背景色
+$header-text-color: #ecf0f1; // ヘッダーテキストカラー
+// $nav-bg: #34495e; // 旧ナビゲーション背景 -> ヘッダーに統合
+// $nav-text-color: #ecf0f1; // 旧ナビゲーションテキスト -> ヘッダーに統合
+// $nav-hover-bg: #46627f; // 旧ナビゲーションホバー -> ヘッダーに統合
+$footer-bg: #f8f9fa;        // フッター背景色 (Bootstrapの$light)
+$footer-text-color: #6c757d; // フッターテキストカラー (Bootstrapの$gray-600)
+$container-max-width: 1200px; // コンテナ最大幅
+$border-color: #dee2e6;     // ボーダーカラー (Bootstrapの$gray-300)
+
+// Bootstrapのプライマリカラーを上書き (アクセントカラー)
+$primary: $primary-color;
+// Bootstrapの他のカラーも必要に応じて上書き
+// $secondary: $secondary-color;
+// $light: $footer-bg;
+// $dark: $header-bg; // ヘッダーは直接指定するので不要かも
+
 
 // 基本的なリセットとページ設定
 body, html {
     margin: 0;
     padding: 0;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Noto Sans JP', 'Helvetica Neue', Arial, sans-serif;
     font-size: 16px;
     line-height: 1.6;
     background-color: $background-color;
@@ -59,12 +67,13 @@ body, html {
     min-height: 100vh;
 }
 
-.container {
-    width: 90%;
-    max-width: $container-max-width;
-    margin: 0 auto;
-    padding: 0 15px;
-}
+// Bootstrapの.container, .container-fluid を使用するため、独自定義はコメントアウト or 削除
+// .container {
+//     width: 90%;
+//     max-width: $container-max-width;
+//     margin: 0 auto;
+//     padding: 0 15px;
+// }
 
 a {
     color: $primary-color;
@@ -75,117 +84,67 @@ a {
 }
 
 // ヘッダー
+// admin-layout.php で .navbar, .navbar-expand-lg, .navbar-dark, .sticky-top を使用
 .admin-header {
     background-color: $header-bg;
-    color: $header-text-color;
-    padding: 1rem 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 
-    .container {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    h1 {
-        margin: 0;
-        font-size: 1.8rem;
-        a {
-            color: $header-text-color;
-            &:hover {
-                text-decoration: none;
-            }
+    .navbar-brand {
+        img {
+            max-height: 30px;
+            margin-right: 0.5rem;
         }
     }
-
-    .user-nav {
-        span {
-            margin-right: 1rem;
-        }
-        a {
-            color: $header-text-color;
-            margin-left: 0.5rem;
-            &:hover {
-                color: darken($header-text-color, 15%);
-            }
-        }
+    .navbar-nav .nav-link.active {
+        border-bottom: 2px solid $primary-color;
+        // color: white !important; // navbar-dark で自動的に白になるはず
+    }
+    .dropdown-menu-dark .dropdown-item:hover,
+    .dropdown-menu-dark .dropdown-item:focus {
+        background-color: rgba(255, 255, 255, 0.15);
     }
 }
 
 // ボディコンテンツ (ナビゲーションとメイン)
 .admin-body {
-    display: flex;
-    flex: 1; // フッターを一番下に押しやるため
-    margin-top: 1px; // ヘッダーとの境界線（任意）
+    display: flex; // admin-layout.php で <main> が flex-grow-1 を持つ想定
+    flex-direction: column; // admin-layout.php の構造変更により不要になるかも
+    flex-grow: 1;
 }
 
 // ナビゲーション
-.admin-navigation {
-    background-color: $nav-bg;
-    color: $nav-text-color;
-    width: 220px; // ナビゲーション幅
-    padding: 1rem;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
 
-    nav ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-
-        li {
-            margin-bottom: 0.5rem;
-
-            a {
-                color: $nav-text-color;
-                display: block;
-                padding: 0.75rem 1rem;
-                border-radius: 4px;
-                &:hover {
-                    background-color: $nav-hover-bg;
-                    text-decoration: none;
-                }
-            }
-
-            &.menu-separator {
-                font-size: 0.9em;
-                color: darken($nav-text-color, 20%);
-                margin-top: 1rem;
-                margin-bottom: 0.5rem;
-                padding-left: 1rem;
-                border-top: 1px solid darken($nav-text-color, 30%);
-                padding-top: 0.5rem;
-            }
-        }
-    }
-}
+// サイドナビゲーションはヘッダー内のドロップダウンに移行したため、このセクションは不要
+// .admin-navigation { ... }
 
 // メインコンテンツエリア
 .admin-main-content {
-    flex: 1;
-    padding: 2rem;
-    background-color: #fff; // メインコンテンツ背景
+    flex-grow: 1;
+    // padding: 2rem; // layoutファイル側で .py-4 をコンテナに付与
+    background-color: #fff; // メインコンテンツエリアの背景は白
     overflow-y: auto; // コンテンツが多い場合にスクロール
 
-    .container { // メインコンテンツ内のコンテナは幅100%に
-        width: 100%;
-        max-width: none;
-        padding: 0;
-    }
+    // メインコンテンツ内のコンテナはBootstrapの .container-fluid を使用
+    // .container {
+    //     width: 100%;
+    //     max-width: none;
+    //     padding: 0;
+    // }
 
     h2 {
         margin-top: 0;
-        border-bottom: 2px solid $primary-color;
-        padding-bottom: 0.5rem;
-        margin-bottom: 1.5rem;
+        // border-bottom: 2px solid $primary-color; // デザインに応じて調整
+        // padding-bottom: 0.5rem;
+        // margin-bottom: 1.5rem;        
     }
 }
 
 // フッター
+// admin-layout.php で .bg-light, .text-center, .py-3, .mt-auto を使用
 .admin-footer {
-    background-color: $footer-bg;
-    color: $footer-text-color;
-    padding: 1rem 0;
-    text-align: center;
+    // background-color: $footer-bg; // Bootstrapクラスで指定
+    // color: $footer-text-color; // Bootstrapクラスで指定
+    // padding: 1rem 0; // Bootstrapクラスで指定
+    // text-align: center; // Bootstrapクラスで指定    
     font-size: 0.9rem;
     margin-top: auto; // admin-bodyがflex:1なので、フッターは常に下
 }
@@ -195,42 +154,21 @@ a {
     .admin-body {
         flex-direction: column;
     }
-    .admin-navigation {
-        width: 100%;
-        box-shadow: none;
-        border-bottom: 1px solid $border-color;
-        margin-bottom: 1rem; // メインコンテンツとの間隔
-        ul {
-            display: flex;
-            flex-wrap: wrap; // 折り返し
-            justify-content: center;
-            li {
-                margin: 0.2rem;
-            }
-        }
-    }
+    // .admin-navigation はヘッダーに統合されたため不要
     .admin-main-content {
-        padding: 1rem;
+        // padding: 1rem; // layoutファイル側で調整
     }
-    .admin-header {
-        .container {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-        h1 {
-            margin-bottom: 0.5rem;
-        }
-        .user-nav {
-            width: 100%;
-            text-align: right;
-        }
-    }
+    // .admin-header のレスポンシブはBootstrapの .navbar-expand-lg が担当
 }
 
 // フォーム要素の基本的なスタイル (ログイン画面用など)
 .card {
     border: 1px solid $border-color;
     border-radius: 0.25rem;
+}
+.card-header { // デザイン案のアクセントカラーを適用
+    background-color: $primary;
+    color: white;
 }
 .card-body {
     padding: 1.5rem;
@@ -261,44 +199,123 @@ a {
     border: 1px solid $primary-color;
     padding: 0.375rem 0.75rem;
     font-size: 1rem;
-    border-radius: 0.25rem;
+    border-radius: 0.375rem; // Bootstrap 5.3 のデフォルトに合わせる
     transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
     &:hover {
-        background-color: darken($primary-color, 10%);
-        border-color: darken($primary-color, 12%);
-        text-decoration: none;
+        // Bootstrapのデフォルトホバー挙動に任せるか、ここで共通のホバーを定義
+        // background-color: darken($primary-color, 10%);
+        // border-color: darken($primary-color, 12%);
+        // text-decoration: none;
+        // color: #fff;
     }
-}
-.btn-primary {
-    // 上記.btnと同じなので特に指定なし
 }
 .btn-block { // width 100%
     display: block;
     width: 100%;
 }
-.alert {
-    position: relative;
-    padding: 1rem 1rem;
-    margin-bottom: 1rem;
-    border: 1px solid transparent;
-    border-radius: .25rem;
-}
-.alert-danger {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-}
-.alert-success {
-    color: #155724;
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-}
+// .alert {
+//     // Bootstrapの.alertをそのまま使用するため、ここでは定義しない
+//     // もし上書きや拡張が必要な場合は _alerts.scss に記述
+// }
+// .alert-danger {
+//     // Bootstrapの.alert-dangerをそのまま使用
+// }
+// .alert-success {
+//     // Bootstrapの.alert-successをそのまま使用
+// }
 // Login page specific
-div.container.d-flex.justify-content-center.p-5 { // ログイン画面のコンテナ
-    width: 100%;
-    padding: 2rem 1rem !important; // 上書き
+// Login page specific styles are moved to pages/auth/_login.scss
+
+
+//==========================================================================
+// Component Styles
+//==========================================================================
+@import "components/forms";
+@import "components/buttons";
+@import "components/alerts";
+
+//==========================================================================
+// Page Specific Styles
+//==========================================================================
+// @import "pages/reservations"; // 予約関連ページ用スタイル ← 削除またはコメントアウト
+// @import "pages/users";        // ユーザー管理ページ用スタイル ← 削除またはコメントアウト
+
+// Adminコントローラ配下のページ
+@import "pages/admin/dashboard/index";
+@import "pages/admin/reservations/index"; // まずはindexのみ作成
+@import "pages/admin/users/index";        // まずはindexのみ作成
+@import "pages/auth/login";               // ログインページ用スタイル
+
+
+//==========================================================================
+// Fixed Width Label for Forms
+//==========================================================================
+$fixed-label-width: 8em; // 8文字分の目安 (1em = 現在のフォントサイズ)
+                         // 例: フォントサイズが16pxなら、8em = 128px
+                         // この値は実際の表示を確認して調整してください。
+
+.label-fixed-width {
+    flex: 0 0 $fixed-label-width; // Flexアイテムとして固定幅を持つ
+    width: $fixed-label-width;    // 通常のブロック要素としての幅も指定
+    max-width: $fixed-label-width; // 最大幅も制限
+    text-align: right;           // テキストを右寄せ (画像に合わせて)
+    padding-right: 0.75rem;      // 入力欄との間に適切な隙間 (col-form-label の padding-right に近い値)
+    // col-form-label の持つ垂直方向のパディングやline-heightを継承または適用するために、
+    // HTML側では col-form-label クラスも併用します。
 }
-.card.col-12.col-md-5.shadow-sm { // ログインカード
-    width: 100%;
-    max-width: 420px;
+
+
+
+//==========================================================================
+// Fixed Width Label for Forms (再掲・確認)
+//==========================================================================
+$label-default-fixed-width: 10em; // 基本のラベル幅 (8文字分目安)
+                               // この値は実際の表示を確認して調整してください。
+
+.label-fixed-width {
+    flex: 0 0 $label-default-fixed-width;
+    width: $label-default-fixed-width;
+    max-width: $label-default-fixed-width;
+    text-align: right;
+    padding-right: 0.75rem;
+    // HTML側で col-form-label クラスも併用することを想定
+}
+
+// 1行目専用のスタイル (label-reservation-number を label-fixed-width で統一)
+.form-row-1-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    // .label-reservation-number は不要になり、代わりに .label-fixed-width を使う
+    // .label-reservation-number { ... }
+
+    .value-auto-number {
+        flex: 0 0 6em; // 6文字分の目安
+        width: 6em;
+        min-width: 6em;
+        text-align: center;
+    }
+
+    .label-status { // 状況ラベルは別途幅指定
+        @extend .col-form-label; // col-form-labelの基本スタイルを適用
+        flex: 0 0 4em;   // 4文字分の目安
+        width: 4em;
+        max-width: 4em;
+        text-align: right;
+        padding-right: 0.5rem;
+        white-space: nowrap;
+    }
+
+    .select-status {
+        flex-grow: 1;
+        min-width: 120px;
+    }
+}
+
+// 予約希望日・時間の入力グループのスタイル (変更なし、SASSでの幅指定を推奨)
+.reservation-date-time-group {
+    gap: 0.5rem; // これはフォームコンポーネントに含めても良いかもしれません
+    .date-input-wrapper { width: 160px; } // 例
+    .time-input-wrapper { width: 100px; } // 例
 }

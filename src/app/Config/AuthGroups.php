@@ -68,34 +68,34 @@ class AuthGroups extends ShieldAuthGroups
     public array $permissions = [
         // 管理者専用機能
         'admin.access'                 => '管理系機能への基本アクセス権限',
-        'admin.users.view'             => 'ユーザー一覧の表示',
-        'admin.users.create'           => '新規ユーザーの作成',
-        'admin.users.edit'             => 'ユーザー情報の編集',
-        'admin.users.delete'           => 'ユーザーの削除',
-        'admin.users.groups'           => 'ユーザーのグループ割り当て変更',
-        'admin.settings.system'        => 'システム動作環境設定の変更',
-        'admin.settings.reminders'     => 'リマインドメール設定の変更',
-        'admin.data.deleteall'         => 'データの一括削除',
+        // 'admin.users.view'             => 'ユーザー一覧の表示',
+        // 'admin.users.create'           => '新規ユーザーの作成',
+        // 'admin.users.edit'             => 'ユーザー情報の編集',
+        // 'admin.users.delete'           => 'ユーザーの削除',
+        // 'admin.users.groups'           => 'ユーザーのグループ割り当て変更',
+        // 'admin.settings.system'        => 'システム動作環境設定の変更',
+        // 'admin.settings.reminders'     => 'リマインドメール設定の変更',
+        // 'admin.data.deleteall'         => 'データの一括削除',
 
         // スタッフ機能（管理者も基本的にこれらの権限を持つ）
         'staff.access'                 => 'スタッフ向け機能への基本アクセス権限',
-        'staff.dashboard'              => 'スタッフ用フロントページの表示',
-        'staff.reservations.calendar'  => '予約状況カレンダー（全体）の表示',
-        'staff.reservations.list'      => '予約検索／一覧の表示',
-        'staff.reservations.detail'    => '予約詳細の表示',
-        'staff.reservations.edit'      => '予約情報の編集',
-        'staff.reservations.confirm'   => '予約の確定処理',
-        'staff.reservations.sendmail'  => '予約確定メールの送信',
-        'staff.reservations.print.schedule' => '入庫予定表の印刷',
-        'staff.reservations.print.tag' => '予約タグの印刷',
-        'staff.reservations.exportcsv' => '予約データのCSV出力',
-        'staff.holidays.manage'        => '定休日の管理',
+        // 'staff.dashboard'              => 'スタッフ用フロントページの表示',
+        // 'staff.reservations.calendar'  => '予約状況カレンダー（全体）の表示',
+        // 'staff.reservations.list'      => '予約検索／一覧の表示',
+        // 'staff.reservations.detail'    => '予約詳細の表示',
+        // 'staff.reservations.edit'      => '予約情報の編集',
+        // 'staff.reservations.confirm'   => '予約の確定処理',
+        // 'staff.reservations.sendmail'  => '予約確定メールの送信',
+        // 'staff.reservations.print.schedule' => '入庫予定表の印刷',
+        // 'staff.reservations.print.tag' => '予約タグの印刷',
+        // 'staff.reservations.exportcsv' => '予約データのCSV出力',
+        // 'staff.holidays.manage'        => '定休日の管理',
 
         // 一般利用者機能
         'user.access'                  => '利用者向け機能への基本アクセス権限',
-        'user.reservations.calendar'   => '予約状況確認カレンダーの表示（利用者向け）',
-        'user.reservations.create'     => '新規予約の作成（自身の予約）',
-        'user.reservations.view'       => '自身の予約状況の確認（一覧・詳細）',
+        // 'user.reservations.calendar'   => '予約状況確認カレンダーの表示（利用者向け）',
+        // 'user.reservations.create'     => '新規予約の作成（自身の予約）',
+        // 'user.reservations.view'       => '自身の予約状況の確認（一覧・詳細）',
         // 'user.reservations.cancel'  => '自身の予約のキャンセル（もし機能があれば）',
     ];
 
@@ -112,38 +112,20 @@ class AuthGroups extends ShieldAuthGroups
      */
     public array $matrix = [
         'admin' => [
-            'admin.*', // admin.で始まる全ての権限
-            'staff.*', // staff.で始まる全ての権限も基本的に付与
-            // 管理者が利用者の操作を代理で行う場合も考慮し、利用者の権限も一部付与
-            'user.access',
-            'user.reservations.calendar',
-            'user.reservations.create', // 代理予約作成
-            'user.reservations.view',   // 特定顧客の予約確認（ユーザー管理経由での操作を想定）
+            'admin.*',  // admin.で始まる全ての権限
+            'staff.*',  // staff.で始まる全ての権限も基本的に付与
+            'user.*',   // user.で始まる全ての権限も基本的に付与
         ],
         'staff' => [
-            'staff.access',
-            'staff.dashboard',
-            'staff.reservations.calendar',
-            'staff.reservations.list',
-            'staff.reservations.detail',
-            'staff.reservations.edit',
-            'staff.reservations.confirm',
-            'staff.reservations.sendmail',
-            'staff.reservations.print.schedule',
-            'staff.reservations.print.tag',
-            'staff.reservations.exportcsv',
-            'staff.holidays.manage',
-            // スタッフが利用者の操作を代理で行う場合も考慮
-            'user.access', // 利用者向け画面へのアクセス（顧客対応時など）
-            'user.reservations.calendar', // 利用者向けカレンダーの確認
-            'user.reservations.create',   // 代理予約作成
-            'user.reservations.view',     // 顧客の予約確認
+            'staff.*',  // staff.で始まる全ての権限も基本的に付与
+            'user.*',   // user.で始まる全ての権限も基本的に付与
         ],
         'user' => [
-            'user.access',
-            'user.reservations.calendar',
-            'user.reservations.create',
-            'user.reservations.view',
+            'user.*',   // user.で始まる全ての権限も基本的に付与
+            // 'user.access',
+            // 'user.reservations.calendar',
+            // 'user.reservations.create',
+            // 'user.reservations.view',
             // 'user.reservations.cancel',
         ],
     ];

@@ -1,0 +1,32 @@
+// /home/ueda/develop/kamishima-reserve/assets/css/components/_buttons.scss
+
+// .btn スタイルは app.scss または Bootstrap から提供される想定
+// ここでは、それとは別のカスタム .button クラス群を定義
+
+.button {
+    display: inline-block;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #fff; // デフォルトの文字色
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    background-color: $primary-color; // $primary-color は app.scss で定義
+    border: 1px solid $primary-color;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    border-radius: 0.375rem;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+
+    &:hover {
+        background-color: darken($primary-color, 10%);
+        border-color: darken($primary-color, 12%);
+        text-decoration: none;
+        color: #fff;
+    }
+}
+
+// .button-primary, .button-secondary, .button-default は
+// Bootstrap の .btn-primary などとの役割を明確にした上で定義推奨。
+// 今回は .button の基本スタイルのみ分離。

@@ -11,6 +11,7 @@ class DashboardController extends BaseController
       
         $data = [
             'page_title' => 'ダッシュボード | 車検予約管理システム',
+            'body_id'    => 'page-admin-dashboard',
         ];
         // BaseControllerのrenderメソッドを使用してビューを表示
         return $this->render('Admin/dashboard', $data); // app/Views/Admin/Dashboard.php を指す

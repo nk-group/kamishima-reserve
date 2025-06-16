@@ -11,15 +11,27 @@
 
 **環境仕様:**
 
+**開発・実行環境**
+開発の土台となるOSやツールです。
 * **OS:** Windows 11 Pro (24H2 推奨) + WSL2/Ubuntu
-* **コンテナ化:** Docker / Docker Compose
+* **コンテナ:** Docker / Docker Compose
+* **エディタ:** VSCode
+
+**バックエンド**
+サーバー側で動作するプログラムやデータベースです。
 * **PHP:** 8.1.x
 * **フレームワーク:** CodeIgniter 4.6.x
-* **データベース:** MySQL 5.7.x + phpMyAdmin
-* **認証:** Shield v1.1.x
-* **PDF:** mPDF v8.1.x
-* **フロントエンド:** Vite 5.4.x + Flatpickr v4.6.x + SASS
-* **エディタ:** VSCode
+* **データベース:** MySQL 5.7.x
+* **DB管理ツール:** phpMyAdmin
+* **認証ライブラリ:** Shield v1.1.x
+* **PDF生成ライブラリ:** mPDF v8.1.x
+
+**フロントエンド**
+ブラウザ上で表示・動作する画面側の技術です。
+* **ビルドツール:** Vite 5.4.x
+* **CSSフレームワーク:** Bootstrap v5.3.x
+* **CSSプリプロセッサ:** SASS
+* **UIライブラリ:** Flatpickr v4.6.x (カレンダー)
 
 ---
 

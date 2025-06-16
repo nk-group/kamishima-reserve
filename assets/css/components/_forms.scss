@@ -1,0 +1,135 @@
+// /home/ueda/develop/kamishima-reserve/assets/css/components/_forms.scss
+
+//==========================================================================
+// Admin Forms - 予約フォーム等の専用スタイル
+// (HTML側では Bootstrap の .form-control, .form-label, .form-select, .mb-3 などの
+//  基本的なクラスも併用することを推奨します)
+//==========================================================================
+
+.form-container {
+    // フォーム全体を囲むコンテナ (ビューでは <form> タグにこのクラスを付与)
+    // 必要に応じて、このコンテナに対する追加のスタイル（例えば背景色やパディングなど）
+    // background-color: #fdfdfd; // 例
+    // padding: 1.5rem; // 例
+    // border: 1px solid $border-color; // 例
+    // border-radius: 0.25rem; // 例
+}
+
+.form-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    border: 1px solid lighten($border-color, 5%); // 既存の$border-colorより少し薄く
+    border-radius: 0.375rem; // 少し角丸に
+    background-color: #fff; // セクションごとの背景を白に
+
+    .section-title { // fieldsetのlegendタグのスタイル
+        font-size: 1.3rem; // 少し大きめに
+        font-weight: 600;  // 少し太く
+        color: darken($text-color, 10%);
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid $primary-color; // プライマリカラーで下線
+    }
+}
+
+.form-group {
+    // Bootstrapの .mb-3 (1rem) をHTML側で適用することを推奨。
+    // ここでは、それ以外の調整が必要な場合に記述。
+    // 例:
+    // &:last-child { margin-bottom: 0; }
+
+    &.inline-group {
+        display: flex;
+        flex-wrap: wrap; // 画面幅に応じて折り返す
+        align-items: flex-end; // ラベルと入力要素の下端を揃える
+        gap: 1rem;     // 要素間の隙間
+
+        .sub-group {
+            flex: 1 1 auto; // 基本は自動幅、スペースがあれば伸びる
+            min-width: 150px; // 折り返し時の最小幅
+        }
+    }
+}
+
+.form-label {
+    // Bootstrapの .form-label スタイルが適用される想定
+    // 必要であれば、ここで更にカスタマイズ
+    //例: font-weight: 500;
+    //例: margin-bottom: 0.5rem;
+}
+
+.required-indicator {
+    color: $danger; // Bootstrap の $danger 変数を使用 (定義されていれば)
+                    // または直接指定: darken(red, 10%);
+    font-size: 0.875em;
+    margin-left: 0.25rem;
+    font-weight: normal; // 強調しすぎないように
+}
+
+// 入力フィールド、セレクトボックス、テキストエリア
+// HTML側で .form-control (input, textarea), .form-select (select) を付与することを推奨
+.form-input, // これらはカスタムクラスとして残すが、基本はBootstrapクラスに依存
+.form-input-short,
+.form-input-large,
+.form-input-date,
+.form-input-time,
+.form-textarea {
+    // Bootstrap の .form-control スタイルが基本となる
+    // ここでは、特定の幅や高さの調整など、追加のスタイルを定義
+}
+
+.form-input-short {
+    max-width: 220px; // 郵便番号など固定幅に近いもの
+}
+
+.form-input-date,
+.form-input-time {
+    max-width: 180px; // 日付・時刻入力の幅
+}
+
+.vehicle-number-inputs {
+    display: flex;
+    gap: 0.75rem; // 各入力欄の間の隙間
+
+    // 各input要素に .form-control を付与する想定
+    input[type="text"] { // または .form-input-vehicle-region など個別のクラス名に対して
+        flex: 1 1 auto; // 基本的に等幅で、必要に応じて伸縮
+        min-width: 40px; // 最小幅
+
+        // 例：個別の幅調整 (HTML側で対応するクラスを振る)
+        &.form-input-vehicle-region { flex-basis: 100px; flex-grow: 0; }
+        &.form-input-vehicle-class  { flex-basis: 70px;  flex-grow: 0; }
+        &.form-input-vehicle-kana   { flex-basis: 60px;  flex-grow: 0; }
+        &.form-input-vehicle-plate  { flex-basis: 80px;  flex-grow: 0; }
+    }
+}
+
+.time-range-group {
+    display: flex;
+    align-items: center; // 時間入力と「～」を中央揃え
+
+    .form-input-time {
+        // HTML側で .form-control を付与
+    }
+
+    .time-separator {
+        padding: 0 0.75rem;
+        line-height: calc(1.5em + 0.75rem + 2px); // Bootstrapの .form-control の高さに合わせる
+        white-space: nowrap;
+    }
+}
+
+.form-actions {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid $border-color;
+    text-align: right; // ボタンを右寄せ
+
+    // .btn クラスがBootstrapとカスタムで定義されているので、それを使用
+    .button + .button, // _buttons.scss の .button を使う場合
+    .btn + .btn,       // Bootstrap の .btn を使う場合
+    button + a.btn,
+    a.btn + button {
+        margin-left: 0.75rem;
+    }
+}

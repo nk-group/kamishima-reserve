@@ -27,7 +27,8 @@ class VehicleTypeController extends BaseController
         $vehicleTypes = $this->vehicleTypeModel->orderBy('id', 'ASC')->findAll();
 
         $data = [
-            'page_title'    => '車両種別マスタ',
+            'page_title'    => '車両種別マスタ | 車検予約管理システム',
+            'body_id'       => 'page-admin-vehicletypes-index',
             'vehicle_types' => $vehicleTypes,
         ];
         return $this->render('Admin/VehicleTypes/index', $data);
@@ -41,7 +42,8 @@ class VehicleTypeController extends BaseController
     public function new(): string
     {
         $data = [
-            'page_title' => '新規車両種別登録',
+            'page_title' => '新規車両種別登録 | 車検予約管理システム',
+            'body_id'    => 'page-admin-vehicletypes-new',
             'errors'     => session()->getFlashdata('errors'), // バリデーションエラーがあればセット
         ];
         return $this->render('Admin/VehicleTypes/new', $data);
@@ -86,7 +88,8 @@ class VehicleTypeController extends BaseController
         }
 
         $data = [
-            'page_title'   => '車両種別編集',
+            'page_title'   => '車両種別編集 | 車検予約管理システム',
+            'body_id'      => 'page-admin-vehicletypes-edit',
             'vehicle_type' => $vehicleType,
             'errors'       => session()->getFlashdata('errors'),
         ];

@@ -1,0 +1,11 @@
+// /home/ueda/develop/kamishima-reserve/assets/css/pages/auth/_login.scss
+
+// Login page specific
+div.container.d-flex.justify-content-center.p-5 { // ログイン画面のコンテナ
+    width: 100%;
+    padding: 2rem 1rem !important; // 上書き
+}
+.card.col-12.col-md-5.shadow-sm { // ログインカード
+    width: 100%;
+    max-width: 420px;
+}

@@ -23,7 +23,8 @@ class UserController extends BaseController
         $users = $userModel->orderBy('id', 'ASC')->findAll();
 
         $data = [
-            'page_title' => 'ユーザーマスタ',
+            'page_title' => 'ユーザーマスタ | 車検予約管理システム',
+            'body_id'    => 'page-admin-users-index',
             'users'      => $users,
         ];
         return $this->render('Admin/Users/index', $data);
@@ -38,7 +39,8 @@ class UserController extends BaseController
     public function new(): string
     {
         $data = [
-            'page_title' => '新規ユーザー登録',
+            'page_title'       => '新規ユーザー登録 | 車検予約管理システム',
+            'body_id'          => 'page-admin-users-new',
             'available_groups' => $this->getAvailableGroups(),
         ];
         return $this->render('Admin/Users/new', $data);
@@ -210,7 +212,8 @@ class UserController extends BaseController
         $userGroups = $user->getGroups();
 
         $data = [
-            'page_title'       => 'ユーザー編集',
+            'page_title'       => 'ユーザー編集 | 車検予約管理システム',
+            'body_id'          => 'page-admin-users-edit',
             'user'             => $user,
             'user_email'       => $identity ? $identity->secret : '',
             'user_groups'      => $userGroups,
