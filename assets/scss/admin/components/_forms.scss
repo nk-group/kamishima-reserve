@@ -1,0 +1,62 @@
+//==========================================================================
+// Admin Common Form Component Styles
+//==========================================================================
+
+@use '../base/variables' as var;
+
+// General form styling
+.form-label {
+  color: var.$header-bg-dark-start; // from design HTML
+  font-weight: 600; // from design HTML
+  margin-bottom: 8px; // from design HTML
+  display: block; // from design HTML
+  font-size: 0.9rem; // from design HTML
+}
+
+.form-control,
+.form-select {
+  border: 2px solid var.$gray-border-light; // from design HTML
+  border-radius: 8px; // from design HTML
+  padding: 12px 16px; // from design HTML
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; // トランジションの対象を限定し、background-positionの移動を防ぐ
+  background: var.$gray-form-bg; // from design HTML
+  font-size: 1em; // from design HTML
+  height: 48px; // Default height for single-line inputs/selects
+  &:focus {
+    border-color: var.$rainbow-blue; // from design HTML
+    box-shadow: 0 0 0 0.2rem rgba(var.$rainbow-blue, 0.25); // from design HTML
+    background: var.$white; // from design HTML
+  }
+}
+
+select[multiple],
+select[size]:not([size="1"]) {
+  height: auto; // Allow height to be determined by the 'size' attribute for multi-row selects
+  padding: 8px 16px; // Adjust padding for better multi-line display
+}
+
+textarea.form-control {
+  height: auto; // textareas should not have a fixed height like other inputs
+  padding-top: 12px; // ensure top padding is consistent
+}
+
+.form-check-input {
+  &:checked {
+    background-color: var.$rainbow-blue; // from design HTML
+    border-color: var.$rainbow-blue; // from design HTML
+  }
+}
+
+// These are general flex/gap styles for checkbox groups,
+// specific grid layouts will be handled in page-specific SCSS.
+.checkbox-group {
+  display: flex;
+  gap: 20px; // This is the common gap for checkbox groups
+  flex-wrap: wrap;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

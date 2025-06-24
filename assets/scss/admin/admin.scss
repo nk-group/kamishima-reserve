@@ -1,0 +1,34 @@
+// 1. 外部ライブラリ (Bootstrap) - Modern Sass (`@use`)
+// `@use`ルールはファイルの先頭に記述する必要があります。
+// これにより、Bootstrapが提供する`box-sizing`などの基本的なスタイルが
+// プロジェクト全体の土台として、他のどのカスタムスタイルよりも先に適用されます。
+// これが、レイアウト問題を根本的に解決する正しい方法です。
+@use "~bootstrap/scss/bootstrap";
+// 2. Sassの組み込みモジュール (必要な場合)
+// @use "sass:meta"; // metaは現在使用していないためコメントアウト
+// 3. プロジェクト固有のモジュール
+// Base (変数、基本タイポグラフィなど)
+@use "base/variables" as var;
+@use "base/typography";
+
+// Components (Define base styles that can be extended)
+@use "components/buttons";
+@use "components/cards";
+@use "components/forms";
+@use "components/tables";
+@use "components/badges";
+@use "components/pagination";
+@use "components/content";
+
+// Themes
+@use "themes/fusion-theme";
+
+// Layout
+@use "layout/header";
+@use "layout/footer";
+@use "layout/admin-layout";
+
+// Page Specific Styles (These use everything defined above)
+@use "pages/dashboard/index";
+@use 'pages/reservations/index' as reservations;
+@use 'pages/reservations/detail';

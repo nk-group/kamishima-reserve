@@ -1,0 +1,63 @@
+//==========================================================================
+// Base Typography
+//==========================================================================
+
+@use "sass:color"; // Sassの組み込みモジュール `color` を読み込み
+@use 'variables' as var; // Use `var` namespace for variables
+
+//--------------------------------------------------------------------------
+// Body & HTML
+//--------------------------------------------------------------------------
+html {
+  font-size: 100%; // Ensures rem units behave as expected
+  -webkit-text-size-adjust: 100%; // Prevent font scaling in landscape on iOS
+  height: 100%; // Ensure html takes full height
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var.$font-family-base; // This now uses the updated variable
+  font-size: var.$font-size-base;
+  line-height: var.$line-height-base;
+  color: var.$text-color;
+  background-color: var.$body-bg;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  // スティッキーフッターのためのFlexbox設定
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+//--------------------------------------------------------------------------
+// Headings
+//--------------------------------------------------------------------------
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: var.$spacer * .5;
+  font-weight: var.$headings-font-weight;
+  line-height: 1.2; // Bootstrap default
+  color: inherit; // Inherit color by default
+}
+
+//--------------------------------------------------------------------------
+// Links
+//--------------------------------------------------------------------------
+a {
+  color: var.$primary; // Use the primary color from variables
+  text-decoration: none; // Bootstrap default is none, can be overridden by utilities
+
+  &:hover {
+    // text-decoration: underline; // Common hover effect, or use Bootstrap utilities
+    color: color.adjust(var.$primary, $lightness: -10%); // `darken` から `color.adjust` に変更
+  }
+}
+
+//--------------------------------------------------------------------------
+// Paragraphs
+//--------------------------------------------------------------------------
+p {
+  margin-top: 0;
+  margin-bottom: var.$spacer; // Default bottom margin for paragraphs
+}

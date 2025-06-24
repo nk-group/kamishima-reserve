@@ -20,12 +20,21 @@ class UserController extends BaseController
     public function index(): string
     {
         $userModel = auth()->getProvider();
-        $users = $userModel->orderBy('id', 'ASC')->findAll();
+        // 1ページあたりの表示件数は Config/Pager.php の設定が使用されます。
+
+        // withIdentities() を追加してN+1問題を回避し、users.idでソート列を明確化
+        $users = $userModel->withIdentities()
+                           ->orderBy('users.id', 'ASC')
+                           ->paginate(); // 引数をなくし、Config/Pager.php の設定を適用
+
+        $pager = $userModel->pager;
 
         $data = [
             'page_title' => 'ユーザーマスタ | 車検予約管理システム',
             'body_id'    => 'page-admin-users-index',
             'users'      => $users,
+            'pager'      => $pager,
+            'totalUsers' => $pager->getTotal(), // 合計件数を取得
         ];
         return $this->render('Admin/Users/index', $data);
     }

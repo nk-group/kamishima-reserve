@@ -1,0 +1,68 @@
+//==========================================================================
+// Admin Common Table Styles
+//==========================================================================
+
+@use '../base/variables' as var;
+
+// Results Area (Container for tables and related elements)
+.results-section {
+  margin-top: 30px;
+
+  .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var.$gray-200;
+  }
+
+  .results-count {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var.$header-bg-dark-start;
+  }
+}
+
+// Table Container (for overflow and styling)
+.table-container {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 2px solid var.$gray-200;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+// Table Base Styles
+.table {
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  min-width: 1000px; // Ensure table has a min-width for horizontal scroll
+
+  th {
+    background: linear-gradient(135deg, var.$blue-very-light, var.$blue-lighter);
+    color: var.$header-bg-dark-start;
+    font-weight: 700;
+    border: none;
+    padding: 15px 12px;
+    white-space: nowrap;
+    border-bottom: 2px solid var.$gray-border-light;
+  }
+
+  th:last-child {
+    width: 140px; // Fixed width for action column
+    text-align: center;
+  }
+  
+  td {
+    padding: 15px 12px;
+    vertical-align: middle;
+    border-color: var.$gray-200;
+  }
+
+  td:last-child {
+    text-align: center;
+    width: 140px;
+    white-space: nowrap;
+    padding: 15px 8px;
+  }
+}

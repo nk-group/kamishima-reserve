@@ -1,0 +1,116 @@
+//==========================================================================
+// Fusion Theme (Admin Header & Footer)
+//==========================================================================
+
+@use '../base/variables' as var;
+
+//--------------------------------------------------------------------------
+// Keyframes for animated border
+//--------------------------------------------------------------------------
+@keyframes rainbow-pulse {
+  0% {
+    border-image-source: linear-gradient(
+      90deg,
+      var.$rainbow-blue,
+      var.$rainbow-green,
+      var.$rainbow-yellow,
+      var.$rainbow-red
+    );
+  }
+  25% {
+    border-image-source: linear-gradient(
+      90deg,
+      var.$rainbow-green,
+      var.$rainbow-yellow,
+      var.$rainbow-red,
+      var.$rainbow-blue
+    );
+  }
+  50% {
+    border-image-source: linear-gradient(
+      90deg,
+      var.$rainbow-yellow,
+      var.$rainbow-red,
+      var.$rainbow-blue,
+      var.$rainbow-green
+    );
+  }
+  75% {
+    border-image-source: linear-gradient(
+      90deg,
+      var.$rainbow-red,
+      var.$rainbow-blue,
+      var.$rainbow-green,
+      var.$rainbow-yellow
+    );
+  }
+  100% {
+    border-image-source: linear-gradient(
+      90deg,
+      var.$rainbow-blue,
+      var.$rainbow-green,
+      var.$rainbow-yellow,
+      var.$rainbow-red
+    );
+  }
+}
+
+//--------------------------------------------------------------------------
+// Navbar Fusion Theme
+//--------------------------------------------------------------------------
+.navbar-fusion {
+  background: linear-gradient(135deg, var.$admin-header-bg-start 0%, var.$admin-header-bg-mid 50%, var.$admin-header-bg-end 100%); // dashboard.html には !important なし
+  border-bottom: 5px solid;
+  border-image: linear-gradient(90deg, var.$rainbow-blue, var.$rainbow-green, var.$rainbow-yellow, var.$rainbow-red) 1;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.3);
+  padding: 12px 0;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg,
+      rgba(var.$rainbow-blue, 0.3),
+      rgba(var.$rainbow-green, 0.3),
+      rgba(var.$rainbow-yellow, 0.3),
+      rgba(var.$rainbow-red, 0.3));
+    filter: blur(1px);
+  }
+
+  &:hover {
+    animation: rainbow-pulse 3s ease-in-out infinite;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Footer Fusion Theme
+//--------------------------------------------------------------------------
+.footer-fusion {
+  background: linear-gradient(135deg, var.$admin-footer-bg-start, var.$admin-footer-bg-end);
+  color: var.$admin-footer-text-color;
+  padding: 12px 0;
+  text-align: center;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
+  border-top: 3px solid transparent;
+  border-image: linear-gradient(90deg, var.$rainbow-blue, var.$rainbow-green, var.$rainbow-yellow, var.$rainbow-red) 1;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg,
+      rgba(var.$rainbow-blue, 0.3),
+      rgba(var.$rainbow-green, 0.3),
+      rgba(var.$rainbow-yellow, 0.3),
+      rgba(var.$rainbow-red, 0.3));
+    filter: blur(1px);
+  }
+}

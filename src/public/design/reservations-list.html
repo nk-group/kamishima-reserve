@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>予約管理システム - 予約検索／一覧</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Flatpickr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-blue: #2e5aa4;
+            --light-blue: #e8f2ff;
+            --border-color: #dee2e6;
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* ヘッダースタイル（融合デザイン） */
+        .navbar-fusion {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 50%, #475569 100%) !important;
+            border-bottom: 5px solid transparent;
+            border-image: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b, #ef4444) 1;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.3);
+            padding: 12px 0;
+            position: relative;
+        }
+
+        .navbar-fusion::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                rgba(59, 130, 246, 0.3), 
+                rgba(16, 185, 129, 0.3), 
+                rgba(245, 158, 11, 0.3), 
+                rgba(239, 68, 68, 0.3)
+            );
+            filter: blur(1px);
+        }
+
+        .navbar-fusion .navbar-brand {
+            color: white !important;
+            font-weight: 700;
+            font-size: 1.25rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .navbar-fusion .nav-link {
+            color: #e5e7eb !important;
+            font-weight: 600;
+            position: relative;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            padding: 8px 16px !important;
+        }
+
+        .navbar-fusion .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+
+        .navbar-fusion .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .navbar-fusion .nav-link:hover::before {
+            width: 90%;
+        }
+
+        .navbar-fusion .dropdown-menu {
+            background: #374151;
+            border: 1px solid #4b5563;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        }
+
+        .navbar-fusion .dropdown-item {
+            color: #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-fusion .dropdown-item:hover {
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            color: white;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            color: #f3f4f6;
+            text-align: right;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .user-name {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: #d1d5db;
+            font-weight: 400;
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: none;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-logout::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-logout:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-logout:hover::before {
+            left: 100%;
+        }
+
+        .logout-icon {
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-logout:hover .logout-icon {
+            transform: rotate(15deg);
+        }
+
+        .logo-img {
+            width: 65px;
+            height: auto;
+            max-height: 50px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .logo-fallback {
+            width: 65px;
+            height: 50px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1f2937;
+            font-weight: bold;
+            font-size: 0.7rem;
+            text-align: center;
+            line-height: 1.2;
+            border: 2px solid #374151;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        /* フッタースタイル（融合デザイン） */
+        .footer-fusion {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 12px 0;
+            text-align: center;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.25);
+            border-top: 3px solid transparent;
+            border-image: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b, #ef4444) 1;
+            position: relative;
+        }
+
+        .footer-fusion::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                rgba(59, 130, 246, 0.3), 
+                rgba(16, 185, 129, 0.3), 
+                rgba(245, 158, 11, 0.3), 
+                rgba(239, 68, 68, 0.3)
+            );
+            filter: blur(1px);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-company {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            background: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-text {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #d1d5db;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* アニメーション効果 */
+        @keyframes rainbow-pulse {
+            0%, 100% { border-image: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b, #ef4444) 1; }
+            25% { border-image: linear-gradient(90deg, #10b981, #f59e0b, #ef4444, #3b82f6) 1; }
+            50% { border-image: linear-gradient(90deg, #f59e0b, #ef4444, #3b82f6, #10b981) 1; }
+            75% { border-image: linear-gradient(90deg, #ef4444, #3b82f6, #10b981, #f59e0b) 1; }
+        }
+
+        .navbar-fusion:hover {
+            animation: rainbow-pulse 3s ease-in-out infinite;
+        }
+        
+        /* メインコンテンツ */
+        .main-content {
+            background: white;
+            margin: 20px auto;
+            max-width: 1200px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .search-content {
+            padding: 35px;
+        }
+        
+        .search-section {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .search-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .search-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            align-items: end;
+        }
+        
+        .search-group {
+            flex: 1;
+        }
+        
+        .search-group.narrow {
+            flex: 0 0 140px;
+        }
+        
+        .search-group.medium {
+            flex: 0 0 220px;
+        }
+        
+        .search-group.wide {
+            flex: 2;
+        }
+        
+        .form-label {
+            color: #1f2937;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 0.9rem;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+            font-size: 1em;
+            height: 48px;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+            background: white;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-check-input:checked {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        
+        .work-types-group {
+            width: 100%;
+        }
+
+        .quick-search {
+            margin-top: 25px;
+        }
+
+        .quick-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .btn-quick-small {
+            background: white;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-quick-small:hover {
+            background: #3b82f6;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .search-actions-mobile {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            align-items: center;
+        }
+        
+        .btn-search {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            color: white;
+            padding: 12px 40px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            min-width: 140px;
+            height: 48px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-search:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-clear {
+            background: white;
+            border: 2px solid #6c757d;
+            color: #6c757d;
+            padding: 10px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-clear:hover {
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+        }
+        
+        .date-range-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .date-separator {
+            font-weight: 600;
+            color: #6b7280;
+            white-space: nowrap;
+            min-width: 25px;
+            text-align: center;
+        }
+
+        .search-row-date {
+            display: none;
+        }
+
+        @media (max-width: 1023px) {
+            .search-row-date {
+                display: flex;
+            }
+            
+            .search-group-date-pc {
+                display: none !important;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .search-row-main {
+                display: flex;
+                gap: 20px;
+                margin-bottom: 20px;
+                align-items: end;
+            }
+            
+            .search-row-date {
+                display: none;
+            }
+            
+            .search-group-date-pc {
+                display: block !important;
+            }
+        }
+        
+        .results-section {
+            margin-top: 30px;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .results-count {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .btn-new-reservation {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-new-reservation:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 2px solid #e9ecef;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .table {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+        }
+        
+        .table th {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            color: #1f2937;
+            font-weight: 700;
+            border: none;
+            padding: 15px 12px;
+            white-space: nowrap;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .table th:last-child {
+            width: 140px;
+            text-align: center;
+        }
+        
+        .table td {
+            padding: 15px 12px;
+            vertical-align: middle;
+            border-color: #e9ecef;
+        }
+        
+        .table td:last-child {
+            text-align: center;
+            width: 140px;
+            white-space: nowrap;
+            padding: 15px 8px;
+        }
+        
+        .table tbody tr {
+            transition: background-color 0.2s ease;
+        }
+        
+        .table tbody tr:hover {
+            background-color: #f8f9fa !important;
+            cursor: pointer;
+        }
+        
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .status-confirmed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .work-type-tag {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        
+        .work-clear {
+            background: #ffcce5;
+            color: #d63384;
+        }
+        
+        .work-general {
+            background: #cff4fc;
+            color: #055160;
+        }
+        
+        .work-maintenance {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .btn-action {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 4px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-edit {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+        }
+        
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+        
+        .btn-complete {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+        }
+        
+        .btn-complete:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+        
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .pagination-dots {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .pagination-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #dee2e6;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination-dot.active {
+            background: #3b82f6;
+            transform: scale(1.3);
+        }
+        
+        .export-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+        
+        .btn-export {
+            background: white;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-export:hover {
+            background: #3b82f6;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+        
+        @media (max-width: 768px) {
+            .navbar-fusion .navbar-brand {
+                font-size: 1.1rem;
+            }
+
+            .logo-img {
+                width: 55px;
+                max-height: 45px;
+            }
+
+            .logo-fallback {
+                width: 55px;
+                height: 45px;
+                font-size: 0.6rem;
+            }
+
+            .user-section {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+                width: 100%;
+            }
+
+            .user-info {
+                text-align: center;
+            }
+
+            .btn-logout {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .navbar-fusion .nav-link {
+                text-align: center;
+                margin: 5px 0;
+            }
+            
+            .search-row {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .search-row-main {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .search-actions-mobile {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .checkbox-group {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 12px;
+                justify-items: start;
+            }
+            
+            .results-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+            
+            .export-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .main-content {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            
+            .search-content {
+                padding: 25px;
+            }
+
+            .search-section {
+                padding: 20px;
+            }
+
+            .search-group.narrow {
+                flex: 1;
+            }
+
+            .search-group.medium {
+                flex: 1;
+            }
+
+            .search-group.wide {
+                flex: 1;
+            }
+
+            .form-label {
+                text-align: left;
+            }
+
+            .search-group {
+                text-align: left;
+            }
+
+            .date-range-container {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+
+            .date-separator {
+                align-self: center;
+                margin: 8px 0;
+            }
+
+            .search-actions-mobile {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+
+            .btn-search,
+            .btn-clear {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .page-header {
+                padding: 20px 25px;
+            }
+
+            .page-title {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 1023px) and (min-width: 769px) {
+            .search-row-main {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .search-row-date {
+                display: flex;
+                margin-bottom: 20px;
+            }
+            
+            .date-range-container {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+            }
+
+            .checkbox-group {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                justify-items: start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-fusion">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZWxsaXBzZSBjeD0iNTAiIGN5PSIzMCIgcng9IjQ1IiByeT0iMjUiIGZpbGw9IiNmYmJmMjQiIHN0cm9rZT0iI2Y5ZmJmZiIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjx0ZXh0IHg9IjUwIiB5PSIyMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMWYyOTM3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CRS1UUkVLPC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iMzIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzFmMjkzNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QU5EIFdJTEQ8L3RleHQ+Cjx0ZXh0IHg9IjUwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzFmMjkzNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+S2FtaXNoaW1hPC90ZXh0Pgo8L3N2Zz4K" 
+                     alt="Kamishima Logo" class="logo-img" 
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="logo-fallback" style="display: none;">
+                    KAMISHIMA<br>MOTORS
+                </div>
+                予約管理システム
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">HOME</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            予約管理
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">予約一覧</a></li>
+                            <li><a class="dropdown-item" href="#">予約登録</a></li>
+                            <li><a class="dropdown-item" href="#">カレンダー</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            メンテナンス
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">マスタ管理</a></li>
+                            <li><a class="dropdown-item" href="#">設定</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <div class="user-section">
+                    <div class="user-info">
+                        <div class="user-name">上田拓一</div>
+                        <div class="user-role">システム管理者</div>
+                    </div>
+                    <button class="btn btn-logout">
+                        <i class="bi bi-door-open-fill logout-icon"></i>
+                        ログアウト
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-search"></i>
+                予約検索／一覧
+            </h1>
+        </div>
+
+        <!-- Search Content -->
+        <div class="search-content">
+            <!-- Search Section -->
+            <div class="search-section">
+                <h2 class="search-title">
+                    <i class="bi bi-funnel"></i>
+                    検索条件
+                </h2>
+
+                <div class="search-row search-row-main">
+                    <div class="search-group narrow">
+                        <label class="form-label">お名前</label>
+                        <input type="text" class="form-control" placeholder="">
+                    </div>
+                    <div class="search-group narrow">
+                        <label class="form-label">車番</label>
+                        <input type="text" class="form-control" placeholder="">
+                    </div>
+                    <div class="search-group narrow">
+                        <label class="form-label">LINE識別</label>
+                        <input type="text" class="form-control" placeholder="">
+                    </div>
+                    <div class="search-group medium">
+                        <label class="form-label">作業店舗</label>
+                        <select class="form-select">
+                            <option value="">すべて</option>
+                            <option>本社（車検・整備工場）</option>
+                            <option>Clear車検</option>
+                            <option>モーターショップカミシマ</option>
+                        </select>
+                    </div>
+                    <div class="search-group wide search-group-date-pc">
+                        <label class="form-label">予約希望日</label>
+                        <div class="date-range-container">
+                            <input type="text" class="form-control flatpickr-date" placeholder="開始日">
+                            <span class="date-separator">～</span>
+                            <input type="text" class="form-control flatpickr-date" placeholder="終了日">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-row search-row-date">
+                    <div class="search-group wide">
+                        <label class="form-label">予約希望日</label>
+                        <div class="date-range-container">
+                            <input type="text" class="form-control flatpickr-date" placeholder="開始日">
+                            <span class="date-separator">～</span>
+                            <input type="text" class="form-control flatpickr-date" placeholder="終了日">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="search-row">
+                    <div class="search-group work-types-group">
+                        <label class="form-label">作業種別</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="form-check-input" id="clear" checked>
+                                <label for="clear" class="form-check-label">Clear車検</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="form-check-input" id="inspection" checked>
+                                <label for="inspection" class="form-check-label">定期点検</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="form-check-input" id="generalShaken" checked>
+                                <label for="generalShaken" class="form-check-label">一般車検</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="form-check-input" id="general" checked>
+                                <label for="general" class="form-check-label">一般整備</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="form-check-input" id="leaseSchedule" checked>
+                                <label for="leaseSchedule" class="form-check-label">リーススケジュール点検</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="form-check-input" id="leaseStatutory" checked>
+                                <label for="leaseStatutory" class="form-check-label">リース法定点検</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="form-check-input" id="leaseShaken" checked>
+                                <label for="leaseShaken" class="form-check-label">リース車検</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="form-check-input" id="leaseMaintenance" checked>
+                                <label for="leaseMaintenance" class="form-check-label">リース整備</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="form-check-input" id="bodywork" checked>
+                                <label for="bodywork" class="form-check-label">板金</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="form-check-input" id="adjustmentClear" checked>
+                                <label for="adjustmentClear" class="form-check-label">調整枠 (Clear車検)</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="form-check-input" id="other" checked>
+                                <label for="other" class="form-check-label">その他</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Search -->
+                <div class="quick-search">
+                    <label class="form-label">クイック検索</label>
+                    <div class="quick-buttons">
+                        <button type="button" class="btn btn-quick-small">本日の作業</button>
+                        <button type="button" class="btn btn-quick-small">未完了</button>
+                        <button type="button" class="btn btn-quick-small">今月整備完了予定</button>
+                        <button type="button" class="btn btn-quick-small">本社作業</button>
+                        <button type="button" class="btn btn-quick-small">12条店作業</button>
+                    </div>
+                </div>
+
+                <!-- Search Actions -->
+                <div class="search-actions-mobile">
+                    <button type="button" class="btn btn-search">
+                        <i class="bi bi-search me-2"></i>検索
+                    </button>
+                    <a href="#" class="btn-clear">
+                        <i class="bi bi-arrow-clockwise me-2"></i>条件クリア
+                    </a>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section">
+                <div class="results-header">
+                    <div class="results-count">検索結果：23件</div>
+                    <a href="#" class="btn-new-reservation">
+                        <i class="bi bi-plus-circle me-2"></i>新規予約作成
+                    </a>
+                </div>
+
+                <!-- Results Table -->
+                <div class="table-container">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>予約番号</th>
+                                <th>予約状況</th>
+                                <th>予約希望日</th>
+                                <th>お名前</th>
+                                <th>車種</th>
+                                <th>車番</th>
+                                <th>作業種別</th>
+                                <th>作業店舗</th>
+                                <th>処理</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>00010375</td>
+                                <td><span class="status-badge status-pending">未確定</span></td>
+                                <td>2025/02/05 09:30</td>
+                                <td>鈴木　一郎</td>
+                                <td>スカイライン</td>
+                                <td>帯広330る583</td>
+                                <td><span class="work-type-tag work-clear">Clear車検</span></td>
+                                <td>本社</td>
+                                <td>
+                                    <a href="#" class="btn btn-action btn-edit">修正</a>
+                                    <a href="#" class="btn btn-action btn-complete">完了</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>00010376</td>
+                                <td><span class="status-badge status-confirmed">予約確定</span></td>
+                                <td>2025/02/06 14:30</td>
+                                <td>吉田　宏</td>
+                                <td>デミオ</td>
+                                <td>帯広563ね1120</td>
+                                <td><span class="work-type-tag work-clear">Clear車検</span></td>
+                                <td>本社</td>
+                                <td>
+                                    <a href="#" class="btn btn-action btn-edit">修正</a>
+                                    <a href="#" class="btn btn-action btn-complete">完了</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>00010380</td>
+                                <td><span class="status-badge status-confirmed">予約確定</span></td>
+                                <td>2025/02/06 16:45</td>
+                                <td>田中　直人</td>
+                                <td>マークX</td>
+                                <td>帯広331な8721</td>
+                                <td><span class="work-type-tag work-general">一般整備</span></td>
+                                <td>12条店</td>
+                                <td>
+                                    <a href="#" class="btn btn-action btn-edit">修正</a>
+                                    <a href="#" class="btn btn-action btn-complete">完了</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>00010382</td>
+                                <td><span class="status-badge status-confirmed">予約確定</span></td>
+                                <td>2025/02/06 14:30</td>
+                                <td>山本　国広</td>
+                                <td>CR-V</td>
+                                <td>帯広332ね1023</td>
+                                <td><span class="work-type-tag work-maintenance">預かり車検</span></td>
+                                <td>本社</td>
+                                <td>
+                                    <a href="#" class="btn btn-action btn-edit">修正</a>
+                                    <a href="#" class="btn btn-action btn-complete">完了</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>00010423</td>
+                                <td><span class="status-badge status-confirmed">予約確定</span></td>
+                                <td>2025/02/15 16:45</td>
+                                <td>田中　直人</td>
+                                <td>マークX</td>
+                                <td>帯広331な8721</td>
+                                <td><span class="work-type-tag work-general">一般整備</span></td>
+                                <td>12条店</td>
+                                <td>
+                                    <a href="#" class="btn btn-action btn-edit">修正</a>
+                                    <a href="#" class="btn btn-action btn-complete">完了</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>00010450</td>
+                                <td><span class="status-badge status-pending">未確定</span></td>
+                                <td>2025/02/16 14:30</td>
+                                <td>宮野　芳雄</td>
+                                <td>フィット</td>
+                                <td>帯広550お3271</td>
+                                <td><span class="work-type-tag work-maintenance">預かり車検</span></td>
+                                <td>本社</td>
+                                <td>
+                                    <a href="#" class="btn btn-action btn-edit">修正</a>
+                                    <a href="#" class="btn btn-action btn-complete">完了</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-container">
+                    <div class="pagination-dots">
+                        <div class="pagination-dot active"></div>
+                        <div class="pagination-dot"></div>
+                        <div class="pagination-dot"></div>
+                        <div class="pagination-dot"></div>
+                        <div class="pagination-dot"></div>
+                    </div>
+                </div>
+
+                <!-- Export Actions -->
+                <div class="export-actions">
+                    <a href="#" class="btn-export">
+                        <i class="bi bi-clipboard me-2"></i>クリップボード
+                    </a>
+                    <a href="#" class="btn-export">
+                        <i class="bi bi-download me-2"></i>CSVダウンロード
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-fusion">
+        <div class="footer-content">
+            <div class="footer-company">株式会社上嶋自動車</div>
+            <div class="footer-text">&copy; 2025 Kamishima Motors Inc. All Rights Reserved.</div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <!-- Flatpickr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/ja.min.js"></script>
+    
+    <script>
+        // Flatpickr初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 日付ピッカー
+            flatpickr('.flatpickr-date', {
+                locale: 'ja',
+                dateFormat: 'Y年n月j日',
+                allowInput: true
+            });
+            
+            // クイック検索ボタンのイベント
+            document.querySelectorAll('.btn-quick-small').forEach(button => {
+                button.addEventListener('click', function() {
+                    // すべてのクイック検索ボタンからアクティブクラスを削除
+                    document.querySelectorAll('.btn-quick-small').forEach(btn => btn.classList.remove('active'));
+                    // クリックされたボタンにアクティブクラスを追加
+                    this.classList.add('active');
+                    
+                    // 実際の検索処理をここに実装
+                    console.log('クイック検索:', this.textContent);
+                });
+            });
+            
+            // 検索ボタンのイベント
+            document.querySelector('.btn-search').addEventListener('click', function() {
+                // 検索処理の実装
+                console.log('検索実行');
+                
+                // 簡単なバリデーション例
+                const searchForm = document.querySelector('.search-section');
+                const inputs = searchForm.querySelectorAll('input[type="text"]');
+                const hasValue = Array.from(inputs).some(input => input.value.trim() !== '');
+                
+                if (!hasValue) {
+                    alert('検索条件を入力してください。');
+                    return;
+                }
+                
+                // 検索結果を更新（実際の処理では、サーバーへのAjaxリクエストなど）
+                console.log('検索条件で結果を更新');
+            });
+            
+            // 条件クリアボタンのイベント
+            document.querySelector('.btn-clear').addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // 全ての入力フィールドをクリア
+                const searchSection = document.querySelector('.search-section');
+                const inputs = searchSection.querySelectorAll('input[type="text"]');
+                inputs.forEach(input => input.value = '');
+                
+                // チェックボックスをリセット
+                const checkboxes = searchSection.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => checkbox.checked = true);
+                
+                console.log('検索条件をクリアしました');
+            });
+            
+            // テーブル行のクリックイベント（行選択機能を削除）
+            document.querySelectorAll('.table tbody tr').forEach(row => {
+                row.addEventListener('click', function(e) {
+                    // ボタンクリック時は行クリックを無視
+                    if (e.target.classList.contains('btn-action') || e.target.closest('.btn-action')) {
+                        return;
+                    }
+                    
+                    // 行選択機能を削除（何もしない）
+                    // この行をクリックしても何も起こらない
+                });
+            });
+            
+            // アクションボタンのイベント
+            document.querySelectorAll('.btn-edit').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const row = this.closest('tr');
+                    const reservationNo = row.querySelector('td:first-child').textContent;
+                    console.log('修正:', reservationNo);
+                    // 実際の処理では予約詳細ページに遷移
+                    // window.location.href = `/reservation/edit/${reservationNo}`;
+                });
+            });
+            
+            document.querySelectorAll('.btn-complete').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const row = this.closest('tr');
+                    const reservationNo = row.querySelector('td:first-child').textContent;
+                    
+                    if (confirm(`予約番号 ${reservationNo} を完了にしますか？`)) {
+                        console.log('完了:', reservationNo);
+                        // 実際の処理では状態を更新
+                        const statusBadge = row.querySelector('.status-badge');
+                        statusBadge.textContent = '作業完了';
+                        statusBadge.className = 'status-badge status-completed';
+                        statusBadge.style.background = '#d4edda';
+                        statusBadge.style.color = '#155724';
+                    }
+                });
+            });
+            
+            // エクスポート機能
+            document.querySelectorAll('.btn-export').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    if (this.textContent.includes('クリップボード')) {
+                        // テーブルデータをクリップボードにコピー
+                        let tableText = '';
+                        const table = document.querySelector('.table');
+                        const rows = table.querySelectorAll('tr');
+                        
+                        rows.forEach(row => {
+                            const cells = row.querySelectorAll('th, td');
+                            const rowData = Array.from(cells).map(cell => 
+                                cell.textContent.trim()
+                            ).join('\t');
+                            tableText += rowData + '\n';
+                        });
+                        
+                        navigator.clipboard.writeText(tableText).then(() => {
+                            alert('クリップボードにコピーしました');
+                        }).catch(() => {
+                            alert('クリップボードへのコピーに失敗しました');
+                        });
+                    }
+                    
+                    if (this.textContent.includes('CSV')) {
+                        console.log('CSVダウンロード処理');
+                        // 実際のCSVダウンロード処理を実装
+                    }
+                });
+            });
+            
+            // ページネーション（簡単な例）
+            document.querySelectorAll('.pagination-dot').forEach((dot, index) => {
+                dot.addEventListener('click', function() {
+                    document.querySelectorAll('.pagination-dot').forEach(d => d.classList.remove('active'));
+                    this.classList.add('active');
+                    console.log(`ページ ${index + 1} に移動`);
+                });
+            });
+
+            // ログアウト機能
+            document.querySelector('.btn-logout').addEventListener('click', function() {
+                if (confirm('ログアウトしますか？')) {
+                    console.log('ログアウト処理実行');
+                    // 実際の処理では logout endpoint にリダイレクト
+                    // window.location.href = '/logout';
+                    alert('ログアウトしました');
+                }
+            });
+
+            // ナビゲーションのアクティブ状態管理
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (!this.classList.contains('dropdown-toggle')) {
+                        // アクティブ状態の管理
+                        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                });
+            });
+
+            // ホバー時のレインボーアニメーション
+            const navbar = document.querySelector('.navbar-fusion');
+            let hoverTimeout;
+
+            navbar.addEventListener('mouseenter', function() {
+                clearTimeout(hoverTimeout);
+                this.style.animation = 'rainbow-pulse 3s ease-in-out infinite';
+            });
+
+            navbar.addEventListener('mouseleave', function() {
+                hoverTimeout = setTimeout(() => {
+                    this.style.animation = '';
+                }, 1000);
+            });
+            
+            // レスポンシブ対応の処理
+            function handleResize() {
+                const isMobile = window.innerWidth < 768;
+                const tableContainer = document.querySelector('.table-container');
+                
+                if (isMobile) {
+                    // モバイル時のテーブル調整
+                    tableContainer.style.fontSize = '0.8rem';
+                } else {
+                    tableContainer.style.fontSize = '0.9rem';
+                }
+            }
+            
+            window.addEventListener('resize', handleResize);
+            handleResize(); // 初期実行
+        });
+        
+        // ユーティリティ関数
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ja-JP', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
+            });
+        }
+        
+        function formatTime(timeString) {
+            return timeString.substring(0, 5); // HH:MM形式
+        }
+        
+        // 検索結果の動的更新（例）
+        function updateSearchResults(results) {
+            const tbody = document.querySelector('.table tbody');
+            const resultsCount = document.querySelector('.results-count');
+            
+            // 結果件数を更新
+            resultsCount.textContent = `検索結果：${results.length}件`;
+            
+            // テーブルの内容を更新
+            tbody.innerHTML = '';
+            results.forEach(result => {
+                const row = createTableRow(result);
+                tbody.appendChild(row);
+            });
+        }
+        
+        function createTableRow(data) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${data.reservationNo}</td>
+                <td><span class="status-badge ${getStatusClass(data.status)}">${data.status}</span></td>
+                <td>${data.date} ${data.time}</td>
+                <td>${data.customerName}</td>
+                <td>${data.vehicleModel}</td>
+                <td>${data.licensePlate}</td>
+                <td><span class="work-type-tag ${getWorkTypeClass(data.workType)}">${data.workType}</span></td>
+                <td>${data.shop}</td>
+                <td>
+                    <a href="#" class="btn btn-action btn-edit">修正</a>
+                    <a href="#" class="btn btn-action btn-complete">完了</a>
+                </td>
+            `;
+            return row;
+        }
+        
+        function getStatusClass(status) {
+            switch(status) {
+                case '予約確定': return 'status-confirmed';
+                case '未確定': return 'status-pending';
+                case '作業完了': return 'status-completed';
+                default: return 'status-pending';
+            }
+        }
+        
+        function getWorkTypeClass(workType) {
+            switch(workType) {
+                case 'Clear車検': return 'work-clear';
+                case '一般整備': return 'work-general';
+                case '預かり車検': return 'work-maintenance';
+                default: return 'work-general';
+            }
+        }
+    </script>
+</body>
+</html>

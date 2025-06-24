@@ -1,0 +1,80 @@
+//==========================================================================
+// Admin Global Layout
+//==========================================================================
+
+@use '../base/variables' as var;
+
+.admin-body-styles {
+  // Styles for the <body> tag itself are in base/_typography.scss
+  // Add any additional body-level layout styles specific to admin pages here
+}
+
+.main-content { // This class is now directly in admin_layout.php
+  // Styles from .main-content in dashboard.html CSS
+  background: var.$main-content-bg;
+  margin: 20px auto;
+  max-width: 1200px;
+  width: 100%; // Flexアイテムとして、親の幅を基準にするために必要
+  flex-grow: 1; // 利用可能なスペースを埋めるように拡張
+  flex-shrink: 0; // コンテンツが少なくても縮小しないようにする
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden; // Important for containing floated children or for border-radius to apply correctly
+}
+
+// Styles for the page header section, corresponding to .page-header in dashboard.html CSS
+// This class should be applied to the div holding the page title in view files.
+.page-header {
+  background: linear-gradient(135deg, var.$page-header-bg-start, var.$page-header-bg-end);
+  color: var.$page-header-text-color;
+  padding: 25px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; // Allow items to wrap on smaller screens
+  gap: 15px; // Gap between title and meta info
+
+  .page-title { // Styles for .page-title in dashboard.html CSS
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .header-info { // New class for datetime-info
+    color: var.$gray-text-light; // Using a variable for consistency
+    font-size: 0.9rem;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    text-align: right; // Default to right align
+  }
+}
+
+// Responsive adjustments for the main layout
+@media (max-width: 768px) {
+  .main-content { // from design HTML
+    margin: 10px; // from design HTML
+    width: calc(100% - 20px); // 左右のmargin(10px * 2)を考慮した幅に設定
+    border-radius: 8px; // from design HTML
+  }
+
+  .page-header { // Styles for .page-header at this breakpoint
+    padding: 15px 15px; // from dashboard.html CSS
+    flex-direction: column; // Stack title and meta vertically
+    align-items: flex-start; // Align items to the start (left)
+    gap: 10px; // Smaller gap when stacked
+
+    .page-title { // Styles for .page-title at this breakpoint
+      font-size: 1.4rem; // from dashboard.html CSS
+      width: 100%; // Take full width when stacked
+      justify-content: flex-start; // Align title to left
+    }
+
+    .header-info {
+      width: 100%; // Take full width
+      text-align: right; // Keep right aligned
+    }
+  }
+}

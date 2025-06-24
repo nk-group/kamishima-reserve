@@ -1,0 +1,51 @@
+//==========================================================================
+// Cards
+//==========================================================================
+
+@use '../base/variables' as var;
+
+//--------------------------------------------------------------------------
+// Base Card Style (Extends/Overrides Bootstrap's .card)
+//--------------------------------------------------------------------------
+.card {
+  // Bootstrap's default .card already provides a lot of styling.
+  // We can override or add to it here.
+  // Example: Add a subtle box-shadow consistent with dashboard.html design
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: none; // Remove Bootstrap's default border if a shadow is preferred
+  border-radius: var.$border-radius-lg; // Slightly larger border-radius
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    // transform: translateY(-3px); // Optional hover effect
+    // box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12); // Optional hover effect
+  }
+}
+
+.card-header {
+  // dashboard.html specific card header style
+  // Example: .schedule-card .card-header
+  // background-color: transparent; // If header needs to be transparent
+  // border-bottom: 1px solid var.$border-color;
+  // padding: var.$spacer var.$spacer * 1.25;
+  // font-weight: 600;
+  // color: var.$text-color;
+
+  // For the sample cards in dashboard.php, Bootstrap's default .card-header is used.
+  // We can provide an alternative custom header style if needed.
+  // For example, if we want a specific background for all admin cards:
+  // background-color: var.$card-cap-bg;
+  // color: var.$card-cap-color;
+  // border-bottom: none;
+}
+
+.card-body {
+  // padding: var.$spacer * 1.25;
+}
+
+.card-title {
+  // font-weight: 500;
+}
+
+// Specific card variants can be added below
+// e.g., .schedule-card from dashboard.html

@@ -1,0 +1,124 @@
+//==========================================================================
+// Admin Header Layout
+//==========================================================================
+
+@use '../base/variables' as var;
+// Components can be used here if needed, e.g., for button styles within the header
+
+.navbar-fusion { // This class is already styled in _fusion-theme.scss for its theme aspects
+  // Add structural or layout-specific styles for the header here if needed
+
+  .navbar-brand {
+    color: var.$nav-link-hover-color !important; // from dashboard.html
+    font-weight: 700; // from dashboard.html
+    font-size: 1.25rem; // from dashboard.html
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); // from dashboard.html
+    display: flex; // from dashboard.html
+    align-items: center; // from dashboard.html
+    gap: 15px; // from dashboard.html
+
+    .logo-img {
+      width: 65px; // from dashboard.html
+      height: auto; // dashboard.html には height: auto; が指定されている
+      max-height: 50px; // from dashboard.html
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3)); // from dashboard.html
+    }
+
+    .logo-fallback { // Copied from dashboard.html, ensure it's styled if used
+      font-size: 0.7rem; // Example, adjust as needed
+      line-height: 0.8rem; // Example, adjust as needed
+      text-transform: uppercase;
+      margin-right: 0.75rem;
+      color: var.$admin-header-text-color;
+      // Styles from dashboard.html .logo-fallback
+      width: 65px; // from dashboard.html
+      height: 50px; // from dashboard.html
+      background: linear-gradient(135deg, var.$yellow-light, var.$rainbow-yellow); // 変数を使用 (dashboard.html: #fbbf24, #f59e0b)
+      display: flex; // from dashboard.html
+      align-items: center; // from dashboard.html
+      justify-content: center; // from dashboard.html
+      border-radius: 10px;
+      border: 2px solid var.$header-bg-dark-mid; // 変数を使用 (dashboard.html: #374151)
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3); // from dashboard.html
+     }
+  }
+
+  .navbar-nav {
+    .nav-link {
+      color: var.$nav-link-color !important; // from dashboard.html
+      font-weight: 600; // from dashboard.html
+      position: relative;
+      transition: all 0.3s ease; // from dashboard.html
+      margin: 0 5px; // from dashboard.html .navbar-fusion .nav-link
+      padding: 8px 16px !important; // from dashboard.html
+
+      &:hover,
+      &:focus {
+        color: var.$nav-link-hover-color !important; // from dashboard.html
+        transform: translateY(-2px); // from dashboard.html
+      }
+
+      // Underline effect from dashboard.html
+      &::before {
+        content: '';
+        position: absolute;
+        bottom: -8px; // from dashboard.html
+        left: 50%;
+        width: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var.$nav-link-underline-start, var.$nav-link-underline-end); // from dashboard.html
+        transition: all 0.3s ease; // from dashboard.html
+        transform: translateX(-50%);
+        border-radius: 2px;
+      }
+
+      &:hover::before { // Only apply underline on hover
+        width: 90%; // from dashboard.html .navbar-fusion .nav-link:hover::before, .navbar-fusion .nav-link.active::before
+      }
+      &.active {
+        color: var.$nav-link-hover-color !important; // Ensure active link is also bright
+      }
+    }
+
+    .dropdown-menu { // From dashboard.html .navbar-fusion .dropdown-menu
+      background: var.$dropdown-bg; // dashboard.html: #374151
+      border: 1px solid var.$dropdown-border-color; // dashboard.html: #4b5563
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25); // dashboard.html
+    }
+
+    .dropdown-item { // From dashboard.html .navbar-fusion .dropdown-item
+      color: var.$dropdown-item-color; // dashboard.html: #e5e7eb
+      transition: all 0.3s ease; // from dashboard.html
+      &:hover, &:focus {
+        background: linear-gradient(135deg, var.$dropdown-item-hover-bg-start, var.$dropdown-item-hover-bg-end); // dashboard.html: $rainbow-blue, $rainbow-green
+        color: var.$nav-link-hover-color; // dashboard.html: white
+      }
+    }
+  }
+
+  .user-section { // From dashboard.html .user-section
+    display: flex;
+    align-items: center;
+    gap: 20px; // from dashboard.html
+    margin-left: auto; // Push to the right
+
+    .user-info { // From dashboard.html .user-info
+      color: var.$user-info-color;
+      text-align: right;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+
+      .user-name { // From dashboard.html .user-name
+        font-size: 1rem; // from dashboard.html
+        font-weight: 600; // from dashboard.html
+        margin-bottom: 2px; // from dashboard.html
+      }
+      .user-role { // From dashboard.html .user-role
+        font-size: 0.8rem; // from dashboard.html
+        color: var.$user-role-color; // dashboard.html: #d1d5db
+        font-weight: 400; // from dashboard.html
+      }
+    }
+    // .btn-logout is styled in components/_buttons.scss
+    // and its specific HTML structure is in _admin_header.php
+  }
+}

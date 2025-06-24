@@ -54,15 +54,12 @@ $routes->group('admin', ['filter' => 'sessionauth', 'namespace' => 'App\Controll
     // Controller: App\Controllers\Admin\ReservationController
     $routes->group('reservations', ['filter' => 'permission:staff.access'], static function ($routes) { // ★ フィルターを 'permission:staff.access' に変更
         /** @var RouteCollection $routes */
-        
+        $routes->get('', 'ReservationController::index', ['as' => 'admin.reservations.index']); // 予約一覧
         $routes->get('new', 'ReservationController::new', ['as' => 'admin.reservations.new']);
-        $routes->post('create', 'ReservationController::create', ['as' => 'admin.reservations.create']);
-        // 以下、必要に応じて一覧、編集、更新、削除などのRESTfulなルートも同様の形式で定義可能です。
-        // $routes->get('', 'Reservations::index', ['as' => 'admin.reservations.index']); // 予約一覧
-        // $routes->get('show/(:num)', 'Reservations::show/$1', ['as' => 'admin.reservations.show']); // 予約詳細 (もしあれば)
-        // $routes->get('edit/(:num)', 'Reservations::edit/$1', ['as' => 'admin.reservations.edit']); // 予約編集フォーム
-        // $routes->post('update/(:num)', 'Reservations::update/$1', ['as' => 'admin.reservations.update']); // 予約更新処理
-        // $routes->post('delete/(:num)', 'Reservations::delete/$1', ['as' => 'admin.reservations.delete']); // 予約削除処理
+        $routes->post('create', 'ReservationController::create', ['as' => 'admin.reservations.create']); // 新規予約作成処理
+        $routes->get('(:num)', 'ReservationController::edit/$1', ['as' => 'admin.reservations.edit']); // 予約詳細/編集フォーム
+        $routes->post('update/(:num)', 'ReservationController::update/$1', ['as' => 'admin.reservations.update']); // 予約更新処理
+        // $routes->post('delete/(:num)', 'ReservationController::delete/$1', ['as' => 'admin.reservations.delete']); // 予約削除処理 (必要に応じて)
     });    
 
 });

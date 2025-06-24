@@ -1,0 +1,344 @@
+//==========================================================================
+// Buttons
+//==========================================================================
+
+@use '../base/variables' as var;
+@use 'sass:color';
+
+//--------------------------------------------------------------------------
+// Base Button Styles (Used for custom buttons, not extending Bootstrap's .btn)
+//--------------------------------------------------------------------------
+/*
+ * This is a general base for custom buttons, not necessarily used directly.
+ */
+.btn-custom {
+  display: inline-flex; // To align icon and text
+  align-items: center;
+  justify-content: center;
+  padding: var.$spacer * 0.375 var.$spacer * 0.75;
+  font-size: var.$font-size-base;
+  font-weight: 600;
+  line-height: 1.5;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid transparent;
+  border-radius: var.$border-radius;
+  transition: all 0.3s ease; // from design HTML
+}
+
+//--------------------------------------------------------------------------
+// Logout Button (from dashboard.html)
+//--------------------------------------------------------------------------
+.btn-logout {
+  // Styles from dashboard.html
+  background: linear-gradient(135deg, var.$btn-logout-bg-start, var.$btn-logout-bg-end);
+  border: none;
+  color: white !important; // Ensure text color is white
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+  display: inline-flex; // Changed from flex to inline-flex to behave more like a button
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 10px rgba(var.$btn-logout-bg-start, 0.3); // Use variable for shadow color base
+  position: relative;
+  overflow: hidden;
+  text-decoration: none; // Ensure no underline from <a> tag
+
+  &::before { // Hover shine effect from dashboard.html
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s ease;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, var.$btn-logout-hover-bg-start, var.$btn-logout-hover-bg-end);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(var.$btn-logout-bg-start, 0.4); // Use variable for shadow color base
+    &::before {
+      left: 100%;
+    }
+    .logout-icon {
+      transform: rotate(15deg);
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Entry Button (from dashboard.html .btn-entry)
+//--------------------------------------------------------------------------
+.btn-entry {
+  background: linear-gradient(135deg, var.$rainbow-blue, var.$blue-dark); // Using variables
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 20px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(var.$rainbow-blue, 0.3); // Using variable
+
+  &:hover {
+    background: linear-gradient(135deg, var.$blue-dark, var.$blue-deep-dark); // Use new variable
+    color: white;
+    text-decoration: none; // Ensure text-decoration remains none on hover
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(var.$rainbow-blue, 0.4); // Using variable
+  }
+  i { // If icons are used within this button
+   margin-right: var.$spacer * 0.5;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Logout Icon (Specific to .btn-logout)
+//--------------------------------------------------------------------------
+.btn-logout .logout-icon {
+  font-size: 0.9rem;
+  transition: transform 0.3s ease;
+}
+
+//--------------------------------------------------------------------------
+// Action Buttons (e.g., Edit, Complete, Delete)
+// This is the base style for the action buttons container.
+//--------------------------------------------------------------------------
+.action-buttons {
+  display: flex; // from design HTML
+  justify-content: space-between; // from design HTML
+  align-items: center; // from design HTML
+  margin-top: 40px; // from design HTML
+  padding-top: 25px; // from design HTML
+  border-top: 2px solid var.$gray-border-light; // from design HTML
+}
+
+// Action Buttons for pages where only buttons are present and should be right-aligned
+.action-buttons-right {
+  justify-content: flex-end; // Align content to the right
+}
+
+// Individual action buttons (e.g., Edit, Complete, Delete)
+.btn-action {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin-right: 4px;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  color: var.$white;
+  border: none;
+  cursor: pointer;
+
+  &.btn-edit {
+    background: linear-gradient(135deg, var.$rainbow-blue, var.$blue-dark);
+    &:hover {
+      background: linear-gradient(135deg, var.$blue-dark, var.$blue-deep-dark);
+      transform: translateY(-1px);
+    }
+  }
+  &.btn-complete {
+    background: linear-gradient(135deg, var.$rainbow-green, var.$green-darker);
+    &:hover {
+      background: linear-gradient(135deg, var.$green-darker, var.$green-deep-dark);
+      transform: translateY(-1px);
+    }
+  }
+  &.btn-delete {
+    background: linear-gradient(135deg, var.$rainbow-red, var.$red);
+    &:hover {
+      background: linear-gradient(135deg, var.$red, color.adjust(var.$red, $lightness: -10%));
+      transform: translateY(-1px);
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Custom Primary Button (e.g., Save, Register)
+//--------------------------------------------------------------------------
+.btn-primary-custom {
+  background: linear-gradient(135deg, var.$rainbow-blue, var.$blue-dark);
+  border: none;
+  padding: 12px 32px;
+  border-radius: 25px;
+  font-weight: 600;
+  color: var.$white;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(var.$rainbow-blue, 0.3);
+  &:hover {
+    background: linear-gradient(135deg, var.$blue-dark, var.$blue-deep-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(var.$rainbow-blue, 0.4);
+    color: var.$white;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Custom Outline Button (e.g., Back, Cancel, Clear)
+//--------------------------------------------------------------------------
+.btn-outline-custom {
+  border: 2px solid var.$gray-text-muted;
+  color: var.$gray-text-muted;
+  background: var.$white;
+  padding: 12px 24px; // 左右のパディングを減らして幅を狭くする
+  border-radius: 25px; // from design HTML
+  font-weight: 600;
+  transition: all 0.3s ease;
+  &:hover {
+    background: var.$gray-text-muted;
+    color: var.$white;
+    transform: translateY(-2px);
+  }
+}
+
+//--------------------------------------------------------------------------
+// Quick Search Buttons (e.g., "本日の作業", "未完了")
+//--------------------------------------------------------------------------
+.btn-quick-small {
+  background: var.$white;
+  border: 2px solid var.$rainbow-blue;
+  color: var.$rainbow-blue;
+  padding: 8px 16px;
+  border-radius: 20px;
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: var.$rainbow-blue;
+    color: var.$white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var.$rainbow-blue, 0.3);
+  }
+}
+
+//--------------------------------------------------------------------------
+// Search Button (e.g., in search forms)
+//--------------------------------------------------------------------------
+.btn-search {
+  background: linear-gradient(135deg, var.$rainbow-blue, var.$blue-dark);
+  border: none;
+  color: var.$white;
+  padding: 12px 40px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 1rem;
+  min-width: 140px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(var.$rainbow-blue, 0.3);
+
+  &:hover {
+    background: linear-gradient(135deg, var.$blue-dark, var.$blue-deep-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(var.$rainbow-blue, 0.4);
+  }
+}
+
+//--------------------------------------------------------------------------
+// Clear Button (e.g., in search forms)
+//--------------------------------------------------------------------------
+.btn-clear {
+  background: var.$white;
+  border: 2px solid var.$secondary;
+  color: var.$secondary;
+  padding: 10px 30px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: var.$secondary;
+    color: var.$white;
+    text-decoration: none;
+    transform: translateY(-2px);
+  }
+}
+
+//--------------------------------------------------------------------------
+// New Entry/Create Button (e.g., New Reservation, New User)
+//--------------------------------------------------------------------------
+.btn-create-new {
+  background: linear-gradient(135deg, var.$rainbow-green, var.$green-darker);
+  border: none;
+  color: var.$white;
+  padding: 12px 25px;
+  border-radius: 25px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(var.$rainbow-green, 0.3);
+
+  &:hover {
+    background: linear-gradient(135deg, var.$green-darker, var.$green-deep-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(var.$rainbow-green, 0.4);
+  }
+}
+
+//--------------------------------------------------------------------------
+// Export Buttons (e.g., Clipboard, CSV Download)
+//--------------------------------------------------------------------------
+.btn-export {
+  background: var.$white;
+  border: 2px solid var.$rainbow-blue;
+  color: var.$rainbow-blue;
+  padding: 8px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: var.$rainbow-blue;
+    color: var.$white;
+    transform: translateY(-1px);
+  }
+}
+
+//--------------------------------------------------------------------------
+// Month Selection Buttons (e.g., "12ヶ月後", "24ヶ月後" in detail page)
+//--------------------------------------------------------------------------
+.btn-month {
+  background: linear-gradient(135deg, var.$rainbow-blue, var.$blue-dark);
+  color: var.$white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  &:hover {
+    background: linear-gradient(135deg, var.$blue-dark, var.$blue-deep-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var.$rainbow-blue, 0.3);
+  }
+  &:active {
+    transform: translateY(0);
+  }
+}

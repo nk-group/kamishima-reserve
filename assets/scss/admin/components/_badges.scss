@@ -1,0 +1,47 @@
+//==========================================================================
+// Admin Common Badge Styles (Status, Work Type)
+//==========================================================================
+
+@use '../base/variables' as var;
+
+// Status Badges
+.status-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  border-radius: 20px;
+
+  &.status-pending {
+    background: var.$status-pending-bg;
+    color: var.$status-pending-color;
+  }
+  &.status-confirmed {
+    background: var.$status-confirmed-bg;
+    color: var.$status-confirmed-color;
+  }
+}
+
+// Work Type Tags
+.work-type-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  border-radius: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.work-clear {
+    background: var.$pink-light;
+    color: var.$pink-dark;
+  }
+  &.work-general {
+    background: var.$work-general-bg;
+    color: var.$work-general-color;
+  }
+  &.work-maintenance {
+    background: var.$work-maintenance-bg;
+    color: var.$work-maintenance-color;
+  }
+}

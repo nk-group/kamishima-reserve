@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>予約管理システム - ダッシュボード</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-blue: #2e5aa4;
+            --light-blue: #e8f2ff;
+            --border-color: #dee2e6;
+            --gray-light: #f1f5f9;
+        }
+        
+        body {
+            background-color: var(--gray-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* ヘッダースタイル（融合デザイン） */
+        .navbar-fusion {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 50%, #475569 100%) !important;
+            border-bottom: 5px solid transparent;
+            border-image: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b, #ef4444) 1;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.3);
+            padding: 12px 0;
+            position: relative;
+        }
+
+        .navbar-fusion::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                rgba(59, 130, 246, 0.3), 
+                rgba(16, 185, 129, 0.3), 
+                rgba(245, 158, 11, 0.3), 
+                rgba(239, 68, 68, 0.3)
+            );
+            filter: blur(1px);
+        }
+
+        .navbar-fusion .navbar-brand {
+            color: white !important;
+            font-weight: 700;
+            font-size: 1.25rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .navbar-fusion .nav-link {
+            color: #e5e7eb !important;
+            font-weight: 600;
+            position: relative;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            padding: 8px 16px !important;
+        }
+
+        .navbar-fusion .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+
+        .navbar-fusion .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .navbar-fusion .nav-link:hover::before {
+            width: 90%;
+        }
+
+        .navbar-fusion .dropdown-menu {
+            background: #374151;
+            border: 1px solid #4b5563;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        }
+
+        .navbar-fusion .dropdown-item {
+            color: #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-fusion .dropdown-item:hover {
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            color: white;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            color: #f3f4f6;
+            text-align: right;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .user-name {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: #d1d5db;
+            font-weight: 400;
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: none;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-logout::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-logout:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-logout:hover::before {
+            left: 100%;
+        }
+
+        .logout-icon {
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-logout:hover .logout-icon {
+            transform: rotate(15deg);
+        }
+
+        .logo-img {
+            width: 65px;
+            height: auto;
+            max-height: 50px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .logo-fallback {
+            width: 65px;
+            height: 50px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1f2937;
+            font-weight: bold;
+            font-size: 0.7rem;
+            text-align: center;
+            line-height: 1.2;
+            border: 2px solid #374151;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        /* フッタースタイル（融合デザイン） */
+        .footer-fusion {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 12px 0;
+            text-align: center;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.25);
+            border-top: 3px solid transparent;
+            border-image: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b, #ef4444) 1;
+            position: relative;
+        }
+
+        .footer-fusion::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                rgba(59, 130, 246, 0.3), 
+                rgba(16, 185, 129, 0.3), 
+                rgba(245, 158, 11, 0.3), 
+                rgba(239, 68, 68, 0.3)
+            );
+            filter: blur(1px);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-company {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            background: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-text {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #d1d5db;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* アニメーション効果 */
+        @keyframes rainbow-pulse {
+            0%, 100% { border-image: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b, #ef4444) 1; }
+            25% { border-image: linear-gradient(90deg, #10b981, #f59e0b, #ef4444, #3b82f6) 1; }
+            50% { border-image: linear-gradient(90deg, #f59e0b, #ef4444, #3b82f6, #10b981) 1; }
+            75% { border-image: linear-gradient(90deg, #ef4444, #3b82f6, #10b981, #f59e0b) 1; }
+        }
+
+        .navbar-fusion:hover {
+            animation: rainbow-pulse 3s ease-in-out infinite;
+        }
+        
+        /* メインコンテンツ */
+        .main-content {
+            background: white;
+            margin: 20px auto;
+            max-width: 1200px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .dashboard-content {
+            padding: 35px;
+        }
+        
+        .today-schedule {
+            margin-bottom: 40px;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-date {
+            color: #6b7280;
+            font-size: 1.1rem;
+            margin-left: 15px;
+            font-weight: 500;
+        }
+        
+        .btn-entry {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-entry:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .schedule-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .schedule-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .schedule-time {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        .customer-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .work-type-badge {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .badge-clear {
+            background: #ffcce5;
+            color: #d63384;
+        }
+        
+        .schedule-details {
+            font-size: 0.9rem;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+        
+        .schedule-details div {
+            margin-bottom: 6px;
+        }
+        
+        .more-link {
+            text-align: center;
+            margin-top: 25px;
+        }
+        
+        .more-link a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid #3b82f6;
+            transition: all 0.3s ease;
+        }
+        
+        .more-link a:hover {
+            background: #3b82f6;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .calendar-section {
+            border-top: 2px solid #e5e7eb;
+            padding-top: 30px;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .calendar-stats {
+            font-size: 0.9rem;
+            color: #6b7280;
+            margin-top: 8px;
+        }
+        
+        .shop-select {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 8px 15px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .shop-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+        }
+        
+        .calendar-container {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .calendar-nav {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .calendar-nav-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .calendar-nav-btn:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .calendar-month {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+        
+        .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .calendar-header-row {
+            background: #f8f9fa;
+        }
+        
+        .calendar-header-cell {
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .calendar-header-cell.sunday {
+            color: #dc3545;
+        }
+        
+        .calendar-header-cell.saturday {
+            color: #0d6efd;
+        }
+        
+        .calendar-cell {
+            padding: 8px 6px;
+            vertical-align: top;
+            border-bottom: 1px solid #e5e7eb;
+            border-right: 1px solid #e5e7eb;
+            min-height: 110px;
+            position: relative;
+            background: white;
+            transition: all 0.3s ease;
+            width: 14.28%;
+        }
+        
+        .calendar-cell.today {
+            background: white;
+            border: 2px solid #f59e0b;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.3);
+        }
+        
+        .calendar-cell.holiday {
+            background: #f3f4f6;
+        }
+        
+        .calendar-cell:hover {
+            background: #f8f9fa;
+        }
+        
+        .calendar-cell.today:hover {
+            background: #f8f9fa;
+        }
+        
+        .calendar-cell.holiday:hover {
+            background: #e5e7eb;
+        }
+        
+        .calendar-cell:last-child {
+            border-right: none;
+        }
+        
+        .calendar-date {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 22px;
+        }
+        
+        .calendar-date .date-number {
+            text-align: right;
+        }
+        
+        .calendar-date .date-number.sunday {
+            color: #dc3545;
+        }
+        
+        .calendar-date .date-number.saturday {
+            color: #0d6efd;
+        }
+        
+        .calendar-date .date-number.prev-month {
+            color: #d1d5db;
+        }
+        
+        .new-reservation-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+        
+        .new-reservation-btn:hover {
+            background: #059669;
+            transform: scale(1.05);
+        }
+        
+        .calendar-appointments {
+            font-size: 0.7rem;
+            line-height: 1.3;
+            margin-top: 8px;
+            margin-bottom: 25px;
+            min-height: 60px;
+        }
+        
+        .appointment-time {
+            display: block;
+            padding: 2px 4px;
+            margin-bottom: 2px;
+            border-radius: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 500;
+            color: #92400e;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .appointment-time:hover {
+            background: #fbbf24;
+            color: #92400e;
+            text-decoration: none;
+        }
+        
+        .appointment-booked {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .appointment-new {
+            background: #dbeafe;
+            color: #1e40af;
+            font-weight: 600;
+        }
+        
+        .holiday-label {
+            color: #dc3545;
+            font-size: 0.65rem;
+            text-align: right;
+            font-weight: 600;
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: white;
+            padding: 1px 3px;
+            border-radius: 2px;
+        }
+        
+        .calendar-scroll-container {
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .calendar-scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .calendar-table-wrapper {
+            width: 100%;
+            min-width: 100%;
+        }
+        
+        .calendar-pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px 0;
+            gap: 8px;
+        }
+        
+        .pagination-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #d1d5db;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination-dot.active {
+            background: #3b82f6;
+            transform: scale(1.2);
+        }
+        
+        @media (max-width: 768px) {
+            .navbar-fusion .navbar-brand {
+                font-size: 1.1rem;
+            }
+
+            .logo-img {
+                width: 55px;
+                max-height: 45px;
+            }
+
+            .logo-fallback {
+                width: 55px;
+                height: 45px;
+                font-size: 0.6rem;
+            }
+
+            .user-section {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+                width: 100%;
+            }
+
+            .user-info {
+                text-align: center;
+            }
+
+            .btn-logout {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .navbar-fusion .nav-link {
+                text-align: center;
+                margin: 5px 0;
+            }
+            
+            .schedule-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .calendar-nav {
+                padding: 12px 15px;
+            }
+            
+            .calendar-cell {
+                min-height: 100px;
+                padding: 6px 4px;
+            }
+            
+            .calendar-date {
+                font-size: 0.75rem;
+            }
+            
+            .appointment-time {
+                font-size: 0.6rem;
+            }
+            
+            .new-reservation-btn {
+                font-size: 0.5rem;
+                padding: 1px 3px;
+            }
+            
+            .calendar-scroll-container {
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .calendar-table {
+                min-width: 500px;
+            }
+            
+            .main-content {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            
+            .dashboard-content {
+                padding: 25px;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+            
+            .calendar-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: stretch;
+            }
+
+            .page-header {
+                padding: 20px 25px;
+            }
+
+            .page-title {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-fusion">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZWxsaXBzZSBjeD0iNTAiIGN5PSIzMCIgcng9IjQ1IiByeT0iMjUiIGZpbGw9IiNmYmJmMjQiIHN0cm9rZT0iI2Y5ZmJmZiIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjx0ZXh0IHg9IjUwIiB5PSIyMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMWYyOTM3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CRS1UUkVLPC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iMzIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzFmMjkzNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QU5EIFdJTEQ8L3RleHQ+Cjx0ZXh0IHg9IjUwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzFmMjkzNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+S2FtaXNoaW1hPC90ZXh0Pgo8L3N2Zz4K" 
+                     alt="Kamishima Logo" class="logo-img" 
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="logo-fallback" style="display: none;">
+                    KAMISHIMA<br>MOTORS
+                </div>
+                予約管理システム
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">HOME</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            予約管理
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">予約一覧</a></li>
+                            <li><a class="dropdown-item" href="#">予約登録</a></li>
+                            <li><a class="dropdown-item" href="#">カレンダー</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            メンテナンス
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">マスタ管理</a></li>
+                            <li><a class="dropdown-item" href="#">設定</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <div class="user-section">
+                    <div class="user-info">
+                        <div class="user-name">上田拓一</div>
+                        <div class="user-role">システム管理者</div>
+                    </div>
+                    <button class="btn btn-logout">
+                        <i class="bi bi-door-open-fill logout-icon"></i>
+                        ログアウト
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-house-fill"></i>
+                ダッシュボード
+            </h1>
+            <div class="datetime-info">
+                <div style="color: #d1d5db; font-size: 0.9rem; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">
+                    2025年2月7日 (金)
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="dashboard-content">
+            <!-- Today's Schedule -->
+            <div class="today-schedule">
+                <div class="section-header">
+                    <div class="d-flex align-items-center">
+                        <h2 class="section-title">
+                            <i class="bi bi-calendar-day"></i>
+                            本日の予定
+                        </h2>
+                        <span class="section-date">2025年2月7日</span>
+                    </div>
+                    <a href="#" class="btn-entry">
+                        <i class="bi bi-printer me-2"></i>
+                        入庫予定表印刷
+                    </a>
+                </div>
+                
+                <div class="schedule-grid">
+                    <!-- Schedule Card 1 -->
+                    <div class="schedule-card">
+                        <div class="schedule-time">
+                            <i class="bi bi-clock"></i>
+                            09:30
+                        </div>
+                        <div class="customer-name">
+                            <i class="bi bi-person-circle"></i>
+                            鈴木　一郎様
+                        </div>
+                        <div class="work-type-badge badge-clear">Clear車検（本店）</div>
+                        <div class="schedule-details">
+                            <div><strong>連絡先：</strong>090-XXXX-XXXX</div>
+                            <div><strong>車種／車番：</strong>スカイライン 帯広330る587</div>
+                            <div><strong>車検満了：</strong>2025年2月20日</div>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Card 2 -->
+                    <div class="schedule-card">
+                        <div class="schedule-time">
+                            <i class="bi bi-clock"></i>
+                            13:45
+                        </div>
+                        <div class="customer-name">
+                            <i class="bi bi-person-circle"></i>
+                            田中　花子様
+                        </div>
+                        <div class="work-type-badge badge-clear">Clear車検（本店）</div>
+                        <div class="schedule-details">
+                            <div><strong>連絡先：</strong>090-YYYY-YYYY</div>
+                            <div><strong>車種／車番：</strong>フィット 帯広550お1234</div>
+                            <div><strong>車検満了：</strong>2025年2月20日</div>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Card 3 -->
+                    <div class="schedule-card">
+                        <div class="schedule-time">
+                            <i class="bi bi-clock"></i>
+                            14:00
+                        </div>
+                        <div class="customer-name">
+                            <i class="bi bi-person-circle"></i>
+                            佐藤　太郎様
+                        </div>
+                        <div class="work-type-badge badge-clear">Clear車検（本店）</div>
+                        <div class="schedule-details">
+                            <div><strong>連絡先：</strong>090-ZZZZ-ZZZZ</div>
+                            <div><strong>車種／車番：</strong>エスクァイア 帯広330る505</div>
+                            <div><strong>車検満了：</strong>2025年3月12日</div>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Card 4 -->
+                    <div class="schedule-card">
+                        <div class="schedule-time">
+                            <i class="bi bi-clock"></i>
+                            16:35
+                        </div>
+                        <div class="customer-name">
+                            <i class="bi bi-person-circle"></i>
+                            山田　美香様
+                        </div>
+                        <div class="work-type-badge badge-clear">Clear車検（本店）</div>
+                        <div class="schedule-details">
+                            <div><strong>連絡先：</strong>090-AAAA-AAAA</div>
+                            <div><strong>車種／車番：</strong>ノート 帯広550お5678</div>
+                            <div><strong>車検満了：</strong>2025年2月28日</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="more-link">
+                    <a href="#">
+                        <i class="bi bi-arrow-right me-2"></i>
+                        もっと見る
+                    </a>
+                </div>
+            </div>
+
+            <!-- Calendar Section -->
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <div>
+                        <h2 class="section-title">
+                            <i class="bi bi-calendar3"></i>
+                            予約カレンダー
+                        </h2>
+                        <div class="calendar-stats">合計件数　15件／Clear車検　10件／一般整備　5件／その他　3件</div>
+                    </div>
+                    <div>
+                        <label for="shopSelect" class="form-label me-2" style="color: #1f2937; font-weight: 600;">作業店舗</label>
+                        <select id="shopSelect" class="shop-select">
+                            <option selected>本社（車検・整備工場）</option>
+                            <option>Clear車検</option>
+                            <option>モーターショップカミシマ</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="calendar-container">
+                    <div class="calendar-nav">
+                        <button class="calendar-nav-btn">
+                            <i class="bi bi-chevron-left me-1"></i>
+                            前月
+                        </button>
+                        <div class="calendar-month">2025年2月</div>
+                        <button class="calendar-nav-btn">
+                            次月
+                            <i class="bi bi-chevron-right ms-1"></i>
+                        </button>
+                    </div>
+
+                    <div class="calendar-scroll-container">
+                        <div class="calendar-table-wrapper">
+                            <table class="calendar-table">
+                                <thead>
+                                    <tr class="calendar-header-row">
+                                        <th class="calendar-header-cell sunday">日</th>
+                                        <th class="calendar-header-cell">月</th>
+                                        <th class="calendar-header-cell">火</th>
+                                        <th class="calendar-header-cell">水</th>
+                                        <th class="calendar-header-cell">木</th>
+                                        <th class="calendar-header-cell">金</th>
+                                        <th class="calendar-header-cell saturday">土</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <span class="date-number prev-month"></span>
+                                            </div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <span class="date-number prev-month"></span>
+                                            </div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <span class="date-number prev-month"></span>
+                                            </div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <span class="date-number prev-month"></span>
+                                            </div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <span class="date-number prev-month"></span>
+                                            </div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <span class="date-number prev-month"></span>
+                                            </div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number saturday">1</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <a href="#" class="appointment-time appointment-booked">09:30 鈴木</a>
+                                                <a href="#" class="appointment-time appointment-booked">16:30 田中</a>
+                                            </div>
+                                            <div class="holiday-label">車検 2件</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number sunday">2</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <a href="#" class="appointment-time appointment-booked">09:30 佐藤</a>
+                                            </div>
+                                            <div class="holiday-label">車検 1件</div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">3</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <a href="#" class="appointment-time appointment-booked">09:30 山田</a>
+                                            </div>
+                                            <div class="holiday-label">車検 1件</div>
+                                        </td>
+                                        <td class="calendar-cell holiday">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">4</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <span class="appointment-new">定休日</span>
+                                            </div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">5</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <a href="#" class="appointment-time appointment-booked">09:30 高橋</a>
+                                            </div>
+                                            <div class="holiday-label">車検 1件</div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">6</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <a href="#" class="appointment-time appointment-booked">09:30 中村</a>
+                                            </div>
+                                            <div class="holiday-label">車検 1件</div>
+                                        </td>
+                                        <td class="calendar-cell today">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">7</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <a href="#" class="appointment-time appointment-booked">09:30 鈴木</a>
+                                                <a href="#" class="appointment-time appointment-booked">13:45 田中</a>
+                                                <a href="#" class="appointment-time appointment-booked">16:35 山田</a>
+                                            </div>
+                                            <div class="holiday-label">車検 4件</div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number saturday">8</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                            </div>
+                                            <div class="holiday-label">車検 0件</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number sunday">9</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <a href="#" class="appointment-time appointment-booked">14:30 渡辺</a>
+                                            </div>
+                                            <div class="holiday-label">車検 1件</div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">10</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                            </div>
+                                            <div class="holiday-label">車検 0件</div>
+                                        </td>
+                                        <td class="calendar-cell holiday">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">11</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <span class="appointment-new">定休日</span>
+                                            </div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">12</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <a href="#" class="appointment-time appointment-booked">09:30 小林</a>
+                                                <a href="#" class="appointment-time appointment-booked">11:00 松田</a>
+                                                <a href="#" class="appointment-time appointment-booked">13:45 橋本</a>
+                                                <a href="#" class="appointment-time appointment-booked">15:15 木下</a>
+                                                <a href="#" class="appointment-time appointment-booked">16:45 清水</a>
+                                            </div>
+                                            <div class="holiday-label">車検 5件</div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">13</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <a href="#" class="appointment-time appointment-booked">15:15 加藤</a>
+                                            </div>
+                                            <div class="holiday-label">車検 1件</div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">14</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                            </div>
+                                            <div class="holiday-label">車検 0件</div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number saturday">15</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <a href="#" class="appointment-time appointment-booked">11:00 松本</a>
+                                            </div>
+                                            <div class="holiday-label">車検 1件</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number sunday">16</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                            </div>
+                                            <div class="holiday-label">車検 0件</div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">17</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <a href="#" class="appointment-time appointment-booked">13:00 井上</a>
+                                            </div>
+                                            <div class="holiday-label">車検 1件</div>
+                                        </td>
+                                        <td class="calendar-cell holiday">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">18</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <span class="appointment-new">定休日</span>
+                                            </div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">19</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <a href="#" class="appointment-time appointment-booked">16:00 木村</a>
+                                            </div>
+                                            <div class="holiday-label">車検 1件</div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">20</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                            </div>
+                                            <div class="holiday-label">車検 0件</div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">21</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <a href="#" class="appointment-time appointment-booked">14:30 斎藤</a>
+                                            </div>
+                                            <div class="holiday-label">車検 1件</div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number saturday">22</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                            </div>
+                                            <div class="holiday-label">車検 0件</div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number sunday">23</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                            </div>
+                                            <div class="holiday-label">車検 0件</div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">24</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <a href="#" class="appointment-time appointment-booked">09:30 遠藤</a>
+                                            </div>
+                                            <div class="holiday-label">車検 1件</div>
+                                        </td>
+                                        <td class="calendar-cell holiday">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">25</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <span class="appointment-new">定休日</span>
+                                            </div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">26</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                            </div>
+                                            <div class="holiday-label">車検 0件</div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">27</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                                <a href="#" class="appointment-time appointment-booked">11:00 藤田</a>
+                                            </div>
+                                            <div class="holiday-label">車検 1件</div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <button class="new-reservation-btn">＋新規</button>
+                                                <span class="date-number">28</span>
+                                            </div>
+                                            <div class="calendar-appointments">
+                                            </div>
+                                            <div class="holiday-label">車検 0件</div>
+                                        </td>
+                                        <td class="calendar-cell">
+                                            <div class="calendar-date">
+                                                <span class="date-number prev-month"></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="calendar-pagination">
+                        <div class="pagination-dot active"></div>
+                        <div class="pagination-dot"></div>
+                        <div class="pagination-dot"></div>
+                        <div class="pagination-dot"></div>
+                        <div class="pagination-dot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-fusion">
+        <div class="footer-content">
+            <div class="footer-company">株式会社上嶋自動車</div>
+            <div class="footer-text">&copy; 2025 Kamishima Motors Inc. All Rights Reserved.</div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Dashboard functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Schedule card hover effects
+            document.querySelectorAll('.schedule-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    // 実際の処理では予約詳細ページに遷移
+                    console.log('予約詳細を表示');
+                });
+            });
+
+            // Calendar navigation
+            document.querySelectorAll('.calendar-nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const isNext = this.textContent.includes('次月');
+                    console.log(isNext ? '次月へ' : '前月へ');
+                    
+                    // 実際の処理では月の切り替え処理を実装
+                    // updateCalendar(isNext ? 1 : -1);
+                });
+            });
+
+            // 新規予約ボタンのイベント
+            document.querySelectorAll('.new-reservation-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const cell = this.closest('.calendar-cell');
+                    const dateElement = cell.querySelector('.date-number');
+                    const date = dateElement.textContent;
+                    
+                    console.log('新規予約作成:', date + '日');
+                    // 実際の処理では新規予約フォームを開く
+                    // openNewReservationForm(date);
+                    
+                    // 視覚的フィードバック
+                    this.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                    
+                    alert(`${date}日の新規予約作成画面を表示します`);
+                });
+            });
+
+            // 予約リンククリック時のイベント
+            document.querySelectorAll('.appointment-time').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const appointmentText = this.textContent;
+                    console.log('予約詳細表示:', appointmentText);
+                    
+                    // 実際の処理では予約詳細ページに遷移
+                    // window.location.href = `/reservation/detail/${reservationId}`;
+                    
+                    // 視覚的フィードバック
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 150);
+                    
+                    alert(`予約詳細画面を表示します：${appointmentText}`);
+                });
+            });
+
+            // カレンダーページネーション
+            document.querySelectorAll('.pagination-dot').forEach((dot, index) => {
+                dot.addEventListener('click', function() {
+                    document.querySelectorAll('.pagination-dot').forEach(d => d.classList.remove('active'));
+                    this.classList.add('active');
+                    console.log(`週 ${index + 1} に移動`);
+                    
+                    // 実際の処理では週の表示を切り替え
+                    // scrollToWeek(index);
+                });
+            });
+
+            // カレンダーのスワイプ対応（タッチデバイス用）
+            const calendarScrollContainer = document.querySelector('.calendar-scroll-container');
+            let startX = 0;
+            let scrollLeft = 0;
+            let isDown = false;
+
+            calendarScrollContainer.addEventListener('mousedown', (e) => {
+                isDown = true;
+                startX = e.pageX - calendarScrollContainer.offsetLeft;
+                scrollLeft = calendarScrollContainer.scrollLeft;
+                calendarScrollContainer.style.cursor = 'grabbing';
+            });
+
+            calendarScrollContainer.addEventListener('mouseleave', () => {
+                isDown = false;
+                calendarScrollContainer.style.cursor = 'grab';
+            });
+
+            calendarScrollContainer.addEventListener('mouseup', () => {
+                isDown = false;
+                calendarScrollContainer.style.cursor = 'grab';
+            });
+
+            calendarScrollContainer.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - calendarScrollContainer.offsetLeft;
+                const walk = (x - startX) * 2;
+                calendarScrollContainer.scrollLeft = scrollLeft - walk;
+            });
+
+            // タッチイベント
+            calendarScrollContainer.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].pageX;
+                scrollLeft = calendarScrollContainer.scrollLeft;
+            });
+
+            calendarScrollContainer.addEventListener('touchmove', (e) => {
+                const x = e.touches[0].pageX;
+                const walk = (x - startX) * 2;
+                calendarScrollContainer.scrollLeft = scrollLeft - walk;
+            });
+
+            // Shop selection change
+            document.getElementById('shopSelect').addEventListener('change', function() {
+                console.log('店舗変更:', this.value);
+                // 実際の処理では選択された店舗のカレンダーを表示
+                // updateCalendarByShop(this.value);
+            });
+
+            // Calendar cell click events
+            document.querySelectorAll('.calendar-cell').forEach(cell => {
+                cell.addEventListener('click', function() {
+                    const dateElement = this.querySelector('.date-number');
+                    if (dateElement && !dateElement.classList.contains('prev-month')) {
+                        const date = dateElement.textContent;
+                        if (date) {
+                            console.log('日付クリック:', date);
+                            // 実際の処理では日別予約詳細を表示
+                            // showDayDetails(date);
+                        }
+                    }
+                });
+            });
+
+            // Print button functionality
+            document.querySelector('.btn-entry').addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('入庫予定表印刷');
+                
+                // 実際の処理ではPDF生成・印刷機能を実装
+                if (confirm('本日の入庫予定表を印刷しますか？')) {
+                    // window.open('/print/daily-schedule', '_blank');
+                    alert('印刷処理を開始しました');
+                }
+            });
+
+            // More link functionality
+            document.querySelector('.more-link a').addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('予約一覧ページへ遷移');
+                // window.location.href = '/reservations';
+            });
+
+            // ログアウト機能
+            document.querySelector('.btn-logout').addEventListener('click', function() {
+                if (confirm('ログアウトしますか？')) {
+                    console.log('ログアウト処理実行');
+                    // 実際の処理では logout endpoint にリダイレクト
+                    // window.location.href = '/logout';
+                    alert('ログアウトしました');
+                }
+            });
+
+            // ナビゲーションのアクティブ状態管理
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (!this.classList.contains('dropdown-toggle')) {
+                        // アクティブ状態の管理
+                        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                });
+            });
+
+            // ホバー時のレインボーアニメーション
+            const navbar = document.querySelector('.navbar-fusion');
+            let hoverTimeout;
+
+            navbar.addEventListener('mouseenter', function() {
+                clearTimeout(hoverTimeout);
+                this.style.animation = 'rainbow-pulse 3s ease-in-out infinite';
+            });
+
+            navbar.addEventListener('mouseleave', function() {
+                hoverTimeout = setTimeout(() => {
+                    this.style.animation = '';
+                }, 1000);
+            });
+            
+            // レスポンシブ対応の処理
+            function handleResize() {
+                const isMobile = window.innerWidth < 768;
+                const scheduleGrid = document.querySelector('.schedule-grid');
+                
+                if (isMobile) {
+                    // モバイル時の調整
+                    scheduleGrid.style.gridTemplateColumns = '1fr';
+                } else {
+                    // デスクトップ時の調整
+                    scheduleGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(300px, 1fr))';
+                }
+            }
+
+            window.addEventListener('resize', handleResize);
+            handleResize(); // 初期実行
+
+            // 現在時刻の表示更新（オプション）
+            function updateCurrentTime() {
+                const now = new Date();
+                const timeString = now.toLocaleTimeString('ja-JP', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                // 実際の処理では現在時刻を表示する要素があれば更新
+                console.log('現在時刻:', timeString);
+            }
+
+            // 1分ごとに時刻更新
+            setInterval(updateCurrentTime, 60000);
+            updateCurrentTime(); // 初期実行
+        });
+
+        // カレンダー更新機能（例）
+        function updateCalendar(monthOffset) {
+            // 実際の処理では、サーバーから新しい月のデータを取得して表示を更新
+            console.log('カレンダー更新:', monthOffset);
+        }
+
+        // 店舗別カレンダー更新機能（例）
+        function updateCalendarByShop(shopId) {
+            // 実際の処理では、選択された店舗の予約データを取得して表示を更新
+            console.log('店舗別カレンダー更新:', shopId);
+        }
+
+        // 日別詳細表示機能（例）
+        function showDayDetails(date) {
+            // 実際の処理では、選択された日の詳細情報を表示するモーダルなどを表示
+            console.log('日別詳細表示:', date);
+        }
+
+        // データ取得とカレンダー描画（例）
+        function renderCalendar(year, month, shopId) {
+            // 実際の処理では、指定された年月・店舗のデータを取得してカレンダーを描画
+            console.log('カレンダー描画:', year, month, shopId);
+        }
+
+        // 本日の予定データ取得（例）
+        function loadTodaySchedule() {
+            // 実際の処理では、本日の予定データを取得して表示を更新
+            console.log('本日の予定データ取得');
+        }
+
+        // 統計情報の更新（例）
+        function updateStats() {
+            // 実際の処理では、予約統計情報を取得して表示を更新
+            console.log('統計情報更新');
+        }
+    </script>
+</body>
+</html>

@@ -7,6 +7,23 @@ use App\Controllers\Admin\BaseController; // Admin用のBaseControllerを継承
 class ReservationController extends BaseController
 {
     /**
+     * 予約一覧ページを表示します。
+     */
+    public function index()
+    {
+        $data = [
+            'page_title' => '予約検索／一覧 | 車検予約管理システム',
+            'body_id'    => 'page-admin-reservations-index',
+            // ここで予約データをモデルから取得してビューに渡す処理を追加します。
+            // 例: 'reservations' => $reservationModel->findAll(),
+        ];
+
+        // ビューファイル名を指定し、データを渡して表示
+        // (ビューファイルは app/Views/Admin/Reservations/index.php とします)
+        return $this->render('Admin/Reservations/index', $data);
+    }
+
+    /**
      * 新規予約入力フォームを表示します。
      */
     public function new()
@@ -94,5 +111,86 @@ class ReservationController extends BaseController
         // 現時点では、完了メッセージを表示してリダイレクトする仮の処理
         session()->setFlashdata('message', '（仮）予約登録処理が呼び出されました。本番ではバリデーションとDB保存処理が必要です。');
         return redirect()->to(route_to('admin.reservations.new'));
+    }
+
+    /**
+     * 予約詳細ページを表示します。
+     *
+     * @param int $id 予約ID
+     * @return string|RedirectResponse
+     */
+    public function edit(int $id)
+    {
+        // 実際のアプリケーションでは、ここで$idを使ってデータベースから予約データを取得します。
+        // 例: $reservation = $this->reservationModel->find($id);
+        // データが見つからない場合は404エラーやリダイレクトを返します。
+        // if (!$reservation) {
+        //     throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        // }
+
+        // 仮の予約データ
+        $reservation = [
+            'id' => $id,
+            'reservation_number' => sprintf('%08d', $id),
+            'status' => '予約確定',
+            'service_type' => 'Clear車検',
+            'desired_date' => '2025/2/5水',
+            'start_time' => '09:30',
+            'end_time' => '09:30',
+            'shop' => '本社（車検・整備工場）',
+            'customer_name' => '鈴木　一郎',
+            'customer_kana' => 'スズキ　イチロウ',
+            'email' => 'i.suzuki@sample.com',
+            'line_via' => true,
+            'line_display_name' => '鈴木',
+            'phone1' => '090-XXXX-XXXX',
+            'phone2' => '0155-XX-XXXX',
+            'zip_code' => '080-0803',
+            'address' => '帯広市東３条南８丁目１－１　ＮＫビル',
+            'vehicle_plate_region' => '帯広',
+            'vehicle_plate_class' => '330',
+            'vehicle_plate_kana' => 'る',
+            'vehicle_plate_number' => '583',
+            'vehicle_model' => 'スカイライン',
+            'first_registration' => '2025年2月',
+            'inspection_due_date' => '2025年2月20日',
+            'model_designation_no' => '50506',
+            'classification_no' => '0689',
+            'loaner_needed' => true,
+            'loaner_car_name' => 'フィット1号車',
+            'customer_request' => 'お客様からのご要望など',
+            'memo' => '車検に関する注意事項等を記載します。',
+            'next_inspection_date' => '2025年2月20日',
+            'send_next_inspection_guide' => true,
+            'reminder_email_sent' => true,
+            'reminder_email_sent_date' => '----年-月-日 --:--',
+            'created_at' => '2025年1月30日 20:15',
+            'updated_at' => '2025年1月30日 20:15',
+        ];
+
+        $data = [
+            'page_title' => '予約詳細 | 車検予約管理システム',
+            'body_id'    => 'page-admin-reservations-detail',
+            'reservation' => (object)$reservation, // ビューでオブジェクトとしてアクセスできるようにキャスト
+        ];
+
+        // ビューファイル名を指定し、データを渡して表示
+        // (ビューファイルは app/Views/Admin/Reservations/detail.php とします)
+        return $this->render('Admin/Reservations/detail', $data);
+    }
+
+    /**
+     * 予約詳細フォームから送信されたデータを更新します。
+     *
+     * @param int $id 予約ID
+     * @return RedirectResponse
+     */
+    public function update(int $id): RedirectResponse
+    {
+        // 実際のアプリケーションでは、ここでバリデーションとデータベース更新処理を行います。
+        // 例: $this->reservationModel->update($id, $this->request->getPost());
+
+        session()->setFlashdata('message', "予約ID {$id} の情報が更新されました。（仮）");
+        return redirect()->to(route_to('admin.reservations.edit', $id));
     }
 }

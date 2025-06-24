@@ -76,6 +76,12 @@ abstract class BaseController extends Controller
             $renderData['page_title'] = '管理画面'; // デフォルトのページタイトル
         }
 
+        // h1_title が明示的に設定されていない場合、page_title から自動生成
+        if (!isset($renderData['h1_title'])) {
+            $parts = explode(' | ', $renderData['page_title']);
+            $renderData['h1_title'] = $parts[0];
+        }
+
         // view() ヘルパー関数に、ビュー名と最終的なデータを渡してレンダリングを実行します。
         // レイアウトの適用は、$viewName で指定されたビューファイル内の $this->extend() に任せます。
         return view($viewName, $renderData);

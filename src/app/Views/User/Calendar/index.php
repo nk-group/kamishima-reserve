@@ -1,4 +1,4 @@
-<?= $this->extend('Layouts/user-layout') // 利用者向け共通レイアウトを継承 ?>
+<?= $this->extend('Layouts/user_layout') // 利用者向け共通レイアウトを継承 ?>
 
 <?= $this->section('page_specific_assets') // user-layout.php のセクションに対応 ?>
   <?php

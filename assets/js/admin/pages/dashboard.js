@@ -1,4 +1,4 @@
-// /home/ueda/develop/kamishima-reserve/assets/js/pages/admin/dashboard.js
+// assets/js/admin/pages/dashboard.js
 
 /**
  * 管理者ダッシュボードページ固有のJavaScript処理

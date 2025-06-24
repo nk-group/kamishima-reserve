@@ -1,15 +1,19 @@
-<?= $this->extend('Layouts/admin-layout') ?>
+<?= $this->extend('Layouts/admin_layout') ?>
 
-<?= $this->section('page_title') ?>
-    新規予約作成 | <?= esc(config('App')->appName ?? '車検予約管理システム') ?>
+<?= $this->section('title') // レイアウトの <title> タグに値を設定 ?>
+    <?= esc($page_title ?? '新規予約作成') ?>
+<?= $this->endSection() ?>
+
+<?= $this->section('page_header_content') ?>
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="bi bi-calendar-plus"></i>
+            <?= esc($h1_title) ?>
+        </h1>
+    </div>
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
-
-    <div class="page-header mb-4">
-        <h1>予約入力</h1>
-    </div>
-
     <?php // フラッシュメッセージ等は省略 ?>
     <?php if (session()->getFlashdata('message')): ?>
         <div class="alert alert-success"><?= session()->getFlashdata('message') ?></div>

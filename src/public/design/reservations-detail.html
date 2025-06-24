@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>予約管理システム - 予約詳細</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Flatpickr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-blue: #2e5aa4;
+            --light-blue: #e8f2ff;
+            --border-color: #dee2e6;
+        }
+        
+        body {
+            background-color: #f1f5f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* ヘッダースタイル（融合デザイン） */
+        .navbar-fusion {
+            background: linear-gradient(135deg, #1f2937 0%, #374151 50%, #475569 100%) !important;
+            border-bottom: 5px solid transparent;
+            border-image: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b, #ef4444) 1;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.3);
+            padding: 12px 0;
+            position: relative;
+        }
+
+        .navbar-fusion::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                rgba(59, 130, 246, 0.3), 
+                rgba(16, 185, 129, 0.3), 
+                rgba(245, 158, 11, 0.3), 
+                rgba(239, 68, 68, 0.3)
+            );
+            filter: blur(1px);
+        }
+
+        .navbar-fusion .navbar-brand {
+            color: white !important;
+            font-weight: 700;
+            font-size: 1.25rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .navbar-fusion .nav-link {
+            color: #e5e7eb !important;
+            font-weight: 600;
+            position: relative;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            padding: 8px 16px !important;
+        }
+
+        .navbar-fusion .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+
+        .navbar-fusion .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #10b981);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .navbar-fusion .nav-link:hover::before {
+            width: 90%;
+        }
+
+        .navbar-fusion .dropdown-menu {
+            background: #374151;
+            border: 1px solid #4b5563;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        }
+
+        .navbar-fusion .dropdown-item {
+            color: #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-fusion .dropdown-item:hover {
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            color: white;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            color: #f3f4f6;
+            text-align: right;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .user-name {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: #d1d5db;
+            font-weight: 400;
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border: none;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-logout::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .btn-logout:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-logout:hover::before {
+            left: 100%;
+        }
+
+        .logout-icon {
+            font-size: 0.9rem;
+            transition: transform 0.3s ease;
+        }
+
+        .btn-logout:hover .logout-icon {
+            transform: rotate(15deg);
+        }
+
+        .logo-img {
+            width: 65px;
+            height: auto;
+            max-height: 50px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        }
+
+        .logo-fallback {
+            width: 65px;
+            height: 50px;
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1f2937;
+            font-weight: bold;
+            font-size: 0.7rem;
+            text-align: center;
+            line-height: 1.2;
+            border: 2px solid #374151;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        /* フッタースタイル（融合デザイン） */
+        .footer-fusion {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 12px 0;
+            text-align: center;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.25);
+            border-top: 3px solid transparent;
+            border-image: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b, #ef4444) 1;
+            position: relative;
+        }
+
+        .footer-fusion::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                rgba(59, 130, 246, 0.3), 
+                rgba(16, 185, 129, 0.3), 
+                rgba(245, 158, 11, 0.3), 
+                rgba(239, 68, 68, 0.3)
+            );
+            filter: blur(1px);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .footer-company {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            background: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-text {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #d1d5db;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        /* メインコンテンツ */
+        .main-content {
+            background: white;
+            margin: 20px auto;
+            max-width: 1200px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .page-header {
+            background: linear-gradient(135deg, #1f2937, #374151);
+            color: white;
+            padding: 25px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .datetime-info {
+            font-size: 0.9rem;
+            color: #d1d5db;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .form-content {
+            padding: 35px;
+        }
+        
+        .form-section {
+            margin-bottom: 40px;
+        }
+        
+        .form-label {
+            color: #1f2937;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .form-control, .form-select {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+            background: white;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .form-group {
+            flex: 1;
+        }
+        
+        .form-group.narrow {
+            flex: 0 0 120px;
+        }
+        
+        .form-group.wide {
+            flex: 2;
+        }
+        
+        .time-inputs {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .time-separator {
+            font-weight: bold;
+            color: #6b7280;
+        }
+        
+        .section-divider {
+            border: none;
+            border-top: 2px dotted #9ca3af;
+            height: 0;
+            margin: 30px 0;
+        }
+        
+        .vehicle-number-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .vehicle-number-group .form-control {
+            text-align: center;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .form-check-input:checked {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        
+        .inspection-section {
+            background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+            border: 2px solid #bae6fd;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 25px;
+        }
+        
+        .inspection-title {
+            color: #1f2937;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-group-custom {
+            display: flex;
+            gap: 12px;
+            margin: 15px 0;
+        }
+        
+        .btn-month {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn-month:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-month:active {
+            transform: translateY(0);
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 2px solid #e5e7eb;
+        }
+        
+        .timestamp-info {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            padding: 12px 32px;
+            border-radius: 25px;
+            font-weight: 600;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-primary-custom:hover {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+            color: white;
+        }
+        
+        .btn-outline-custom {
+            border: 2px solid #6b7280;
+            color: #6b7280;
+            background: white;
+            padding: 12px 32px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline-custom:hover {
+            background: #6b7280;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .line-tag-container {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            user-select: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            margin: 0;
+            height: 48px;
+            min-width: 120px;
+            border: 2px solid transparent;
+        }
+
+        .line-tag-container:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .line-checkbox {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            cursor: pointer;
+            accent-color: white;
+        }
+
+        .line-tag-text {
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .line-text-input {
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+
+        .line-text-input:disabled {
+            background-color: #f3f4f6;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        .info-icon {
+            color: #6b7280;
+            margin-left: 8px;
+            cursor: help;
+        }
+
+        /* アニメーション効果 */
+        @keyframes rainbow-pulse {
+            0%, 100% { border-image: linear-gradient(90deg, #3b82f6, #10b981, #f59e0b, #ef4444) 1; }
+            25% { border-image: linear-gradient(90deg, #10b981, #f59e0b, #ef4444, #3b82f6) 1; }
+            50% { border-image: linear-gradient(90deg, #f59e0b, #ef4444, #3b82f6, #10b981) 1; }
+            75% { border-image: linear-gradient(90deg, #ef4444, #3b82f6, #10b981, #f59e0b) 1; }
+        }
+
+        .navbar-fusion:hover {
+            animation: rainbow-pulse 3s ease-in-out infinite;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar-fusion .navbar-brand {
+                font-size: 1.1rem;
+            }
+
+            .logo-img {
+                width: 55px;
+                max-height: 45px;
+            }
+
+            .logo-fallback {
+                width: 55px;
+                height: 45px;
+                font-size: 0.6rem;
+            }
+
+            .user-section {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+                width: 100%;
+            }
+
+            .user-info {
+                text-align: center;
+            }
+
+            .btn-logout {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .navbar-fusion .nav-link {
+                text-align: center;
+                margin: 5px 0;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .time-inputs {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            
+            .vehicle-number-group {
+                flex-wrap: wrap;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .main-content {
+                margin: 10px;
+                border-radius: 8px;
+            }
+            
+            .form-content {
+                padding: 25px;
+            }
+
+            .page-header {
+                padding: 20px 25px;
+            }
+
+            .page-title {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-fusion">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZWxsaXBzZSBjeD0iNTAiIGN5PSIzMCIgcng9IjQ1IiByeT0iMjUiIGZpbGw9IiNmYmJmMjQiIHN0cm9rZT0iI2Y5ZmJmZiIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjx0ZXh0IHg9IjUwIiB5PSIyMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjgiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMWYyOTM3IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5CRS1UUkVLPC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iMzIiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSI4IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzFmMjkzNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QU5EIFdJTEQ8L3RleHQ+Cjx0ZXh0IHg9IjUwIiB5PSI0NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzFmMjkzNyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+S2FtaXNoaW1hPC90ZXh0Pgo8L3N2Zz4K" 
+                     alt="Kamishima Logo" class="logo-img" 
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="logo-fallback" style="display: none;">
+                    KAMISHIMA<br>MOTORS
+                </div>
+                予約管理システム
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">HOME</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            予約管理
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">予約一覧</a></li>
+                            <li><a class="dropdown-item" href="#">予約登録</a></li>
+                            <li><a class="dropdown-item" href="#">カレンダー</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            メンテナンス
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">マスタ管理</a></li>
+                            <li><a class="dropdown-item" href="#">設定</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                
+                <div class="user-section">
+                    <div class="user-info">
+                        <div class="user-name">上田拓一</div>
+                        <div class="user-role">システム管理者</div>
+                    </div>
+                    <button class="btn btn-logout">
+                        <i class="bi bi-door-open-fill logout-icon"></i>
+                        ログアウト
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="bi bi-person-circle"></i>
+                予約詳細
+            </h1>
+            <div class="datetime-info">
+                予約受付日 2025年1月30日 20:15
+            </div>
+        </div>
+
+        <!-- Form Content -->
+        <div class="form-content">
+            <!-- Basic Information -->
+            <div class="form-section">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">予約番号</label>
+                        <input type="text" class="form-control" value="00010375" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">状況</label>
+                        <select class="form-select">
+                            <option selected>予約確定</option>
+                            <option>未確定</option>
+                            <option>作業完了</option>
+                            <option>キャンセル</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">作業種別</label>
+                        <select class="form-select">
+                            <option selected>Clear車検</option>
+                            <option>定期点検</option>
+                            <option>一般車検</option>
+                            <option>一般整備</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">予約希望日 <span class="text-danger">※</span></label>
+                        <input type="text" class="form-control flatpickr-date" value="2025/2/5水" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">時間</label>
+                        <div class="time-inputs">
+                            <input type="time" class="form-control" value="09:30">
+                            <span class="time-separator">～</span>
+                            <input type="time" class="form-control" value="09:30">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">作業店舗</label>
+                        <select class="form-select">
+                            <option selected>本社（車検・整備工場）</option>
+                            <option>Clear車検</option>
+                            <option>モーターショップカミシマ</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Information -->
+            <div class="form-section">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">お名前 <span class="text-danger">※</span></label>
+                        <input type="text" class="form-control" value="鈴木　一郎">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">カナ名</label>
+                        <input type="text" class="form-control" value="スズキ　イチロウ">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">メールアドレス <span class="text-danger">※</span></label>
+                        <div class="input-group">
+                            <input type="email" class="form-control" value="i.suzuki@sample.com">
+                            <span class="input-group-text">
+                                <i class="bi bi-info-circle info-icon"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">LINE識別名</label>
+                        <div class="d-flex align-items-center gap-3">
+                            <label for="lineVia" class="line-tag-container" style="cursor: pointer;">
+                                <input type="checkbox" class="line-checkbox" id="lineVia" checked>
+                                <span class="line-tag-text">LINE経由</span>
+                            </label>
+                            <input type="text" class="form-control line-text-input" value="鈴木" id="lineDisplayName">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">連絡先電話番号 <span class="text-danger">※</span></label>
+                        <input type="tel" class="form-control" value="090-XXXX-XXXX">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">電話番号２</label>
+                        <input type="tel" class="form-control" value="0155-XX-XXXX">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group narrow">
+                        <label class="form-label">郵便番号</label>
+                        <input type="text" class="form-control" value="080-0803">
+                    </div>
+                    <div class="form-group wide">
+                        <label class="form-label">住所</label>
+                        <input type="text" class="form-control" value="帯広市東３条南８丁目１－１　ＮＫビル">
+                    </div>
+                </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <!-- Vehicle Information -->
+            <div class="form-section">
+                <hr class="section-divider">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">車両ナンバー <span class="text-danger">※</span></label>
+                        <div class="vehicle-number-group">
+                            <input type="text" class="form-control" value="帯広" style="width: 80px;">
+                            <input type="text" class="form-control" value="330" style="width: 60px;">
+                            <input type="text" class="form-control" value="る" style="width: 50px;">
+                            <input type="text" class="form-control" value="583" style="width: 80px;">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">車種 <span class="text-danger">※</span></label>
+                        <input type="text" class="form-control" value="スカイライン">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">初年度登録</label>
+                        <input type="text" class="form-control flatpickr-month" value="2025年2月">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">車検満了日 <span class="text-danger">※</span></label>
+                        <input type="text" class="form-control flatpickr-date" value="2025年2月20日">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">型式指定番号 <span class="text-danger">※</span></label>
+                        <input type="text" class="form-control" value="50506">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">類別区分番号 <span class="text-danger">※</span></label>
+                        <input type="text" class="form-control" value="0689">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">代車</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="form-check-input" id="loaner" checked>
+                            <label for="loaner" class="form-check-label">必要</label>
+                            <input type="text" class="form-control ms-3" value="フィット1号車" style="max-width: 200px;">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">お客様要望</label>
+                        <textarea class="form-control" rows="3" placeholder="お客様からのご要望など"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Section -->
+            <div class="form-section">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">メモ</label>
+                        <textarea class="form-control" rows="4" placeholder="車検に関する注意事項等を記載します。"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inspection Section -->
+            <div class="inspection-section">
+                <h3 class="inspection-title">
+                    <i class="bi bi-gear-fill"></i>
+                    点検後に入力
+                </h3>
+                <p class="text-muted mb-3">この情報は点検後に整備士が入力する情報です。</p>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">次回車検日</label>
+                        <input type="text" class="form-control flatpickr-date" value="2025年2月20日" id="nextInspectionDate">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">次回点検案内</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="form-check-input" id="nextInspection" checked>
+                            <label for="nextInspection" class="form-check-label">次回点検案内を送る</label>
+                        </div>
+                        <div class="btn-group-custom">
+                            <button type="button" class="btn btn-month" data-months="12">12か月後</button>
+                            <button type="button" class="btn btn-month" data-months="24">24か月後</button>
+                        </div>
+                        <select class="form-select">
+                            <option selected>Clear車検</option>
+                            <option>定期点検</option>
+                            <option>一般車検</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="form-check-input" id="reminderEmail" checked>
+                            <label for="reminderEmail" class="form-check-label">リマインドメール送信済</label>
+                            <span class="ms-3 text-muted">送信日：----年-月-日 --:--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <div class="timestamp-info">
+                    <div>新規登録：2025年1月30日 20:15</div>
+                    <div>最終更新：2025年1月30日 20:15</div>
+                </div>
+                <div class="d-flex gap-3">
+                    <button type="button" class="btn btn-primary-custom">
+                        <i class="bi bi-check-circle me-2"></i>保存
+                    </button>
+                    <button type="button" class="btn btn-outline-custom">
+                        <i class="bi bi-arrow-left me-2"></i>戻る
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-fusion">
+        <div class="footer-content">
+            <div class="footer-company">株式会社上嶋自動車</div>
+            <div class="footer-text">&copy; 2025 Kamishima Motors Inc. All Rights Reserved.</div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <!-- Flatpickr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/ja.min.js"></script>
+    
+    <script>
+        // Flatpickr初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 日付ピッカー
+            flatpickr('.flatpickr-date', {
+                locale: 'ja',
+                dateFormat: 'Y年n月j日',
+                allowInput: true
+            });
+            
+            // 月選択ピッカー
+            flatpickr('.flatpickr-month', {
+                locale: 'ja',
+                plugins: [new monthSelectPlugin({
+                    shorthand: true,
+                    dateFormat: 'Y年n月',
+                    altFormat: 'Y年n月'
+                })]
+            });
+            
+            // LINE経由チェックボックスの制御
+            const lineCheckbox = document.getElementById('lineVia');
+            const lineTextInput = document.getElementById('lineDisplayName');
+
+            function toggleLineInput() {
+                if (lineCheckbox.checked) {
+                    lineTextInput.disabled = false;
+                    lineTextInput.style.backgroundColor = '#f9fafb';
+                } else {
+                    lineTextInput.disabled = true;
+                    lineTextInput.value = '';
+                    lineTextInput.style.backgroundColor = '#f3f4f6';
+                }
+            }
+
+            // 初期状態を設定
+            toggleLineInput();
+
+            // チェックボックス変更時のイベント
+            lineCheckbox.addEventListener('change', toggleLineInput);
+
+            // 月選択ボタンのイベント（次回車検日自動設定機能）
+            document.querySelectorAll('.btn-month').forEach(button => {
+                button.addEventListener('click', function() {
+                    const months = parseInt(this.getAttribute('data-months'));
+                    const nextInspectionInput = document.getElementById('nextInspectionDate');
+                    
+                    // 現在の日付を取得
+                    const today = new Date();
+                    
+                    // 指定された月数を追加
+                    const futureDate = new Date(today);
+                    futureDate.setMonth(futureDate.getMonth() + months);
+                    
+                    // 日本語形式でフォーマット（例: 2025年2月20日）
+                    const year = futureDate.getFullYear();
+                    const month = futureDate.getMonth() + 1;
+                    const day = futureDate.getDate();
+                    const formattedDate = `${year}年${month}月${day}日`;
+                    
+                    // 入力フィールドに設定
+                    nextInspectionInput.value = formattedDate;
+                    
+                    // 視覚的フィードバック
+                    nextInspectionInput.style.backgroundColor = '#dbeafe';
+                    setTimeout(() => {
+                        nextInspectionInput.style.backgroundColor = '#f9fafb';
+                    }, 1000);
+                    
+                    console.log(`${months}か月後の日付を設定: ${formattedDate}`);
+                });
+            });
+
+            // ログアウト機能
+            document.querySelector('.btn-logout').addEventListener('click', function() {
+                if (confirm('ログアウトしますか？')) {
+                    console.log('ログアウト処理実行');
+                    // 実際の処理では logout endpoint にリダイレクト
+                    // window.location.href = '/logout';
+                    alert('ログアウトしました');
+                }
+            });
+
+            // ナビゲーションのアクティブ状態管理
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (!this.classList.contains('dropdown-toggle')) {
+                        // アクティブ状態の管理
+                        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                        this.classList.add('active');
+                    }
+                });
+            });
+
+            // ホバー時のレインボーアニメーション
+            const navbar = document.querySelector('.navbar-fusion');
+            let hoverTimeout;
+
+            navbar.addEventListener('mouseenter', function() {
+                clearTimeout(hoverTimeout);
+                this.style.animation = 'rainbow-pulse 3s ease-in-out infinite';
+            });
+
+            navbar.addEventListener('mouseleave', function() {
+                hoverTimeout = setTimeout(() => {
+                    this.style.animation = '';
+                }, 1000);
+            });
+            
+            // フォームバリデーション
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    
+                    // 簡単なバリデーション例
+                    const requiredFields = document.querySelectorAll('input[required]');
+                    let isValid = true;
+                    
+                    requiredFields.forEach(field => {
+                        if (!field.value.trim()) {
+                            field.classList.add('is-invalid');
+                            isValid = false;
+                        } else {
+                            field.classList.remove('is-invalid');
+                        }
+                    });
+                    
+                    if (isValid) {
+                        alert('保存が完了しました。');
+                    } else {
+                        alert('必須項目を入力してください。');
+                    }
+                });
+            }
+
+            // 保存ボタンの処理
+            document.querySelector('.btn-primary-custom').addEventListener('click', function() {
+                // 簡単なバリデーション
+                const requiredInputs = document.querySelectorAll('input[type="text"]:not([readonly]), input[type="email"], input[type="tel"]');
+                let hasError = false;
+
+                requiredInputs.forEach(input => {
+                    if (input.hasAttribute('required') || input.closest('.form-group').querySelector('.text-danger')) {
+                        if (!input.value.trim()) {
+                            input.style.borderColor = '#ef4444';
+                            hasError = true;
+                        } else {
+                            input.style.borderColor = '#e5e7eb';
+                        }
+                    }
+                });
+
+                if (!hasError) {
+                    // 成功時のアニメーション
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                        alert('予約情報を保存しました。');
+                    }, 150);
+                } else {
+                    alert('必須項目を入力してください。');
+                }
+            });
+
+            // 戻るボタンの処理
+            document.querySelector('.btn-outline-custom').addEventListener('click', function() {
+                if (confirm('編集内容が保存されていない可能性があります。戻りますか？')) {
+                    // 実際の処理では前のページに戻る
+                    // window.history.back();
+                    console.log('前のページに戻る');
+                }
+            });
+            
+            // レスポンシブ対応
+            function handleResize() {
+                const isMobile = window.innerWidth < 768;
+                const timeInputs = document.querySelector('.time-inputs');
+                
+                if (timeInputs) {
+                    if (isMobile) {
+                        timeInputs.style.flexDirection = 'column';
+                        timeInputs.style.alignItems = 'stretch';
+                    } else {
+                        timeInputs.style.flexDirection = 'row';
+                        timeInputs.style.alignItems = 'center';
+                    }
+                }
+            }
+            
+            window.addEventListener('resize', handleResize);
+            handleResize(); // 初期実行
+        });
+    </script>
+</body>
+</html>

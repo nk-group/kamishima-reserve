@@ -8,12 +8,7 @@
   <?php
     // 利用者向けアセットを読み込む (vite.config.js の inputキー 'user_app' に対応するエントリー)
     // 'assets/js/user.js' を渡す (vite_tags() ヘルパーはプロジェクトルートからのパスを期待)
-    if (function_exists('vite_tags')) {
-        echo vite_tags(['assets/css/user.scss', 'assets/js/user.js']); // ★ vite.config.js の input で指定したキーに対応するエントリーを指定
-        //echo vite_tags('assets/js/user.js'); // ★ vite.config.js の input で指定したキーに対応するエントリーを指定
-    } else {
-        echo "";
-    }
+    echo vite_tags(['assets/scss/customer/customer.scss', 'assets/js/customer.js']);
   ?>
   <?= $this->renderSection('page_specific_before_head_end') // ★ページ固有のコード ?>
 </head>

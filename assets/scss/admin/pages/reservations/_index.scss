@@ -1,0 +1,255 @@
+//==========================================================================
+// Admin Reservations List Page Specific Styles
+//==========================================================================
+
+@use '../../base/variables' as var;
+@use 'sass:map';
+
+.search-section {
+  background: var.$gray-100; // from design HTML
+  border-radius: 12px; // from design HTML
+  padding: 25px; // from design HTML
+  margin-bottom: 30px; // from design HTML
+  border: 2px solid var.$gray-200; // from design HTML
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); // from design HTML
+
+  .search-title {
+    font-size: 1.3rem; // from design HTML
+    font-weight: 700; // from design HTML
+    margin-bottom: 20px; // from design HTML
+    color: var.$header-bg-dark-start; // from design HTML
+    display: flex; // from design HTML
+    align-items: center; // from design HTML
+    gap: 10px; // from design HTML
+    i {
+      font-size: 1.3rem; // Match title font size for correct alignment
+      color: var.$header-bg-dark-start; // Match title color
+    }
+  }
+
+  .form-check-input:checked {
+    background-color: var.$rainbow-blue; // from design HTML
+    border-color: var.$rainbow-blue; // from design HTML
+  }
+}
+
+.search-row-main {
+  // This class is now controlled by media queries at the bottom of the file.
+  // No base styles are needed here.
+}
+
+.search-group {
+  flex: 1; // from design HTML
+}
+
+.search-group.narrow {
+  flex: 0 0 140px; // from design HTML
+}
+
+.search-group.medium {
+  flex: 0 0 220px; // from design HTML
+}
+
+.search-group.wide {
+  flex: 2; // from design HTML
+}
+
+// Search Rows & Groups
+.search-row {
+  display: flex; // from design HTML
+  gap: 20px; // from design HTML
+  margin-bottom: 20px; // from design HTML
+  align-items: end; // from design HTML
+
+  // Specific override for the work-type row, based on user's discovery.
+  &:not(.search-row-main):not(.search-row-date) {
+    display: block;
+  }
+}
+
+.date-range-container {
+  display: flex; // from design HTML
+  gap: 10px; // from design HTML
+  align-items: center; // from design HTML
+}
+
+.search-row-date {
+  display: none; // Default hidden for larger screens, shown on mobile
+}
+.search-group-date-pc {
+  // Removed base display: block; to match design HTML's reliance on media queries.
+}
+
+.search-actions-mobile {
+  display: flex; // from design HTML
+  justify-content: center; // from design HTML
+  gap: 20px; // from design HTML
+  margin-top: 30px; // from design HTML
+  align-items: center; // from design HTML
+}
+
+.work-types-group {
+  width: 100%; // from design HTML
+}
+
+.quick-search {
+  margin-top: 25px; // from design HTML
+  .quick-buttons {
+    display: flex; // from design HTML
+    gap: 10px; // from design HTML
+    flex-wrap: wrap; // from design HTML
+    margin-top: 10px; // from design HTML
+  }
+}
+
+// Export Actions
+//--------------------------------------------------
+.export-actions {
+  display: flex; // from design HTML
+  gap: 15px; // from design HTML
+  justify-content: flex-end; // from design HTML
+  margin-top: 25px; // from design HTML
+}
+// Responsive adjustments from reservations-list.html
+//--------------------------------------------------
+
+// Desktop view (>= 1024px)
+// This block is ported directly from the design HTML to ensure the desktop layout
+// is explicitly defined and correctly overrides any styles from smaller breakpoints.
+// My previous failure to include this was a critical oversight.
+@media (min-width: 1024px) {
+  .search-row-main {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    align-items: end;
+  }
+
+  .search-group-date-pc {
+    display: block !important; // from design HTML
+  }
+
+
+  .search-row-date {
+    display: none;
+  }
+
+  .search-group-date-pc {
+    display: block !important;
+  }
+}
+
+// Tablet view
+@media (max-width: 1023px) and (min-width: 769px) {
+  .search-row-main {
+    display: grid; // from design HTML
+    grid-template-columns: repeat(2, 1fr); // from design HTML
+    gap: 20px; // from design HTML
+    margin-bottom: 20px; // from design HTML
+  }
+
+  .search-group-date-pc {
+    display: none !important; // from design HTML
+  }
+
+  .search-row-date {
+    display: flex; // from design HTML
+    margin-bottom: 20px; // from design HTML
+  }
+
+  .search-group-date-pc {
+    display: none !important; // Hiding the PC date range
+  }
+
+  .checkbox-group { // from design HTML (Corrected: No longer nested under .search-section)
+    display: grid; // from design HTML
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); // from design HTML
+    gap: 15px; // from design HTML
+    justify-items: start; // from design HTML
+  }
+}
+
+// Mobile view
+@media (max-width: 768px) {
+  .search-section {
+    padding: 20px; // from design HTML
+  }
+
+  .search-row-date {
+    display: flex; // from design HTML (was missing for this breakpoint)
+  }
+
+  .search-row,
+  .search-row-main {
+    flex-direction: column; // from design HTML
+    gap: 15px; // from design HTML
+    align-items: stretch; // from design HTML
+  }
+
+  .search-group-date-pc {
+    display: none !important; // from design HTML (covers mobile as well)
+  }
+
+  // These styles were missed during the initial port.
+  // They ensure that when search groups stack vertically on mobile,
+  // their labels and content are correctly left-aligned.
+  .form-label,
+  .search-group {
+    text-align: left; // from design HTML
+  }
+
+
+  .search-group.narrow,
+  .search-group.medium,
+  .search-group.wide {
+    flex: 1; // Reset flex basis for stacking (from design HTML)
+  }
+
+  .checkbox-group { // from design HTML (Corrected: No longer nested under .search-section)
+    display: grid; // from design HTML
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); // from design HTML
+    gap: 12px; // from design HTML
+    justify-items: start; // from design HTML
+  }
+
+  .search-actions-mobile { // from design HTML
+    flex-direction: column; // from design HTML
+    gap: 12px; // from design HTML
+    align-items: stretch; // from design HTML
+
+    .btn-search,
+    .btn-clear {
+      width: 100%; // from design HTML
+      justify-content: center; // from design HTML
+    }
+  }
+
+  .results-section {
+    .results-header { // from design HTML
+      flex-direction: column; // from design HTML
+      gap: 15px; // from design HTML
+      align-items: stretch; // from design HTML
+    }
+  }
+
+  .btn-new-reservation { // from design HTML
+    width: 100%; // from design HTML
+    display: flex; // To allow justify-content
+    justify-content: center; // Center text and icon
+  }
+
+  .export-actions {
+    flex-direction: column; // from design HTML
+    gap: 10px; // from design HTML
+    align-items: stretch; // from design HTML
+  }
+  .date-range-container { // from design HTML
+    flex-direction: column; // from design HTML
+    align-items: stretch; // from design HTML
+  }
+
+  .date-separator { // from design HTML
+    align-self: center; // from design HTML
+    margin: 8px 0; // from design HTML
+  }
+}

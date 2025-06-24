@@ -13,7 +13,7 @@ class DashboardController extends BaseController
             'page_title' => 'ダッシュボード | 車検予約管理システム',
             'body_id'    => 'page-admin-dashboard',
         ];
-        // BaseControllerのrenderメソッドを使用してビューを表示
-        return $this->render('Admin/dashboard', $data); // app/Views/Admin/Dashboard.php を指す
+        // BaseControllerのrenderメソッドを使用してビューを表示 (新しいパスを指定)
+        return $this->render('Admin/Dashboard/index', $data); // app/Views/Admin/Dashboard/index.php を指す
     }
 }
