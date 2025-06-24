@@ -50,8 +50,9 @@
                                     <td><?= esc($user->last_active ? $user->last_active->format('Y-m-d H:i:s') : '') ?></td>
                                     <td>
                                         <?php
-                                            $groups = $user->getGroups();
-                                            echo esc(implode(', ', $groups));
+                                            // ★既存のUserエンティティのgetGroupsAsString()メソッドを使用（日本語対応済み）
+                                            $groupsString = $user->getGroupsAsString();
+                                            echo !empty($groupsString) ? esc($groupsString) : '';
                                         ?>
                                     </td>
                                     <td>

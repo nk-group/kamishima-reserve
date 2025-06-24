@@ -2,7 +2,13 @@
 $current_url = current_url();
 $admin_dashboard_url = site_url('admin/dashboard');
 $admin_reservations_url = site_url('admin/reservations');
-// 他の主要なURLもここで定義しておくと便利です
+
+// ★エンティティのメソッドを使用してユーザー役割を取得
+$userRoleDisplay = '一般ユーザー'; // デフォルト値
+if (auth()->loggedIn()) {
+    $user = auth()->user();
+    $userRoleDisplay = $user->getPrimaryGroupJapaneseName();
+}
 ?>
 <nav class="navbar navbar-expand-lg navbar-fusion">
     <div class="container-fluid">
@@ -59,7 +65,7 @@ $admin_reservations_url = site_url('admin/reservations');
             <div class="user-section">
                 <div class="user-info">
                     <div class="user-name"><?= esc(auth()->user()->full_name ?? auth()->user()->username ?? 'ゲスト') ?></div>
-                    <div class="user-role"><?= esc(auth()->user()->getGroups()[0] ?? '一般ユーザー') // グループ表示の例 ?></div>
+                    <div class="user-role"><?= esc($userRoleDisplay) ?></div>
                 </div>
                 <a href="<?= site_url('logout') ?>" class="btn btn-logout">
                     <i class="bi bi-door-open-fill logout-icon"></i>

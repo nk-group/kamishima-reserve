@@ -61,4 +61,23 @@ class User extends ShieldUser
         
         return implode(', ', $groupNames);
     }
+
+    /**
+     * ユーザーのメイングループ（最初のグループ）の日本語名を取得します。
+     * 
+     * @return string メイングループの日本語名
+     */
+    public function getPrimaryGroupJapaneseName(): string
+    {
+        $groups = $this->getGroups();
+        
+        if (empty($groups)) {
+            return '未設定';
+        }
+        
+        $authGroupsConfig = config('AuthGroups');
+        $primaryGroup = $groups[0];
+        
+        return $authGroupsConfig->groups[$primaryGroup]['title'] ?? $primaryGroup;
+    }
 }
