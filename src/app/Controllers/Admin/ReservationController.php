@@ -2,10 +2,33 @@
 
 namespace App\Controllers\Admin;
 
-use App\Controllers\Admin\BaseController; // Admin用のBaseControllerを継承
+use App\Controllers\Admin\BaseController;
+use App\Models\ReservationModel;
+use App\Models\ReserveStatusModel;
+use App\Models\WorkTypeModel;
+use App\Models\ShopModel;
+use App\Models\TimeSlotModel;
+use App\Models\VehicleTypeModel;
 
 class ReservationController extends BaseController
 {
+    protected $reservationModel;
+    protected $reserveStatusModel;
+    protected $workTypeModel;
+    protected $shopModel;
+    protected $timeSlotModel;
+    protected $vehicleTypeModel;
+
+    public function __construct()
+    {
+        $this->reservationModel = new ReservationModel();
+        $this->reserveStatusModel = new ReserveStatusModel();
+        $this->workTypeModel = new WorkTypeModel();
+        $this->shopModel = new ShopModel();
+        $this->timeSlotModel = new TimeSlotModel();
+        $this->vehicleTypeModel = new VehicleTypeModel();
+    }
+
     /**
      * 予約一覧ページを表示します。
      */
@@ -13,13 +36,10 @@ class ReservationController extends BaseController
     {
         $data = [
             'page_title' => '予約検索／一覧 | 車検予約管理システム',
-            'body_id'    => 'page-admin-reservations-index',
-            // ここで予約データをモデルから取得してビューに渡す処理を追加します。
-            // 例: 'reservations' => $reservationModel->findAll(),
+            'h1_title' => '予約検索／一覧',
+            'body_id' => 'page-admin-reservations-index',
         ];
 
-        // ビューファイル名を指定し、データを渡して表示
-        // (ビューファイルは app/Views/Admin/Reservations/index.php とします)
         return $this->render('Admin/Reservations/index', $data);
     }
 
@@ -28,169 +48,276 @@ class ReservationController extends BaseController
      */
     public function new()
     {
+        helper(['form', 'app_form']);
+
         $data = [
             'page_title' => '新規予約作成 | 車検予約管理システム',
-            'body_id'    => 'page-admin-reservations-new',
-        ]; // ビューに渡すデータを格納する配列
-
-        // フォームヘルパーをロード (BaseControllerで既にロードしている場合は不要)
-        helper('form');
-
-        // プルダウンメニュー用のデータを準備します。
-        // 実際のアプリケーションでは、これらのデータはモデルを介してデータベースから取得することを強く推奨します。
-        $data['service_types'] = [
-            ['id' => 'clear_shaken', 'name' => 'Clear車検'],
-            ['id' => 'legal_inspection', 'name' => '法定点検'],
-            ['id' => 'oil_change', 'name' => 'オイル交換'],
-            // 他の作業種別を追加
+            'h1_title' => '新規予約作成',
+            'body_id' => 'page-admin-reservations-new',
+            'reservation' => null, // 新規なのでnull
+            'form_action' => route_to('admin.reservations.create'),
+            'is_edit' => false,
         ];
 
-        $data['shops'] = [
-            ['id' => 'honsha_kojo', 'name' => '本社（車検・整備工場）'],
-            ['id' => '○○_branch', 'name' => '〇〇支店'],
-            // 他の店舗を追加
-        ];
+        // フォーム用データを準備
+        $data = array_merge($data, $this->prepareFormData());
 
-        $data['vehicle_types'] = [
-            ['id' => 'normal_car', 'name' => '普通乗用車'],
-            ['id' => 'kei_car', 'name' => '軽自動車'],
-            // 他の車両種別を追加
-        ];
-
-        // 予約状況の選択肢 (新規作成時は「仮予約」などをデフォルトにすることを想定)
-        $data['reservation_statuses'] = [
-            ['id' => 'tentative', 'name' => '仮予約'],
-            ['id' => 'confirmed', 'name' => '予約確定'],
-        ];
-        // 新規入力時の予約状況のデフォルト値 (例: 'tentative')
-        $data['default_reservation_status'] = 'tentative';
-
-
-        // ビューファイル名を指定し、データを渡して表示
-        // (ビューファイルは app/Views/admin/Reservations/new.php とします)
-        return view('Admin/Reservations/new', $data);
+        return $this->render('Admin/Reservations/new', $data);
     }
 
     /**
      * フォームから送信された予約データを処理し、保存します。
-     * 本番で使用するには、バリデーション、エラーハンドリング、モデルを通じたDB操作を実装する必要があります。
-     * POSTリクエストでこのメソッドが呼ばれることを想定します。
      */
     public function create()
     {
-        // --- 本番用の実装例 (要詳細化) ---
-        // $validation =  \Config\Services::validation();
-        // // バリデーションルールの設定 (例)
-        // $rules = [
-        //     'customer_name' => 'required|max_length[100]',
-        //     'phone_number1' => 'required|max_length[15]',
-        //     'reservation_date' => 'required|valid_date',
-        //     // ... 他のフィールドのルール
-        // ];
+        helper(['form', 'app_form']);
 
-        // if (! $this->validate($rules)) {
-        //     // バリデーションエラーの場合、エラーメッセージと共にフォームを再表示
-        //     // return redirect()->back()->withInput()->with('errors', $validation->getErrors());
-        // }
+        // バリデーション実行
+        if (!$this->validate($this->getValidationRules())) {
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
+        }
 
-        // // データベースへの保存処理 (モデルを使用)
-        // // $reservationModel = new \App\Models\ReservationModel(); // 適切なモデルをインスタンス化
-        // $postData = $this->request->getPost();
+        $postData = $this->request->getPost();
+        
+        // データ整形
+        $reservationData = $this->prepareReservationData($postData);
 
-        // // ここで $postData をモデルに渡す前に整形・加工が必要な場合があります。
-
-        // // if ($reservationModel->insert($postData)) { // モデルのinsertメソッドを呼び出し
-        // //     // 成功した場合の処理 (例: 一覧ページへリダイレクトと成功メッセージ)
-        // //     return redirect()->to(site_url('admin/reservations'))->with('message', '予約を登録しました。');
-        // // } else {
-        // //     // 失敗した場合の処理 (例: フォームへ戻りエラーメッセージ表示)
-        // //     return redirect()->back()->withInput()->with('error', '予約の登録に失敗しました。データベースエラーが発生した可能性があります。');
-        // // }
-        // --- ここまで本番用の実装例 ---
-
-        // 現時点では、完了メッセージを表示してリダイレクトする仮の処理
-        session()->setFlashdata('message', '（仮）予約登録処理が呼び出されました。本番ではバリデーションとDB保存処理が必要です。');
-        return redirect()->to(route_to('admin.reservations.new'));
+        try {
+            // デバッグ用ログ
+            log_message('debug', 'Reservation data to insert: ' . json_encode($reservationData));
+            
+            $reservationId = $this->reservationModel->insert($reservationData);
+            
+            if ($reservationId) {
+                return redirect()->to(route_to('admin.reservations.edit', $reservationId))
+                    ->with('message', '予約を登録しました。');
+            } else {
+                // モデルのエラーを取得
+                $errors = $this->reservationModel->errors();
+                log_message('error', 'Model validation errors: ' . json_encode($errors));
+                throw new \Exception('データベースへの保存に失敗しました。バリデーションエラー: ' . implode(', ', $errors));
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Reservation creation failed: ' . $e->getMessage());
+            log_message('error', 'Failed data: ' . json_encode($reservationData));
+            return redirect()->back()
+                ->withInput()
+                ->with('error', '予約の登録に失敗しました。再度お試しください。');
+        }
     }
 
     /**
-     * 予約詳細ページを表示します。
-     *
-     * @param int $id 予約ID
-     * @return string|RedirectResponse
+     * 予約詳細/編集ページを表示します。
      */
     public function edit(int $id)
     {
-        // 実際のアプリケーションでは、ここで$idを使ってデータベースから予約データを取得します。
-        // 例: $reservation = $this->reservationModel->find($id);
-        // データが見つからない場合は404エラーやリダイレクトを返します。
-        // if (!$reservation) {
-        //     throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
-        // }
+        helper(['form', 'app_form']);
 
-        // 仮の予約データ
-        $reservation = [
-            'id' => $id,
-            'reservation_number' => sprintf('%08d', $id),
-            'status' => '予約確定',
-            'service_type' => 'Clear車検',
-            'desired_date' => '2025/2/5水',
-            'start_time' => '09:30',
-            'end_time' => '09:30',
-            'shop' => '本社（車検・整備工場）',
-            'customer_name' => '鈴木　一郎',
-            'customer_kana' => 'スズキ　イチロウ',
-            'email' => 'i.suzuki@sample.com',
-            'line_via' => true,
-            'line_display_name' => '鈴木',
-            'phone1' => '090-XXXX-XXXX',
-            'phone2' => '0155-XX-XXXX',
-            'zip_code' => '080-0803',
-            'address' => '帯広市東３条南８丁目１－１　ＮＫビル',
-            'vehicle_plate_region' => '帯広',
-            'vehicle_plate_class' => '330',
-            'vehicle_plate_kana' => 'る',
-            'vehicle_plate_number' => '583',
-            'vehicle_model' => 'スカイライン',
-            'first_registration' => '2025年2月',
-            'inspection_due_date' => '2025年2月20日',
-            'model_designation_no' => '50506',
-            'classification_no' => '0689',
-            'loaner_needed' => true,
-            'loaner_car_name' => 'フィット1号車',
-            'customer_request' => 'お客様からのご要望など',
-            'memo' => '車検に関する注意事項等を記載します。',
-            'next_inspection_date' => '2025年2月20日',
-            'send_next_inspection_guide' => true,
-            'reminder_email_sent' => true,
-            'reminder_email_sent_date' => '----年-月-日 --:--',
-            'created_at' => '2025年1月30日 20:15',
-            'updated_at' => '2025年1月30日 20:15',
-        ];
+        $reservation = $this->reservationModel->find($id);
+        
+        if (!$reservation) {
+            return redirect()->to(route_to('admin.reservations.index'))
+                ->with('error', '指定された予約が見つかりません。');
+        }
 
         $data = [
-            'page_title' => '予約詳細 | 車検予約管理システム',
-            'body_id'    => 'page-admin-reservations-detail',
-            'reservation' => (object)$reservation, // ビューでオブジェクトとしてアクセスできるようにキャスト
+            'page_title' => '予約詳細・編集 | 車検予約管理システム',
+            'h1_title' => '予約詳細・編集',
+            'body_id' => 'page-admin-reservations-detail',
+            'reservation' => $reservation,
+            'form_action' => route_to('admin.reservations.update', $id),
+            'is_edit' => true,
         ];
 
-        // ビューファイル名を指定し、データを渡して表示
-        // (ビューファイルは app/Views/Admin/Reservations/detail.php とします)
-        return $this->render('Admin/Reservations/detail', $data);
+        // フォーム用データを準備
+        $data = array_merge($data, $this->prepareFormData());
+
+        return $this->render('Admin/Reservations/edit', $data);
     }
 
     /**
      * 予約詳細フォームから送信されたデータを更新します。
-     *
-     * @param int $id 予約ID
-     * @return RedirectResponse
      */
-    public function update(int $id): RedirectResponse
+    public function update(int $id)
     {
-        // 実際のアプリケーションでは、ここでバリデーションとデータベース更新処理を行います。
-        // 例: $this->reservationModel->update($id, $this->request->getPost());
+        helper(['form', 'app_form']);
 
-        session()->setFlashdata('message', "予約ID {$id} の情報が更新されました。（仮）");
-        return redirect()->to(route_to('admin.reservations.edit', $id));
+        $reservation = $this->reservationModel->find($id);
+        
+        if (!$reservation) {
+            return redirect()->to(route_to('admin.reservations.index'))
+                ->with('error', '指定された予約が見つかりません。');
+        }
+
+        // バリデーション実行
+        if (!$this->validate($this->getValidationRules())) {
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
+        }
+
+        $postData = $this->request->getPost();
+        
+        // データ整形
+        $reservationData = $this->prepareReservationData($postData);
+
+        try {
+            $result = $this->reservationModel->update($id, $reservationData);
+            
+            if ($result) {
+                return redirect()->to(route_to('admin.reservations.edit', $id))
+                    ->with('message', '予約情報を更新しました。');
+            } else {
+                throw new \Exception('データベースの更新に失敗しました。');
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Reservation update failed: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', '予約の更新に失敗しました。再度お試しください。');
+        }
+    }
+
+    /**
+     * 予約を削除します。
+     */
+    public function delete(int $id)
+    {
+        $reservation = $this->reservationModel->find($id);
+        
+        if (!$reservation) {
+            return redirect()->to(route_to('admin.reservations.index'))
+                ->with('error', '指定された予約が見つかりません。');
+        }
+
+        try {
+            $result = $this->reservationModel->delete($id); // 物理削除
+            
+            if ($result) {
+                return redirect()->to(route_to('admin.reservations.index'))
+                    ->with('message', '予約を削除しました。');
+            } else {
+                throw new \Exception('データベースからの削除に失敗しました。');
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Reservation deletion failed: ' . $e->getMessage());
+            return redirect()->to(route_to('admin.reservations.index'))
+                ->with('error', '予約の削除に失敗しました。再度お試しください。');
+        }
+    }
+
+    /**
+     * フォーム用の選択肢データを準備します。
+     */
+    private function prepareFormData(): array
+    {
+        // 時間帯データを全店舗分取得
+        $timeSlots = $this->timeSlotModel->orderBy('shop_id')->orderBy('sort_order')->findAll();
+        $shops = $this->shopModel->findActiveShops();
+        
+        // デバッグ用ログ
+        log_message('debug', 'Time slots count: ' . count($timeSlots));
+        log_message('debug', 'Shops count: ' . count($shops));
+        
+        // 店舗と時間帯の関係をログ出力
+        foreach ($shops as $shop) {
+            $shopTimeSlots = array_filter($timeSlots, function($ts) use ($shop) {
+                return $ts->shop_id == $shop->id;
+            });
+            log_message('debug', "Shop ID {$shop->id} ({$shop->name}) has " . count($shopTimeSlots) . " time slots");
+        }
+        
+        return [
+            'reservation_statuses' => $this->reserveStatusModel->getListForForm(),
+            'work_types' => $this->workTypeModel->findActive(),
+            'shops' => $shops,
+            'time_slots' => $timeSlots, // 全店舗の時間帯（JS側で絞り込み）
+            'vehicle_types' => $this->vehicleTypeModel->findActive(),
+            'default_reservation_status' => $this->reserveStatusModel->getIdByCode('pending'), // 未確定をデフォルト
+        ];
+    }
+
+    /**
+     * POSTデータを予約保存用に整形します。
+     */
+    private function prepareReservationData(array $postData): array
+    {
+        $data = [
+            'reservation_status_id' => !empty($postData['reservation_status_id']) ? (int)$postData['reservation_status_id'] : null,
+            'work_type_id' => !empty($postData['work_type_id']) ? (int)$postData['work_type_id'] : null,
+            'shop_id' => !empty($postData['shop_id']) ? (int)$postData['shop_id'] : null,
+            'desired_date' => $postData['desired_date'] ?? null,
+            'customer_name' => $postData['customer_name'] ?? null,
+            'customer_kana' => $postData['customer_kana'] ?? null,
+            'email' => $postData['email'] ?? null,
+            'line_display_name' => $postData['line_display_name'] ?? null,
+            'via_line' => isset($postData['via_line']) ? 1 : 0,
+            'phone_number1' => $postData['phone_number1'] ?? null,
+            'phone_number2' => $postData['phone_number2'] ?? null,
+            'postal_code' => $postData['postal_code'] ?? null,
+            'address' => $postData['address'] ?? null,
+            'vehicle_license_region' => $postData['vehicle_license_region'] ?? null,
+            'vehicle_license_class' => $postData['vehicle_license_class'] ?? null,
+            'vehicle_license_kana' => $postData['vehicle_license_kana'] ?? null,
+            'vehicle_license_number' => $postData['vehicle_license_number'] ?? null,
+            'vehicle_type_id' => !empty($postData['vehicle_type_id']) ? (int)$postData['vehicle_type_id'] : null,
+            'vehicle_model_name' => $postData['vehicle_model_name'] ?? null,
+            'shaken_expiration_date' => !empty($postData['shaken_expiration_date']) ? $postData['shaken_expiration_date'] : null,
+            'notes' => $postData['notes'] ?? null,
+            'next_inspection_date' => !empty($postData['next_inspection_date']) ? $postData['next_inspection_date'] : null,
+            'send_inspection_notice' => isset($postData['send_inspection_notice']) ? 1 : 0,
+            'inspection_notice_sent' => isset($postData['inspection_notice_sent']) ? 1 : 0,
+        ];
+
+        // 時間関連の処理
+        if (!empty($postData['desired_time_slot_id'])) {
+            // 時間帯選択の場合
+            $data['desired_time_slot_id'] = (int)$postData['desired_time_slot_id'];
+            
+            // 時間帯から開始・終了時刻を設定
+            $timeSlot = $this->timeSlotModel->find($postData['desired_time_slot_id']);
+            if ($timeSlot) {
+                $data['reservation_start_time'] = $timeSlot->start_time;
+                $data['reservation_end_time'] = $timeSlot->end_time;
+            }
+        } else {
+            // 直接時刻入力の場合
+            $data['desired_time_slot_id'] = null;
+            $data['reservation_start_time'] = !empty($postData['reservation_start_time']) ? $postData['reservation_start_time'] : null;
+            $data['reservation_end_time'] = !empty($postData['reservation_end_time']) ? $postData['reservation_end_time'] : null;
+        }
+
+        // 空文字列を明示的にNULLに変換（データベース制約対応）
+        foreach ($data as $key => $value) {
+            if ($value === '' || $value === '0') {
+                // 外部キーフィールドで空文字列や'0'の場合はNULLに変換
+                if (in_array($key, ['vehicle_type_id', 'desired_time_slot_id', 'reservation_status_id', 'work_type_id', 'shop_id'])) {
+                    $data[$key] = null;
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * バリデーションルールを取得します。
+     */
+    private function getValidationRules(): array
+    {
+        return [
+            'reservation_status_id' => 'required|integer',
+            'work_type_id' => 'required|integer',
+            'shop_id' => 'required|integer',
+            'desired_date' => 'required|valid_date',
+            'customer_name' => 'required|string|max_length[50]',
+            'customer_kana' => 'permit_empty|string|max_length[50]',
+            'email' => 'required|valid_email|max_length[255]',
+            'phone_number1' => 'required|string|max_length[20]',
+            'vehicle_license_number' => 'required|string|max_length[5]',
+            'vehicle_model_name' => 'required|string|max_length[50]',
+        ];
     }
 }

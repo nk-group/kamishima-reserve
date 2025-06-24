@@ -31,4 +31,8 @@
 // Page Specific Styles (These use everything defined above)
 @use "pages/dashboard/index";
 @use 'pages/reservations/index' as reservations;
-@use 'pages/reservations/detail';
+// 削除: @use 'pages/reservations/detail';
+// 追加: 予約フォーム関連SCSS
+@use 'pages/reservations/form';
+@use 'pages/reservations/new';
+@use 'pages/reservations/edit';

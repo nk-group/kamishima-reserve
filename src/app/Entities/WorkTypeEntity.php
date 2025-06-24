@@ -21,7 +21,7 @@ class WorkTypeEntity extends Entity
         'active'            => 'boolean', // TINYINT(1) を boolean にキャスト
         'is_clear_shaken'   => 'boolean', // TINYINT(1) を boolean にキャスト
         'sort_order'        => 'integer',
-        'code'              => WorkTypeCode::class, // codeプロパティをWorkTypeCode Enumにキャスト
+        // 'code'              => WorkTypeCode::class, // ★この行を削除（Enumキャストが原因）
     ];
 
     protected $dateFormat = 'datetime'; // このエンティティにはタイムスタンプはないが、ベースクラス用に設定
@@ -49,10 +49,23 @@ class WorkTypeEntity extends Entity
     }
 
     /**
-     * codeプロパティのゲッター (型ヒントのため明示的に定義する例)
+     * codeプロパティをWorkTypeCode Enumとして取得します。
      * @return \App\Enums\WorkTypeCode|null
      */
-    public function getCode(): ?WorkTypeCode
+    public function getCodeEnum(): ?WorkTypeCode
+    {
+        if (empty($this->attributes['code'])) {
+            return null;
+        }
+        
+        return WorkTypeCode::tryFrom($this->attributes['code']);
+    }
+
+    /**
+     * codeプロパティを文字列として取得します。
+     * @return string|null
+     */
+    public function getCode(): ?string
     {
         return $this->attributes['code'];
     }

@@ -1,0 +1,91 @@
+//==========================================================================
+// Admin Reservations Edit Page Specific Styles
+//==========================================================================
+
+@use '../../base/variables' as var;
+
+// Page specific styles for reservation editing
+#page-admin-reservations-detail {
+    
+    .page-header {
+        .page-title {
+            color: var.$rainbow-blue; // Highlight edit with blue
+        }
+    }
+    
+    // Timestamp info styling
+    .timestamp-info {
+        color: var.$gray-text-muted;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        
+        div {
+            margin-bottom: 4px;
+            
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+    
+    // Action buttons for edit page (includes timestamp info)
+    .action-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 40px;
+        padding-top: 25px;
+        border-top: 2px solid var.$gray-border-light;
+        
+        .timestamp-info {
+            flex-shrink: 0;
+            margin-right: 20px;
+        }
+        
+        .d-flex {
+            flex-shrink: 0;
+        }
+    }
+    
+    // Reservation number display for edit
+    .form-control[readonly] {
+        background-color: var.$gray-100;
+        border-color: var.$gray-300;
+        color: var.$gray-600;
+        font-weight: 600;
+    }
+    
+    // Highlight changes/updates
+    .form-section {
+        position: relative;
+        
+        &:hover {
+            .form-group .form-control:not([readonly]):focus {
+                border-color: var.$rainbow-blue;
+                box-shadow: 0 0 0 0.2rem rgba(var.$rainbow-blue, 0.15);
+            }
+        }
+    }
+}
+
+// Responsive adjustments for edit page
+@media (max-width: 768px) {
+    #page-admin-reservations-detail {
+        .action-buttons {
+            flex-direction: column;
+            gap: 20px;
+            text-align: center;
+            
+            .timestamp-info {
+                margin-right: 0;
+                order: 2; // Show timestamp after buttons on mobile
+            }
+            
+            .d-flex {
+                order: 1;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+        }
+    }
+}

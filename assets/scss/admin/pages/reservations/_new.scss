@@ -1,0 +1,44 @@
+//==========================================================================
+// Admin Reservations New Page Specific Styles
+//==========================================================================
+
+@use '../../base/variables' as var;
+
+// Page specific styles for new reservation creation
+#page-admin-reservations-new {
+    // Any specific styles for new page can go here
+    
+    .page-header {
+        .page-title {
+            color: var.$rainbow-green; // Highlight new creation with green
+        }
+    }
+    
+    // Emphasize required fields on new form
+    .form-label {
+        .text-danger {
+            font-weight: 700;
+        }
+    }
+    
+    // Auto number display specific styling for new page
+    .auto-number-display {
+        background: linear-gradient(135deg, var.$blue-lightest, var.$blue-lighter);
+        border-color: var.$rainbow-blue;
+        color: var.$rainbow-blue;
+        font-style: italic;
+        
+        &::before {
+            content: "📝 ";
+            margin-right: 8px;
+        }
+    }
+    
+    // Action buttons alignment for new page
+    .action-buttons {
+        justify-content: flex-end; // Right-align buttons for new page
+        padding-top: 25px;
+        border-top: 2px solid var.$gray-border-light;
+        margin-top: 40px;
+    }
+}

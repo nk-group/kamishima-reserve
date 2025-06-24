@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // initAdminUIInteractions() はDOM要素に依存するため、DOMContentLoaded内で呼び出す
     // Flatpickrの初期化はadmin/plugins/flatpickr-init.js内でDOMContentLoadedを待機しているため、ここでは不要
 
-
     // 共通処理の初期化
     initCommon();
     initAdminUIInteractions(); // 共通UI初期化関数を呼び出し
@@ -46,6 +45,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                 await import('./admin/pages/reservations-list.js');
             } catch (e) {
                 console.error('Failed to load reservation list scripts:', e);
+            }
+            break;
+
+        case 'page-admin-reservations-new':
+            try {
+                const { initNewReservation } = await import('./admin/pages/reservations/new.js');
+                initNewReservation();
+            } catch (e) {
+                console.error('Failed to load reservation new scripts:', e);
+            }
+            break;
+
+        case 'page-admin-reservations-detail':
+            try {
+                const { initEditReservation } = await import('./admin/pages/reservations/edit.js');
+                initEditReservation();
+            } catch (e) {
+                console.error('Failed to load reservation edit scripts:', e);
             }
             break;
 
