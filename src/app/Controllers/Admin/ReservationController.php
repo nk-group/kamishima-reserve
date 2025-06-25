@@ -34,13 +34,170 @@ class ReservationController extends BaseController
      */
     public function index()
     {
+        helper(['form', 'pagination']);
+
+        // 検索パラメータを取得
+        $searchParams = $this->getSearchParams();
+        
+        // ページネーション情報を取得
+        $page = (int)($this->request->getGet('page') ?? 1);
+        $perPage = 20;
+
+        // 検索実行
+        $searchResult = $this->reservationModel->searchReservations($searchParams, $perPage, $page);
+        
+        // 統計情報取得
+        $statistics = $this->reservationModel->getStatistics($searchParams);
+
         $data = [
             'page_title' => '予約検索／一覧 | 車検予約管理システム',
             'h1_title' => '予約検索／一覧',
             'body_id' => 'page-admin-reservations-index',
+            
+            // 検索結果
+            'reservations' => $searchResult['data'],
+            'pagination' => $searchResult['pagination'],
+            'statistics' => $statistics,
+            
+            // 検索条件
+            'search_params' => $searchParams,
+            
+            // フォーム用選択肢
+            'work_types' => $this->workTypeModel->findActive(),
+            'shops' => $this->shopModel->findActiveShops(),
+            'reservation_statuses' => $this->reserveStatusModel->getListForForm(),
+            
+            // クイック検索定義
+            'quick_searches' => $this->getQuickSearchDefinitions(),
         ];
 
         return $this->render('Admin/Reservations/index', $data);
+    }
+
+    /**
+     * 検索パラメータを取得・整理します。
+     */
+    private function getSearchParams(): array
+    {
+        $request = $this->request;
+        
+        $params = [
+            'customer_name' => $request->getGet('customer_name'),
+            'vehicle_number' => $request->getGet('vehicle_number'),
+            'line_display_name' => $request->getGet('line_display_name'),
+            'shop_id' => $request->getGet('shop_id'),
+            'status_id' => $request->getGet('status_id'),
+            'date_from' => $request->getGet('date_from'),
+            'date_to' => $request->getGet('date_to'),
+            'quick_search' => $request->getGet('quick_search'),
+            'sort' => $request->getGet('sort'),
+            'direction' => $request->getGet('direction'),
+        ];
+
+        // 作業種別複数選択の処理
+        $workTypeIds = $request->getGet('work_type_ids');
+        if ($workTypeIds) {
+            if (is_array($workTypeIds)) {
+                $params['work_type_ids'] = array_filter($workTypeIds, 'is_numeric');
+            } else {
+                $params['work_type_ids'] = [(int)$workTypeIds];
+            }
+        }
+
+        // 空文字列をnullに変換
+        return array_map(function($value) {
+            return ($value === '' || $value === '0') ? null : $value;
+        }, $params);
+    }
+
+    /**
+     * クイック検索の定義を返します。
+     */
+    private function getQuickSearchDefinitions(): array
+    {
+        return [
+            'today' => '本日の作業',
+            'incomplete' => '未完了',
+            'this_month_completed' => '今月整備完了予定',
+            'main_shop' => '本社作業',
+            'clear_shop' => 'Clear車検店作業',
+        ];
+    }
+
+    /**
+     * CSVエクスポート機能
+     */
+    public function exportCsv()
+    {
+        $searchParams = $this->getSearchParams();
+        $exportData = $this->reservationModel->getExportData($searchParams);
+
+        // CSVヘッダー
+        $headers = [
+            '予約番号', '予約状況', '予約希望日', '開始時刻', '終了時刻',
+            'お客様氏名', 'カナ名', 'メールアドレス', 'LINE名', 'LINE経由',
+            '電話番号1', '電話番号2', '郵便番号', '住所',
+            '車両地域', '車両分類', '車両かな', '車両番号', '車種名', '車両種別',
+            '車検満了日', '作業種別', '作業店舗', 'メモ',
+            '次回点検日', '次回案内送信', '案内送信済み',
+            '登録日時', '更新日時'
+        ];
+
+        // ファイル名
+        $filename = 'reservations_' . date('Ymd_His') . '.csv';
+
+        // レスポンスヘッダー設定
+        $this->response->setHeader('Content-Type', 'text/csv; charset=UTF-8');
+        $this->response->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
+
+        // CSVデータ作成
+        $output = fopen('php://output', 'w');
+        
+        // BOMを追加（Excel対応）
+        fputs($output, "\xEF\xBB\xBF");
+        
+        // ヘッダー出力
+        fputcsv($output, $headers);
+
+        // データ出力
+        foreach ($exportData as $row) {
+            $csvRow = [
+                $row['reservation_no'],
+                $row['status_name'] ?? '',
+                $row['desired_date'],
+                $row['reservation_start_time'],
+                $row['reservation_end_time'],
+                $row['customer_name'],
+                $row['customer_kana'] ?? '',
+                $row['email'],
+                $row['line_display_name'] ?? '',
+                $row['via_line'] ? 'はい' : 'いいえ',
+                $row['phone_number1'],
+                $row['phone_number2'] ?? '',
+                $row['postal_code'] ?? '',
+                $row['address'] ?? '',
+                $row['vehicle_license_region'] ?? '',
+                $row['vehicle_license_class'] ?? '',
+                $row['vehicle_license_kana'] ?? '',
+                $row['vehicle_license_number'],
+                $row['vehicle_model_name'] ?? '',
+                $row['vehicle_type_name'] ?? '',
+                $row['shaken_expiration_date'] ?? '',
+                $row['work_type_name'] ?? '',
+                $row['shop_name'] ?? '',
+                $row['notes'] ?? '',
+                $row['next_inspection_date'] ?? '',
+                $row['send_inspection_notice'] ? 'はい' : 'いいえ',
+                $row['inspection_notice_sent'] ? 'はい' : 'いいえ',
+                $row['created_at'],
+                $row['updated_at']
+            ];
+            
+            fputcsv($output, $csvRow);
+        }
+
+        fclose($output);
+        return $this->response;
     }
 
     /**

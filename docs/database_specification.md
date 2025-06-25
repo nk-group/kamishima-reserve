@@ -320,7 +320,7 @@
 | 類別区分番号       | classification_number     | VARCHAR(10)         |          |     |     |        | NULL    |       | 例: 0689                                           |
 | 代車利用         | loaner_usage              | TINYINT(1) UNSIGNED | ○        |     |     |        | 0       |       | 1: 利用する  0: 利用しない (デフォルトは0)                       |
 | 代車名          | loaner_name               | VARCHAR(20)         |          |     |     |        | NULL    |       | 呼称や車番                                             |
-| お客さ様要望      | customer_requests         | TEXT                |          |     |     |        | NULL    |       | お客様からのご要望事項                                     |
+| お客様要望      | customer_requests         | TEXT                |          |     |     |        | NULL    |       | お客様からのご要望事項                                     |
 | メモ           | notes                     | TEXT                |          |     |     |        | NULL    |       | 車検に関する注意事項等                                       |
 | 次回点検日        | next_inspection_date      | DATE                |          |     |     |        | NULL    |       | 今回の作業完了後に設定される、顧客への次回の推奨点検日                       |
 | 次回点検案内送信     | send_inspection_notice    | TINYINT(1) UNSIGNED | ○        |     |     |        | 0       | ○     | 次回の点検案内を顧客に送信する予定があるかを示すフラグ (1: 送信する, 0: 送信しない)   |

@@ -26,6 +26,11 @@ class CreateReservationsTable extends Migration
                 'unsigned'   => true,
                 'null'       => false,
             ],
+            'reservation_guid' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 36,
+                'null'       => false,
+            ],
             'work_type_id' => [
                 'type'       => 'TINYINT',
                 'constraint' => 3,
@@ -60,6 +65,11 @@ class CreateReservationsTable extends Migration
                 'type'       => 'VARCHAR',
                 'constraint' => 50,
                 'null'       => false,
+            ],
+            'customer_kana' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 50,
+                'null'       => true,
             ],
             'email' => [
                 'type'       => 'VARCHAR',
@@ -119,8 +129,8 @@ class CreateReservationsTable extends Migration
                 'null'       => false,
             ],
             'vehicle_type_id' => [
-                'type'       => 'INT', // vehicle_types.id と合わせる
-                'constraint'     => 5, // vehicle_types.id と合わせる
+                'type'       => 'INT',
+                'constraint' => 5,
                 'unsigned'   => true,
                 'null'       => true,
             ],
@@ -129,8 +139,38 @@ class CreateReservationsTable extends Migration
                 'constraint' => 50,
                 'null'       => true,
             ],
+            'first_registration_date' => [
+                'type' => 'DATE',
+                'null' => true,
+            ],
             'shaken_expiration_date' => [
                 'type' => 'DATE',
+                'null' => true,
+            ],
+            'model_spec_number' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 10,
+                'null'       => true,
+            ],
+            'classification_number' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 10,
+                'null'       => true,
+            ],
+            'loaner_usage' => [
+                'type'       => 'TINYINT',
+                'constraint' => 1,
+                'unsigned'   => true,
+                'null'       => false,
+                'default'    => 0,
+            ],
+            'loaner_name' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 20,
+                'null'       => true,
+            ],
+            'customer_requests' => [
+                'type' => 'TEXT',
                 'null' => true,
             ],
             'notes' => [
@@ -147,6 +187,12 @@ class CreateReservationsTable extends Migration
                 'unsigned'   => true,
                 'null'       => false,
                 'default'    => 0,
+            ],
+            'next_work_type_id' => [
+                'type'       => 'TINYINT',
+                'constraint' => 3,
+                'unsigned'   => true,
+                'null'       => true,
             ],
             'next_contact_date' => [
                 'type' => 'DATE',
@@ -175,10 +221,12 @@ class CreateReservationsTable extends Migration
         ]);
         $this->forge->addKey('id', true); // 主キー
         $this->forge->addKey('reservation_no', false, true); // UNIQUEキー
+        $this->forge->addKey('reservation_guid', false, true); // UNIQUEキー
 
         // INDEX設定
         $this->forge->addKey('desired_date');
         $this->forge->addKey('customer_name');
+        $this->forge->addKey('customer_kana');
         $this->forge->addKey('phone_number1');
         $this->forge->addKey('vehicle_license_number');
         $this->forge->addKey('send_inspection_notice');
@@ -191,17 +239,15 @@ class CreateReservationsTable extends Migration
         $this->forge->addKey('shop_id');
         $this->forge->addKey('desired_time_slot_id');
         $this->forge->addKey('vehicle_type_id');
+        $this->forge->addKey('next_work_type_id');
 
         // 外部キー制約
-        // ON DELETE, ON UPDATE の挙動は要件に応じて調整してください。
-        // (例: 'CASCADE', 'SET NULL', 'NO ACTION', 'RESTRICT')
-        // マスタ参照系は 'NO ACTION' or 'RESTRICT' が一般的 (関連レコードがあるとマスタ削除不可)
-        // NULL許容のFKは 'SET NULL' も選択肢
         $this->forge->addForeignKey('reservation_status_id', 'reserve_statuses', 'id', 'NO ACTION', 'NO ACTION');
         $this->forge->addForeignKey('work_type_id', 'work_types', 'id', 'NO ACTION', 'NO ACTION');
         $this->forge->addForeignKey('shop_id', 'shops', 'id', 'NO ACTION', 'NO ACTION');
         $this->forge->addForeignKey('desired_time_slot_id', 'time_slots', 'id', 'SET NULL', 'NO ACTION');
         $this->forge->addForeignKey('vehicle_type_id', 'vehicle_types', 'id', 'SET NULL', 'NO ACTION');
+        $this->forge->addForeignKey('next_work_type_id', 'work_types', 'id', 'SET NULL', 'NO ACTION');
 
         $this->forge->createTable('reservations');
     }

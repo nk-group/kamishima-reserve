@@ -110,27 +110,241 @@ class ReservationModel extends Model
     }
 
     /**
-     * 指定された条件で予約を検索します。
+     * 指定された条件で予約を検索します（強化版）。
      * @param array $params 検索条件
-     * @return array<\App\Entities\ReservationEntity>
+     * @param int   $perPage 1ページあたりの件数
+     * @param int   $page ページ番号
+     * @return array 検索結果とページネーション情報
      */
-    public function searchReservations(array $params = []): array
+    public function searchReservations(array $params = [], int $perPage = 20, int $page = 1): array
     {
-        $builder = $this; 
+        // 基本的な条件構築
+        $this->buildSearchConditions($this, $params);
 
+        // 総件数を取得（ページネーション用）
+        $totalCount = $this->countAllResults(false); // falseで元のクエリを保持
+        
+        // 再度条件を適用（countAllResultsで条件がリセットされるため）
+        $this->buildSearchConditions($this, $params);
+
+        // ソート条件
+        $sortColumn = $params['sort'] ?? 'desired_date';
+        $sortDirection = $params['direction'] ?? 'DESC';
+        
+        // 安全なソートカラムの検証
+        $allowedSortColumns = [
+            'desired_date', 'reservation_no', 'customer_name', 
+            'created_at', 'updated_at', 'reservation_status_id'
+        ];
+        
+        if (!in_array($sortColumn, $allowedSortColumns)) {
+            $sortColumn = 'desired_date';
+        }
+        
+        if (!in_array(strtoupper($sortDirection), ['ASC', 'DESC'])) {
+            $sortDirection = 'DESC';
+        }
+
+        // ソート適用
+        $this->orderBy($sortColumn, $sortDirection);
+        $this->orderBy('id', 'DESC'); // 同一日時の場合のサブソート
+
+        // ページネーション適用（手動）
+        $offset = ($page - 1) * $perPage;
+        $results = $this->limit($perPage, $offset)->findAll();
+
+        // ページネーション情報計算
+        $totalPages = (int) ceil($totalCount / $perPage);
+        
+        return [
+            'data' => $results,
+            'pagination' => [
+                'current_page' => $page,
+                'per_page' => $perPage,
+                'total' => $totalCount,
+                'total_pages' => $totalPages,
+                'has_previous' => $page > 1,
+                'has_next' => $page < $totalPages,
+                'previous_page' => $page > 1 ? $page - 1 : null,
+                'next_page' => $page < $totalPages ? $page + 1 : null,
+            ]
+        ];
+    }
+
+    /**
+     * 検索条件をクエリビルダーに適用します。
+     * @param \CodeIgniter\Model $model
+     * @param array $params
+     */
+    private function buildSearchConditions($model, array $params): void
+    {
+        // 名前検索（部分一致）
+        if (!empty($params['customer_name'])) {
+            $model->like('customer_name', $params['customer_name']);
+        }
+
+        // 車番検索（部分一致、どの車番フィールドにも対応）
+        if (!empty($params['vehicle_number'])) {
+            $model->groupStart()
+                  ->like('vehicle_license_region', $params['vehicle_number'])
+                  ->orLike('vehicle_license_class', $params['vehicle_number'])
+                  ->orLike('vehicle_license_kana', $params['vehicle_number'])
+                  ->orLike('vehicle_license_number', $params['vehicle_number'])
+                  ->groupEnd();
+        }
+
+        // LINE識別名検索（部分一致）
+        if (!empty($params['line_display_name'])) {
+            $model->like('line_display_name', $params['line_display_name']);
+        }
+
+        // 日付範囲検索
         if (!empty($params['date_from'])) {
-            $builder->where('desired_date >=', $params['date_from']);
+            $model->where('desired_date >=', $params['date_from']);
         }
         if (!empty($params['date_to'])) {
-            $builder->where('desired_date <=', $params['date_to']);
+            $model->where('desired_date <=', $params['date_to']);
         }
-        if (!empty($params['status_id'])) {
-            $builder->where('reservation_status_id', $params['status_id']);
-        }
-        // ... 他の検索条件 ...
 
-        return $builder->orderBy('desired_date', 'DESC')
-                       ->orderBy('id', 'DESC')
-                       ->findAll();
+        // 作業種別複数選択
+        if (!empty($params['work_type_ids']) && is_array($params['work_type_ids'])) {
+            $model->whereIn('work_type_id', $params['work_type_ids']);
+        }
+
+        // 店舗絞り込み
+        if (!empty($params['shop_id'])) {
+            $model->where('shop_id', $params['shop_id']);
+        }
+
+        // 予約状況絞り込み
+        if (!empty($params['status_id'])) {
+            $model->where('reservation_status_id', $params['status_id']);
+        }
+
+        // 特別な検索条件（クイック検索用）
+        $this->applyQuickSearchConditions($model, $params);
+    }
+
+    /**
+     * クイック検索条件を適用します。
+     * @param \CodeIgniter\Model $model
+     * @param array $params
+     */
+    private function applyQuickSearchConditions($model, array $params): void
+    {
+        $quickSearch = $params['quick_search'] ?? null;
+
+        switch ($quickSearch) {
+            case 'today':
+                // 本日の作業
+                $today = date('Y-m-d');
+                $model->where('desired_date', $today);
+                break;
+
+            case 'incomplete':
+                // 未完了（未確定 + 予約確定）
+                $model->whereIn('reservation_status_id', [1, 2]); // pending, confirmed
+                break;
+
+            case 'this_month_completed':
+                // 今月整備完了予定
+                $firstDay = date('Y-m-01');
+                $lastDay = date('Y-m-t');
+                $model->where('desired_date >=', $firstDay)
+                      ->where('desired_date <=', $lastDay)
+                      ->where('reservation_status_id', 3); // completed
+                break;
+
+            case 'main_shop':
+                // 本社作業（shop_id = 2 の想定）
+                $model->where('shop_id', 2);
+                break;
+
+            case 'clear_shop':
+                // Clear車検店作業（shop_id = 1 の想定）
+                $model->where('shop_id', 1);
+                break;
+        }
+    }
+
+    /**
+     * CSVエクスポート用のデータを取得します。
+     * @param array $params 検索条件
+     * @return array
+     */
+    public function getExportData(array $params = []): array
+    {
+        $builder = $this->builder();
+        $this->buildSearchConditions($builder, $params);
+        
+        // JOINして関連データも含める
+        $builder->select('
+            reservations.*,
+            reserve_statuses.name as status_name,
+            work_types.name as work_type_name,
+            shops.name as shop_name,
+            vehicle_types.name as vehicle_type_name
+        ')
+        ->join('reserve_statuses', 'reserve_statuses.id = reservations.reservation_status_id', 'left')
+        ->join('work_types', 'work_types.id = reservations.work_type_id', 'left')
+        ->join('shops', 'shops.id = reservations.shop_id', 'left')
+        ->join('vehicle_types', 'vehicle_types.id = reservations.vehicle_type_id', 'left');
+
+        $builder->orderBy('desired_date', 'DESC')
+               ->orderBy('id', 'DESC');
+
+        return $builder->get()->getResultArray();
+    }
+
+    /**
+     * 統計情報を取得します。
+     * @param array $params 検索条件
+     * @return array
+     */
+    public function getStatistics(array $params = []): array
+    {
+        // 基本統計（コピーを作成）
+        $tempModel = clone $this;
+        $tempModel->buildSearchConditions($tempModel, $params);
+        $total = $tempModel->countAllResults();
+
+        // ステータス別集計
+        $tempModel2 = clone $this;
+        $tempModel2->buildSearchConditions($tempModel2, $params);
+        $statusCounts = $tempModel2->select('reservation_status_id, COUNT(*) as count')
+            ->groupBy('reservation_status_id')
+            ->findAll();
+
+        // 作業種別別集計
+        $tempModel3 = clone $this;
+        $tempModel3->buildSearchConditions($tempModel3, $params);
+        $workTypeCounts = $tempModel3->select('work_type_id, COUNT(*) as count')
+            ->groupBy('work_type_id')
+            ->findAll();
+
+        // 結果を配列に変換
+        $statusArray = [];
+        foreach ($statusCounts as $status) {
+            if (is_object($status)) {
+                $statusArray[] = $status->toArray();
+            } else {
+                $statusArray[] = $status;
+            }
+        }
+
+        $workTypeArray = [];
+        foreach ($workTypeCounts as $workType) {
+            if (is_object($workType)) {
+                $workTypeArray[] = $workType->toArray();
+            } else {
+                $workTypeArray[] = $workType;
+            }
+        }
+
+        return [
+            'total' => $total,
+            'by_status' => $statusArray,
+            'by_work_type' => $workTypeArray,
+        ];
     }
 }

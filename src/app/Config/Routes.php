@@ -55,13 +55,13 @@ $routes->group('admin', ['filter' => 'sessionauth', 'namespace' => 'App\Controll
     $routes->group('reservations', ['filter' => 'permission:staff.access'], static function ($routes) {
         /** @var RouteCollection $routes */
         $routes->get('', 'ReservationController::index', ['as' => 'admin.reservations.index']); // 予約一覧
+        $routes->get('export-csv', 'ReservationController::exportCsv', ['as' => 'admin.reservations.export-csv']); // CSVエクスポート
         $routes->get('new', 'ReservationController::new', ['as' => 'admin.reservations.new']); // 新規作成フォーム
         $routes->post('create', 'ReservationController::create', ['as' => 'admin.reservations.create']); // 新規予約作成処理
         $routes->get('(:num)', 'ReservationController::edit/$1', ['as' => 'admin.reservations.edit']); // 予約詳細/編集フォーム
         $routes->post('update/(:num)', 'ReservationController::update/$1', ['as' => 'admin.reservations.update']); // 予約更新処理
         $routes->post('delete/(:num)', 'ReservationController::delete/$1', ['as' => 'admin.reservations.delete']); // 予約削除処理
-    });    
-
+    });
 });
 
 

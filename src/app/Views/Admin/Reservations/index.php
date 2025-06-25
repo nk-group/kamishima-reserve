@@ -1,24 +1,24 @@
-<?= $this->extend('Layouts/admin_layout') // 管理者向け共通レイアウトを継承 ?>
+<?= $this->extend('Layouts/admin_layout') ?>
 
-<?php // ページヘッダーセクション ?>
-<?= $this->section('title') // レイアウトの <title> タグに値を設定 ?>
+<?= $this->section('title') ?>
     <?= esc($page_title ?? '予約検索／一覧') ?>
 <?= $this->endSection() ?>
 
 <?= $this->section('page_header_content') ?>
-    <?php // reservations-list.html の .page-header 構造を移植 ?>
     <div class="page-header">
         <h1 class="page-title">
-            <i class="bi bi-search"></i> <?php // アイコンは適宜調整 ?>
+            <i class="bi bi-search"></i>
             <?= esc($h1_title) ?>
         </h1>
     </div>
 <?= $this->endSection() ?>
 
-<?= $this->section('content') // レイアウトのメインコンテンツ部分 ?>
-    <?php // reservations-list.html の .search-content 構造を移植 ?>
+<?= $this->section('content') ?>
     <div class="page-content">
+        <?= $this->include('Partials/_alert_messages') ?>
+
         <!-- Search Section -->
+        <?= form_open(route_to('admin.reservations.index'), ['method' => 'get', 'id' => 'search-form']) ?>
         <div class="search-section">
             <h2 class="search-title">
                 <i class="bi bi-funnel"></i>
@@ -28,31 +28,39 @@
             <div class="search-row search-row-main">
                 <div class="search-group narrow">
                     <label class="form-label">お名前</label>
-                    <input type="text" class="form-control" placeholder="">
+                    <input type="text" name="customer_name" class="form-control" 
+                           value="<?= esc($search_params['customer_name'] ?? '') ?>" placeholder="">
                 </div>
                 <div class="search-group narrow">
                     <label class="form-label">車番</label>
-                    <input type="text" class="form-control" placeholder="">
+                    <input type="text" name="vehicle_number" class="form-control" 
+                           value="<?= esc($search_params['vehicle_number'] ?? '') ?>" placeholder="">
                 </div>
                 <div class="search-group narrow">
                     <label class="form-label">LINE識別</label>
-                    <input type="text" class="form-control" placeholder="">
+                    <input type="text" name="line_display_name" class="form-control" 
+                           value="<?= esc($search_params['line_display_name'] ?? '') ?>" placeholder="">
                 </div>
                 <div class="search-group medium">
                     <label class="form-label">作業店舗</label>
-                    <select class="form-select">
+                    <select name="shop_id" class="form-select">
                         <option value="">すべて</option>
-                        <option>本社（車検・整備工場）</option>
-                        <option>Clear車検</option>
-                        <option>モーターショップカミシマ</option>
+                        <?php foreach ($shops as $shop): ?>
+                            <option value="<?= esc($shop->id) ?>" 
+                                <?= set_select('shop_id', $shop->id, ($search_params['shop_id'] ?? '') == $shop->id) ?>>
+                                <?= esc($shop->name) ?>
+                            </option>
+                        <?php endforeach; ?>
                     </select>
                 </div>
                 <div class="search-group wide search-group-date-pc">
                     <label class="form-label">予約希望日</label>
                     <div class="date-range-container">
-                        <input type="text" class="form-control flatpickr-date" placeholder="開始日">
+                        <input type="text" name="date_from" class="form-control flatpickr-date" 
+                               value="<?= esc($search_params['date_from'] ?? '') ?>" placeholder="開始日">
                         <span class="date-separator">～</span>
-                        <input type="text" class="form-control flatpickr-date" placeholder="終了日">
+                        <input type="text" name="date_to" class="form-control flatpickr-date" 
+                               value="<?= esc($search_params['date_to'] ?? '') ?>" placeholder="終了日">
                     </div>
                 </div>
             </div>
@@ -61,9 +69,11 @@
                 <div class="search-group wide">
                     <label class="form-label">予約希望日</label>
                     <div class="date-range-container">
-                        <input type="text" class="form-control flatpickr-date" placeholder="開始日">
+                        <input type="text" name="date_from" class="form-control flatpickr-date" 
+                               value="<?= esc($search_params['date_from'] ?? '') ?>" placeholder="開始日">
                         <span class="date-separator">～</span>
-                        <input type="text" class="form-control flatpickr-date" placeholder="終了日">
+                        <input type="text" name="date_to" class="form-control flatpickr-date" 
+                               value="<?= esc($search_params['date_to'] ?? '') ?>" placeholder="終了日">
                     </div>
                 </div>
             </div>
@@ -72,50 +82,18 @@
                 <div class="search-group work-types-group">
                     <label class="form-label">作業種別</label>
                     <div class="checkbox-group">
-                        <div class="checkbox-item">
-                            <input type="checkbox" class="form-check-input" id="clear" checked>
-                            <label for="clear" class="form-check-label">Clear車検</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" class="form-check-input" id="inspection" checked>
-                            <label for="inspection" class="form-check-label">定期点検</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" class="form-check-input" id="generalShaken" checked>
-                            <label for="generalShaken" class="form-check-label">一般車検</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" class="form-check-input" id="general" checked>
-                            <label for="general" class="form-check-label">一般整備</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" class="form-check-input" id="leaseSchedule" checked>
-                            <label for="leaseSchedule" class="form-check-label">リーススケジュール点検</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" class="form-check-input" id="leaseStatutory" checked>
-                            <label for="leaseStatutory" class="form-check-label">リース法定点検</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" class="form-check-input" id="leaseShaken" checked>
-                            <label for="leaseShaken" class="form-check-label">リース車検</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" class="form-check-input" id="leaseMaintenance" checked>
-                            <label for="leaseMaintenance" class="form-check-label">リース整備</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" class="form-check-input" id="bodywork" checked>
-                            <label for="bodywork" class="form-check-label">板金</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" class="form-check-input" id="adjustmentClear" checked>
-                            <label for="adjustmentClear" class="form-check-label">調整枠 (Clear車検)</label>
-                        </div>
-                        <div class="checkbox-item">
-                            <input type="checkbox" class="form-check-input" id="other" checked>
-                            <label for="other" class="form-check-label">その他</label>
-                        </div>
+                        <?php foreach ($work_types as $workType): ?>
+                            <div class="checkbox-item">
+                                <input type="checkbox" class="form-check-input" 
+                                       id="work_type_<?= $workType->id ?>" 
+                                       name="work_type_ids[]" 
+                                       value="<?= $workType->id ?>"
+                                       <?= in_array($workType->id, $search_params['work_type_ids'] ?? []) ? 'checked' : '' ?>>
+                                <label for="work_type_<?= $workType->id ?>" class="form-check-label">
+                                    <?= esc($workType->name) ?>
+                                </label>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
                 </div>
 
@@ -123,171 +101,213 @@
                 <div class="quick-search">
                     <label class="form-label">クイック検索</label>
                     <div class="quick-buttons">
-                        <button type="button" class="btn btn-quick-small">本日の作業</button>
-                        <button type="button" class="btn btn-quick-small">未完了</button>
-                        <button type="button" class="btn btn-quick-small">今月整備完了予定</button>
-                        <button type="button" class="btn btn-quick-small">本社作業</button>
-                        <button type="button" class="btn btn-quick-small">12条店作業</button>
+                        <?php foreach ($quick_searches as $key => $label): ?>
+                            <button type="button" class="btn btn-quick-small" data-quick="<?= esc($key) ?>">
+                                <?= esc($label) ?>
+                            </button>
+                        <?php endforeach; ?>
                     </div>
                 </div>
 
                 <!-- Search Actions -->
                 <div class="search-actions-mobile">
-                    <button type="button" class="btn-search">
+                    <button type="submit" class="btn-search">
                         <i class="bi bi-search me-2"></i>検索
                     </button>
-                    <a href="#" class="btn-clear">
+                    <button type="button" class="btn-clear" id="clear-search">
                         <i class="bi bi-arrow-clockwise me-2"></i>条件クリア
-                    </a>
+                    </button>
                 </div>
             </div>
-
         </div>
+        <?= form_close() ?>
 
         <!-- Results Section -->
         <div class="results-section">
             <div class="results-header">
-                <div class="results-count">検索結果：23件</div>
+                <div class="results-count">
+                    検索結果：<?= number_format($pagination['total']) ?>件
+                    <?php if (!empty($statistics['by_status'])): ?>
+                        <small class="text-muted ms-3">
+                            <?php foreach ($statistics['by_status'] as $stat): ?>
+                                <?php 
+                                $statusName = '';
+                                foreach ($reservation_statuses as $id => $name) {
+                                    if ($id == $stat['reservation_status_id']) {
+                                        $statusName = $name;
+                                        break;
+                                    }
+                                }
+                                ?>
+                                <?= esc($statusName) ?>: <?= number_format($stat['count']) ?>件　
+                            <?php endforeach; ?>
+                        </small>
+                    <?php endif; ?>
+                </div>
                 <a href="<?= route_to('admin.reservations.new') ?>" class="btn-create-new">
                     <i class="bi bi-plus-circle me-2"></i>新規予約作成
                 </a>
             </div>
 
             <!-- Results Table -->
-            <div class="table-container"> <?php // table-container は _tables.scss で定義 ?>
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>予約番号</th>
-                            <th>予約状況</th>
-                            <th>予約希望日</th>
-                            <th>お名前</th>
-                            <th>車種</th>
-                            <th>車番</th>
-                            <th>作業種別</th>
-                            <th>作業店舗</th>
-                            <th>処理</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>00010375</td>
-                            <td><span class="status-badge status-pending">未確定</span></td>
-                            <td>2025/02/05 09:30</td> <?php // status-badge は _badges.scss で定義 ?>
-                            <td>鈴木　一郎</td>
-                            <td>スカイライン</td>
-                            <td>帯広330る583</td>
-                            <td><span class="work-type-tag work-clear">Clear車検</span></td>
-                            <td>本社</td>
-                            <td>
-                                <a href="#" class="btn-action btn-edit">修正</a>
-                                <a href="#" class="btn-action btn-complete">完了</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>00010376</td>
-                            <td><span class="status-badge status-confirmed">予約確定</span></td>
-                            <td>2025/02/06 14:30</td> <?php // status-badge は _badges.scss で定義 ?>
-                            <td>吉田　宏</td>
-                            <td>デミオ</td>
-                            <td>帯広563ね1120</td>
-                            <td><span class="work-type-tag work-clear">Clear車検</span></td>
-                            <td>本社</td>
-                            <td>
-                                <a href="#" class="btn-action btn-edit">修正</a>
-                                <a href="#" class="btn-action btn-complete">完了</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>00010380</td>
-                            <td><span class="status-badge status-confirmed">予約確定</span></td>
-                            <td>2025/02/06 16:45</td> <?php // status-badge は _badges.scss で定義 ?>
-                            <td>田中　直人</td>
-                            <td>マークX</td>
-                            <td>帯広331な8721</td>
-                            <td><span class="work-type-tag work-general">一般整備</span></td>
-                            <td>12条店</td>
-                            <td>
-                                <a href="#" class="btn-action btn-edit">修正</a>
-                                <a href="#" class="btn-action btn-complete">完了</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>00010382</td>
-                            <td><span class="status-badge status-confirmed">予約確定</span></td>
-                            <td>2025/02/06 14:30</td> <?php // status-badge は _badges.scss で定義 ?>
-                            <td>山本　国広</td>
-                            <td>CR-V</td>
-                            <td>帯広332ね1023</td>
-                            <td><span class="work-type-tag work-maintenance">預かり車検</span></td>
-                            <td>本社</td>
-                            <td>
-                                <a href="#" class="btn-action btn-edit">修正</a>
-                                <a href="#" class="btn-action btn-complete">完了</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>00010423</td>
-                            <td><span class="status-badge status-confirmed">予約確定</span></td>
-                            <td>2025/02/15 16:45</td> <?php // status-badge は _badges.scss で定義 ?>
-                            <td>田中　直人</td>
-                            <td>マークX</td>
-                            <td>帯広331な8721</td>
-                            <td><span class="work-type-tag work-general">一般整備</span></td>
-                            <td>12条店</td>
-                            <td>
-                                <a href="#" class="btn-action btn-edit">修正</a>
-                                <a href="#" class="btn-action btn-complete">完了</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>00010450</td>
-                            <td><span class="status-badge status-pending">未確定</span></td>
-                            <td>2025/02/16 14:30</td> <?php // status-badge は _badges.scss で定義 ?>
-                            <td>宮野　芳雄</td>
-                            <td>フィット</td>
-                            <td>帯広550お3271</td>
-                            <td><span class="work-type-tag work-maintenance">預かり車検</span></td>
-                            <td>本社</td>
-                            <td>
-                                <a href="#" class="btn-action btn-edit">修正</a>
-                                <a href="#" class="btn-action btn-complete">完了</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            <div class="pagination-container"> <?php // pagination-container は _pagination.scss で定義 ?>
-                <div class="pagination-dots">
-                    <div class="pagination-dot active"></div>
-                    <div class="pagination-dot"></div>
-                    <div class="pagination-dot"></div>
-                    <div class="pagination-dot"></div>
-                    <div class="pagination-dot"></div>
+            <?php if (!empty($reservations)): ?>
+                <div class="table-container">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <a href="<?= buildSortUrl('reservation_no') ?>" class="sort-link">
+                                        予約番号
+                                        <?= renderSortIcon('reservation_no') ?>
+                                    </a>
+                                </th>
+                                <th>予約状況</th>
+                                <th>
+                                    <a href="<?= buildSortUrl('desired_date') ?>" class="sort-link">
+                                        予約希望日
+                                        <?= renderSortIcon('desired_date') ?>
+                                    </a>
+                                </th>
+                                <th>
+                                    <a href="<?= buildSortUrl('customer_name') ?>" class="sort-link">
+                                        お名前
+                                        <?= renderSortIcon('customer_name') ?>
+                                    </a>
+                                </th>
+                                <th>車種</th>
+                                <th>車番</th>
+                                <th>作業種別</th>
+                                <th>作業店舗</th>
+                                <th>処理</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($reservations as $reservation): ?>
+                                <tr>
+                                    <td><?= esc($reservation->reservation_no) ?></td>
+                                    <td>
+                                        <?php 
+                                        $statusClass = 'status-pending';
+                                        if ($reservation->reservation_status_id == 2) $statusClass = 'status-confirmed';
+                                        elseif ($reservation->reservation_status_id == 3) $statusClass = 'status-completed';
+                                        elseif ($reservation->reservation_status_id == 9) $statusClass = 'status-canceled';
+                                        ?>
+                                        <span class="status-badge <?= $statusClass ?>">
+                                            <?= esc($reservation_statuses[$reservation->reservation_status_id] ?? '不明') ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?= $reservation->desired_date ? date('Y/m/d', strtotime($reservation->desired_date)) : '' ?>
+                                        <?php if ($reservation->reservation_start_time): ?>
+                                            <?= date('H:i', strtotime($reservation->reservation_start_time)) ?>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?= esc($reservation->customer_name) ?></td>
+                                    <td><?= esc($reservation->vehicle_model_name) ?></td>
+                                    <td><?= esc($reservation->getFullLicensePlate()) ?></td>
+                                    <td>
+                                        <?php 
+                                        $workType = $reservation->getWorkType();
+                                        $workTypeClass = 'work-general';
+                                        if ($workType && $workType->getCode() === 'clear_shaken') $workTypeClass = 'work-clear';
+                                        elseif ($workType && in_array($workType->getCode(), ['general_maintenance', 'other'])) $workTypeClass = 'work-maintenance';
+                                        ?>
+                                        <span class="work-type-tag <?= $workTypeClass ?>">
+                                            <?= $workType ? esc($workType->name) : '不明' ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php 
+                                        $shop = $reservation->getShop();
+                                        echo $shop ? esc($shop->name) : '不明';
+                                        ?>
+                                    </td>
+                                    <td>
+                                        <a href="<?= route_to('admin.reservations.edit', $reservation->id) ?>" class="btn-action btn-edit">
+                                            修正
+                                        </a>
+                                        <?php if ($reservation->reservation_status_id != 3): ?>
+                                            <button type="button" class="btn-action btn-complete" 
+                                                    onclick="markAsComplete(<?= $reservation->id ?>)">
+                                                完了
+                                            </button>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
 
-            <!-- Export Actions -->
-            <div class="export-actions"> <?php // export-actions は _index.scss に残し、btn-export は _buttons.scss で定義 ?>
-                <a href="#" class="btn-export">
-                    <i class="bi bi-clipboard me-2"></i>クリップボード
-                </a>
-                <a href="#" class="btn-export">
-                    <i class="bi bi-download me-2"></i>CSVダウンロード
-                </a>
-            </div>
+                <!-- Pagination -->
+                <?php if ($pagination['total_pages'] > 1): ?>
+                    <div class="pagination-container">
+                        <ul class="pagination">
+                            <?php if ($pagination['has_previous']): ?>
+                                <li><a href="<?= buildPageUrl($pagination['previous_page']) ?>">前へ</a></li>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            $startPage = max(1, $pagination['current_page'] - 2);
+                            $endPage = min($pagination['total_pages'], $pagination['current_page'] + 2);
+                            ?>
+                            
+                            <?php if ($startPage > 1): ?>
+                                <li><a href="<?= buildPageUrl(1) ?>">1</a></li>
+                                <?php if ($startPage > 2): ?>
+                                    <li><span>...</span></li>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                            
+                            <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
+                                <li class="<?= $i == $pagination['current_page'] ? 'active' : '' ?>">
+                                    <a href="<?= buildPageUrl($i) ?>"><?= $i ?></a>
+                                </li>
+                            <?php endfor; ?>
+                            
+                            <?php if ($endPage < $pagination['total_pages']): ?>
+                                <?php if ($endPage < $pagination['total_pages'] - 1): ?>
+                                    <li><span>...</span></li>
+                                <?php endif; ?>
+                                <li><a href="<?= buildPageUrl($pagination['total_pages']) ?>"><?= $pagination['total_pages'] ?></a></li>
+                            <?php endif; ?>
+                            
+                            <?php if ($pagination['has_next']): ?>
+                                <li><a href="<?= buildPageUrl($pagination['next_page']) ?>">次へ</a></li>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Export Actions -->
+                <div class="export-actions">
+                    <button type="button" class="btn-export" id="copy-to-clipboard">
+                        <i class="bi bi-clipboard me-2"></i>クリップボード
+                    </button>
+                    <a href="<?= route_to('admin.reservations.export-csv') . '?' . http_build_query($search_params) ?>" 
+                       class="btn-export">
+                        <i class="bi bi-download me-2"></i>CSVダウンロード
+                    </a>
+                </div>
+            <?php else: ?>
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    検索条件に該当する予約が見つかりませんでした。
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 <?= $this->endSection() ?>
 
-<?php // このページ固有の <head> 内アセット (例: CSS) を追加する場合は以下を使用 ?>
-<?php /* echo $this->section('page_specific_before_head_end') ?>
-    <-- <link rel="stylesheet" href="path/to/specific.css"> -->
-<?= $this->endSection() */ ?>
+<?= $this->section('page_specific_scripts') ?>
+<script>
+// PHP側のデータをJavaScript側に渡す
+window.reservationListData = {
+    searchParams: <?= json_encode($search_params) ?>,
+    pagination: <?= json_encode($pagination) ?>,
+    quickSearches: <?= json_encode($quick_searches) ?>
+};
 
-<?php // このページ固有の </body> 直前アセット (例: JS) を追加する場合は以下を使用 ?>
-<?php /* echo $this->section('page_specific_before_body_end') ?>
-    <-- <script src="path/to/specific.js"></script> -->
-<?= $this->endSection() */ ?>
+console.log('Reservation list data loaded:', window.reservationListData);
+</script>
+<?= $this->endSection() ?>
