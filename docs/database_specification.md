@@ -60,24 +60,35 @@
 | 有効フラグ     | active          | TINYINT(1) UNSIGNED | ○        |     |     |        | 1       |       | 1:有効, 0:無効                       |
 | Clear車検予約 | is_clear_shaken | TINYINT(1) UNSIGNED | ○        |     |     |        | 0       |       | Clear車検用の作業かを識別するフラグ (1:Clear車検) |
 | タグ色       | tag_color       | VARCHAR(7)          | ○        |     |     |        | #ffffff |       | 例: #ff99cc, #99ccff              |
+| 集計カテゴリ     | count_category  | VARCHAR(20)         | ○        |     |     |        | other   | ○     | 予約件数集計用カテゴリ                        |
 | 表示順       | sort_order      | INT(5) UNSIGNED     | ○        |     |     |        | 0       |       | 並び順を制御するための数値                    |
+
+**集計カテゴリ (count_category) 取りうる値**
+
+| 値               | 説明              | 用途                    |
+| --------------- | --------------- | --------------------- |
+| clear_shaken    | Clear車検件数       | Clear車検の予約件数を集計      |
+| general_shaken  | 車検件数（Clear車検除く） | 一般車検・リース車検等の予約件数を集計 |
+| other           | その他件数           | 車検以外の予約件数を集計        |
+| excluded        | 集計除外            | 調整枠等、件数集計から除外する     |
 
 **初期データ**
 
-| 作業種別ID | 作業種別コード             | 作業種別名         | 有効フラグ | Clear車検予約 | タグ色     | 表示順 |
-| ------ | ------------------- | ------------- | ----- | --------- | ------- | --- |
-| 1      | clear_shaken        | Clear車検       | 1     | 1         | #ff99cc | 10  |
-| 2      | periodic_inspection | 定期点検          | 1     | 0         | #99ccff | 20  |
-| 3      | general_shaken      | 一般車検          | 1     | 0         | #ff99cc | 30  |
-| 4      | general_maintenance | 一般整備          | 1     | 0         | #ffffff | 40  |
-| 5      | adjustment_clear    | 調整枠 (Clear車検) | 1     | 1         | #cccccc | 50  |
-| 6      | lease_schedule      | リーススケジュール点検   | 1     | 0         | #99cc99 | 60  |
-| 7      | lease_statutory     | リース法定点検       | 1     | 0         | #99cc99 | 70  |
-| 8      | lease_shaken        | リース車検         | 1     | 0         | #99cc99 | 80  |
-| 9      | lease_maintenance   | リース整備         | 1     | 0         | #99cc99 | 90  |
-| 10     | bodywork            | 板金            | 1     | 0         | #ffcc66 | 100 |
-| 99     | other               | その他           | 1     | 0         | #ffffff | 110 |
+| 作業種別ID | 作業種別コード             | 作業種別名         | 有効フラグ | Clear車検予約 | タグ色     | 集計カテゴリ        | 表示順 |
+| ------ | ------------------- | ------------- | ----- | --------- | ------- | ------------- | --- |
+| 1      | clear_shaken        | Clear車検       | 1     | 1         | #ff99cc | clear_shaken  | 10  |
+| 2      | periodic_inspection | 定期点検          | 1     | 0         | #99ccff | other         | 20  |
+| 3      | general_shaken      | 一般車検          | 1     | 0         | #ff99cc | general_shaken | 30  |
+| 4      | general_maintenance | 一般整備          | 1     | 0         | #ffffff | other         | 40  |
+| 5      | adjustment_clear    | 調整枠 (Clear車検) | 1     | 1         | #cccccc | excluded      | 50  |
+| 6      | lease_schedule      | リーススケジュール点検   | 1     | 0         | #99cc99 | other         | 60  |
+| 7      | lease_statutory     | リース法定点検       | 1     | 0         | #99cc99 | other         | 70  |
+| 8      | lease_shaken        | リース車検         | 1     | 0         | #99cc99 | general_shaken | 80  |
+| 9      | lease_maintenance   | リース整備         | 1     | 0         | #99cc99 | other         | 90  |
+| 10     | bodywork            | 板金            | 1     | 0         | #ffcc66 | other         | 100 |
+| 99     | other               | その他           | 1     | 0         | #ffffff | other         | 110 |
 
+-----
 -----
 
 **3. 店舗マスタ (shops)**

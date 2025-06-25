@@ -13,6 +13,7 @@ class CreateWorkTypesTable extends Migration
                 'type'           => 'TINYINT',
                 'constraint'     => 3,
                 'unsigned'       => true,
+                'auto_increment' => false, // シーダーでIDを直接指定するため
             ],
             'code' => [
                 'type'       => 'VARCHAR',
@@ -38,6 +39,18 @@ class CreateWorkTypesTable extends Migration
                 'null'       => false,
                 'default'    => 0,
             ],
+            'tag_color' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 7,
+                'null'       => false,
+                'default'    => '#ffffff',
+            ],
+            'count_category' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 20,
+                'null'       => false,
+                'default'    => 'other',
+            ],
             'sort_order' => [
                 'type'       => 'INT',
                 'constraint' => 5,
@@ -46,9 +59,12 @@ class CreateWorkTypesTable extends Migration
                 'default'    => 0,
             ],
         ]);
-        $this->forge->addKey('id', true);
-        $this->forge->addKey('code', false, true);
-        $this->forge->addKey('sort_order');
+        
+        $this->forge->addKey('id', true); // 主キー
+        $this->forge->addKey('code', false, true); // UNIQUEキー
+        $this->forge->addKey('code'); // INDEX
+        $this->forge->addKey('count_category'); // INDEX（集計クエリの高速化）
+        
         $this->forge->createTable('work_types');
     }
 
