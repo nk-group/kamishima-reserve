@@ -185,35 +185,71 @@
 
 -----
 
-**6. 定休日マスタ (shop_closing_days)**
+**定休日マスタ (shop_closing_days)**
 
 * **日本語テーブル名:** 定休日マスタ
 * **物理テーブル名:** `shop_closing_days`
-* **説明:** 定休日や休業日を管理するテーブルです。
+* **説明:** 定休日や休業日を管理するテーブルです。改善案2を採用し、実際の休業日ベースで管理します。
 
 **テーブル構造**
 
-| 論理名 (日本語)    | 物理名 (英語)          | データ型                | NOT NULL | PK  | FK  | UNIQUE | DEFAULT | INDEX | 備考                         |
-| ------------ | ----------------- | ------------------- | -------- | --- | --- | ------ | ------- | ----- | -------------------------- |
-| 定休日ID        | id                | INT UNSIGNED        | ○        | ○   |     |        |         | ○     | 主キー、自動増分                   |
-| 店舗ID         | shop_id           | TINYINT UNSIGNED    | ○        |     | ○   |        |         | ○     | `shops.id` への外部キー          |
-| 定休日名         | holiday_name      | VARCHAR(50)         | ○        |     |     |        |         |       | 例: 年末年始休業、毎週火曜日            |
-| 開始日          | start_date        | DATE                | ○        |     |     |        |         | ○     | 休業開始日                      |
-| 終了日          | end_date          | DATE                |          |     |     |        | NULL    | ○     | 休業終了日、単日の場合はNULL           |
-| 繰り返しフラグ      | is_recurring      | TINYINT(1) UNSIGNED | ○        |     |     |        | 0       |       | 1: 毎年繰り返し、0: 一度限り          |
-| 曜日指定         | recurring_weekday | TINYINT UNSIGNED    |          |     |     |        | NULL    |       | 毎週特定曜日に適用する場合（1=日曜, 7=土曜）  |
-| 作成日時         | created_at        | DATETIME            | ○        |     |     |        |         |       | CodeIgniterのタイムスタンプ機能で自動設定 |
-| 更新日時         | updated_at        | DATETIME            | ○        |     |     |        |         |       | CodeIgniterのタイムスタンプ機能で自動設定 |
-| 削除日時 (論理削除用) | deleted_at        | DATETIME            |          |     |     |        | NULL    |       | CodeIgniterのソフトデリート機能用     |
+| 論理名 (日本語)  | 物理名 (英語)      | データ型                | NOT NULL | PK  | FK  | UNIQUE | DEFAULT | INDEX | 備考                         |
+| ------------ | -------------- | ------------------- | -------- | --- | --- | ------ | ------- | ----- | -------------------------- |
+| 定休日ID       | id             | INT UNSIGNED        | ○        | ○   |     |        |         | ○     | 主キー、自動増分                   |
+| 店舗ID        | shop_id        | TINYINT UNSIGNED    | ○        |     | ○   |        |         | ○     | `shops.id` への外部キー          |
+| 定休日名        | holiday_name   | VARCHAR(50)         | ○        |     |     |        |         |       | 例: 定休日（毎週火曜日）、年末年始休業       |
+| 休業日         | closing_date   | DATE                | ○        |     |     |        |         | ○     | 実際の休業日                   |
+| 繰り返し種別      | repeat_type    | TINYINT UNSIGNED    | ○        |     |     |        | 0       |       | 0:繰り返しなし, 1:毎週, 2:毎年      |
+| 繰り返し終了日     | repeat_end_date| DATE                |          |     |     |        | NULL    |       | 繰り返し適用の終了日（NULLなら無期限）    |
+| 有効フラグ       | is_active      | TINYINT(1) UNSIGNED | ○        |     |     |        | 1       |       | 1: 有効、0: 無効               |
+| 作成日時        | created_at     | DATETIME            | ○        |     |     |        |         |       | CodeIgniterのタイムスタンプ機能で自動設定 |
+| 更新日時        | updated_at     | DATETIME            | ○        |     |     |        |         |       | CodeIgniterのタイムスタンプ機能で自動設定 |
+| 削除日時(論理削除用) | deleted_at     | DATETIME            |          |     |     |        | NULL    |       | CodeIgniterのソフトデリート機能用     |
 
 **初期データ**
 
-| 定休日ID | 店舗ID | 定休日名               | 開始日  | 終了日  | 繰り返しフラグ | 曜日指定 |
-| ----- | ---- | ------------------ | ---- | ---- | ------- | ---- |
-| 1     | 1    | 定休日 (Clear車検)      | NULL | NULL | 1       | 4    |
-| 2     | 2    | 定休日 (本社工場)         | NULL | NULL | 1       | 4    |
-| 3     | 3    | 定休日 (モーターショップカミシマ) | NULL | NULL | 1       | 4    |
+| 定休日ID | 店舗ID | 定休日名 | 休業日 | 繰り返し種別 | 繰り返し終了日 | 有効フラグ |
+|---------|--------|----------|--------|-------------|-------------|-----------|
+| 1 | 1 | 定休日（毎週火曜日） | 2025-01-07 | 1 | NULL | 1 |
+| 2 | 2 | 定休日（毎週火曜日） | 2025-01-07 | 1 | NULL | 1 |
+| 3 | 3 | 定休日（毎週水曜日） | 2025-01-08 | 1 | NULL | 1 |
 
+**繰り返し種別の詳細**
+
+| 値 | 名称 | 説明 | closing_date の意味 | repeat_end_date の意味 |
+|---|------|------|---------------------|----------------------|
+| 0 | 繰り返しなし | 特定の日のみ休業 | その日が休業日 | 使用しない（NULL） |
+| 1 | 毎週 | 毎週同じ曜日に休業 | 基準となる日付（その曜日） | 繰り返し終了日（NULLなら無期限） |
+| 2 | 毎年 | 毎年同じ月日に休業 | 基準となる日付（その月日） | 繰り返し終了日（NULLなら無期限） |
+
+**データ例（さまざまなパターン）**
+
+```sql
+-- 毎週の定休日
+INSERT INTO shop_closing_days (shop_id, holiday_name, closing_date, repeat_type, is_active)
+VALUES (1, '定休日（毎週火曜日）', '2025-01-07', 1, 1);
+
+-- 単発の休業日
+INSERT INTO shop_closing_days (shop_id, holiday_name, closing_date, repeat_type, is_active)
+VALUES (1, '創立記念日', '2025-05-01', 0, 1);
+
+-- 毎年の休業日（お盆休み）
+INSERT INTO shop_closing_days (shop_id, holiday_name, closing_date, repeat_type, is_active)
+VALUES 
+(1, 'お盆休み', '2025-08-13', 2, 1),
+(1, 'お盆休み', '2025-08-14', 2, 1),
+(1, 'お盆休み', '2025-08-15', 2, 1);
+
+-- 毎年の年末年始休業
+INSERT INTO shop_closing_days (shop_id, holiday_name, closing_date, repeat_type, is_active)
+VALUES 
+(1, '年末年始休業', '2025-12-29', 2, 1),
+(1, '年末年始休業', '2025-12-30', 2, 1),
+(1, '年末年始休業', '2025-12-31', 2, 1),
+(1, '年末年始休業', '2026-01-01', 2, 1),
+(1, '年末年始休業', '2026-01-02', 2, 1),
+(1, '年末年始休業', '2026-01-03', 2, 1);
+```
 -----
 
 **7. リマインドメール設定 (reminder_settings)**
