@@ -86,16 +86,17 @@ class Autoload extends AutoloadConfig
      * @var list<string>
      */
     public $helpers = [
-        'auth',         // Shield認証ライブラリ用 (必須)
-        'setting',      // Shield設定値取得用 (必須)
-        'url',          // URL生成関数 (例: site_url(), base_url()) のため (強く推奨)
-        'html',         // HTML要素生成関数 (例: link_tag(), script_tag()) のため (vite_helperで必須)
-        'vite',         // カスタムViteヘルパー (vite_helper.php) のため (必須)
-        'form',         // フォーム生成関数 (例: csrf_field(), form_open()) のため (強く推奨)
-        'auth_utility', // Shieldの認証機能を補完するカスタムヘルパー
-        'app_form',     // このアプリのフォームに関するカスタムヘルパー
-        // 'filesystem',   // ファイルシステム操作が必要になった場合に追加
-        // 'text',         // 高度なテキスト処理が必要になった場合に追加
+        'auth',             // Shield認証ライブラリ用 (必須)
+        'setting',          // Shield設定値取得用 (必須)
+        'url',              // URL生成関数 (例: site_url(), base_url()) のため (強く推奨)
+        'html',             // HTML要素生成関数 (例: link_tag(), script_tag()) のため (vite_helperで必須)
+        'vite',             // カスタムViteヘルパー (vite_helper.php) のため (必須)
+        'form',             // フォーム生成関数 (例: csrf_field(), form_open()) のため (強く推奨)
+        'auth_utility',     // Shieldの認証機能を補完するカスタムヘルパー
+        'app_form',         // このアプリのフォームに関するカスタムヘルパー
+        'shop_closing_day', // 定休日マスタ用ヘルパー（新規追加）
+        // 'filesystem',       // ファイルシステム操作が必要になった場合に追加
+        // 'text',             // 高度なテキスト処理が必要になった場合に追加
     ];    
 
 }

@@ -65,6 +65,32 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.error('Failed to load reservation edit scripts:', e);
             }
             break;
+        case 'page-admin-shop-closing-days-index':
+            try {
+                const { initShopClosingDaysIndex } = await import('./admin/pages/shop-closing-days.js');
+                initShopClosingDaysIndex();
+            } catch (e) {
+                console.error('Failed to load shop closing days index scripts:', e);
+            }
+            break;
+
+        case 'page-admin-shop-closing-days-form':
+            try {
+                const { initShopClosingDaysForm } = await import('./admin/pages/shop-closing-days.js');
+                initShopClosingDaysForm();
+            } catch (e) {
+                console.error('Failed to load shop closing days form scripts:', e);
+            }
+            break;
+
+        case 'page-admin-shop-closing-days-batch':
+            try {
+                const { initShopClosingDaysBatch } = await import('./admin/pages/shop-closing-days.js');
+                initShopClosingDaysBatch();
+            } catch (e) {
+                console.error('Failed to load shop closing days batch scripts:', e);
+            }
+            break;
 
         // case 'page-admin-reservations-detail':
         //     // 予約詳細ページ用のスクリプトもここに追加できます。

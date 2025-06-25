@@ -32,7 +32,13 @@
 @use "pages/dashboard/index";
 @use 'pages/reservations/index' as reservations;
 // 削除: @use 'pages/reservations/detail';
-// 追加: 予約フォーム関連SCSS
+
+// 予約フォーム関連SCSS
 @use 'pages/reservations/form';
 @use 'pages/reservations/new';
 @use 'pages/reservations/edit';
+
+// 定休日マスタ関連SCSS
+@use 'pages/shop-closing-days/index' as shop-closing-days-index;
+@use 'pages/shop-closing-days/form' as shop-closing-days-form;
+@use 'pages/shop-closing-days/batch' as shop-closing-days-batch;
