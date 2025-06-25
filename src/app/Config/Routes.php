@@ -62,6 +62,13 @@ $routes->group('admin', ['filter' => 'sessionauth', 'namespace' => 'App\Controll
         $routes->post('update/(:num)', 'ReservationController::update/$1', ['as' => 'admin.reservations.update']); // 予約更新処理
         $routes->post('delete/(:num)', 'ReservationController::delete/$1', ['as' => 'admin.reservations.delete']); // 予約削除処理
     });
+
+    // 帳票系機能
+    $routes->group('reports', ['namespace' => 'App\Controllers\Admin'], static function ($routes) {
+        $routes->get('arrival-schedule', 'ReportsController::arrivalSchedule', ['as' => 'admin.reports.arrival-schedule']);
+        $routes->get('work-instruction-card', 'ReportsController::workInstructionCard', ['as' => 'admin.reports.work-instruction-card']);
+    });
+    
 });
 
 
