@@ -34,7 +34,7 @@ class ShopClosingDayModel extends Model
     public const REPEAT_TYPE_WEEKLY = 1; // 毎週
     public const REPEAT_TYPE_YEARLY = 2; // 毎年
 
-    // バリデーションルール
+    // CodeIgniter標準のバリデーションルール
     protected $validationRules = [
         'shop_id' => [
             'label' => '店舗',
@@ -54,7 +54,7 @@ class ShopClosingDayModel extends Model
         ],
         'repeat_end_date' => [
             'label' => '繰り返し終了日',
-            'rules' => 'permit_empty|valid_date[Y-m-d]|check_end_date_after_start'
+            'rules' => 'permit_empty|valid_date[Y-m-d]'
         ],
         'is_active' => [
             'label' => '有効フラグ',
@@ -64,10 +64,28 @@ class ShopClosingDayModel extends Model
 
     protected $validationMessages = [
         'shop_id' => [
+            'required' => '店舗を選択してください。',
+            'integer' => '店舗IDは数値で入力してください。',
             'is_not_unique' => '指定された店舗が見つかりません。'
         ],
+        'holiday_name' => [
+            'required' => '定休日名を入力してください。',
+            'max_length' => '定休日名は50文字以内で入力してください。'
+        ],
+        'closing_date' => [
+            'required' => '休業日を入力してください。',
+            'valid_date' => '正しい日付形式で入力してください。'
+        ],
+        'repeat_type' => [
+            'required' => '繰り返し種別を選択してください。',
+            'in_list' => '繰り返し種別は指定された値から選択してください。'
+        ],
         'repeat_end_date' => [
-            'check_end_date_after_start' => '繰り返し終了日は休業日以降の日付を入力してください。'
+            'valid_date' => '正しい日付形式で入力してください。'
+        ],
+        'is_active' => [
+            'required' => '有効フラグを設定してください。',
+            'in_list' => '有効フラグは指定された値から選択してください。'
         ]
     ];
 
@@ -75,7 +93,7 @@ class ShopClosingDayModel extends Model
     protected $beforeUpdate = ['validateDates'];
 
     /**
-     * 日付の整合性をチェック
+     * 日付の整合性をチェック（既存機能を保持）
      */
     protected function validateDates(array $data): array
     {
@@ -252,7 +270,7 @@ class ShopClosingDayModel extends Model
             $builder = $builder->where('closing_date <=', $filters['date_to']);
         }
         
-        // 定休日名での部分一致検索
+        // 定休日名検索
         if (!empty($filters['holiday_name'])) {
             $builder = $builder->like('holiday_name', $filters['holiday_name']);
         }
@@ -263,7 +281,7 @@ class ShopClosingDayModel extends Model
     }
 
     /**
-     * 一括登録用：連続する日付の定休日を作成
+     * 一括作成処理
      *
      * @param int $shopId 店舗ID
      * @param string $holidayName 定休日名
@@ -271,8 +289,8 @@ class ShopClosingDayModel extends Model
      * @param string $endDate 終了日
      * @param int $repeatType 繰り返し種別
      * @param string|null $repeatEndDate 繰り返し終了日
-     * @param bool $isActive 有効フラグ
-     * @return array 作成結果 ['success' => bool, 'count' => int, 'message' => string]
+     * @param int $isActive 有効フラグ
+     * @return array ['success' => bool, 'message' => string]
      */
     public function createBatchClosingDays(
         int $shopId,
@@ -281,25 +299,15 @@ class ShopClosingDayModel extends Model
         string $endDate,
         int $repeatType = self::REPEAT_TYPE_NONE,
         ?string $repeatEndDate = null,
-        bool $isActive = true
+        int $isActive = 1
     ): array {
-        $start = new \DateTime($startDate);
-        $end = new \DateTime($endDate);
-        
-        if ($start > $end) {
-            return [
-                'success' => false,
-                'count' => 0,
-                'message' => '開始日は終了日以前で入力してください。'
-            ];
-        }
-
-        $createdCount = 0;
-        $current = clone $start;
-        
-        $this->db->transStart();
-        
         try {
+            $start = new \DateTime($startDate);
+            $end = new \DateTime($endDate);
+            $createdCount = 0;
+            
+            // 期間内の全日付に対して定休日を作成
+            $current = clone $start;
             while ($current <= $end) {
                 $data = [
                     'shop_id' => $shopId,
@@ -307,40 +315,25 @@ class ShopClosingDayModel extends Model
                     'closing_date' => $current->format('Y-m-d'),
                     'repeat_type' => $repeatType,
                     'repeat_end_date' => $repeatEndDate,
-                    'is_active' => $isActive ? 1 : 0
+                    'is_active' => $isActive
                 ];
                 
-                if ($this->insert($data)) {
+                if ($this->save($data)) {
                     $createdCount++;
                 }
                 
                 $current->add(new \DateInterval('P1D'));
             }
             
-            $this->db->transComplete();
-            
-            if ($this->db->transStatus() === false) {
-                return [
-                    'success' => false,
-                    'count' => 0,
-                    'message' => 'データベースエラーが発生しました。'
-                ];
-            }
-            
             return [
                 'success' => true,
-                'count' => $createdCount,
-                'message' => "{$createdCount}件の定休日を登録しました。"
+                'message' => "{$createdCount}件の定休日を一括作成しました。"
             ];
             
         } catch (\Exception $e) {
-            $this->db->transRollback();
-            log_message('error', 'Batch closing days creation failed: ' . $e->getMessage());
-            
             return [
                 'success' => false,
-                'count' => 0,
-                'message' => 'エラーが発生しました: ' . $e->getMessage()
+                'message' => '一括作成に失敗しました: ' . $e->getMessage()
             ];
         }
     }

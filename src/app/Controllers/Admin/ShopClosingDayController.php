@@ -91,21 +91,24 @@ class ShopClosingDayController extends BaseController
     }
 
     /**
-     * 新規作成処理
+     * 新規作成処理（デバッグ版）
      */
     public function create()
     {
         $postData = $this->request->getPost();
         
-        // バリデーション実行
-        $validation = \Config\Services::validation();
-        if (!$validation->run($postData, 'shop_closing_day_create')) {
-            return redirect()->to('admin/shop-closing-days/new')
-                           ->withInput()
-                           ->with('validation', $validation);
-        }
-
-        // データ作成
+        // デバッグログ
+        log_message('debug', 'CREATE - Post data: ' . json_encode($postData));
+        
+        // 重複チェック（デバッグ用）
+        $existingCheck = $this->shopClosingDayModel
+            ->where('shop_id', $postData['shop_id'])
+            ->where('holiday_name', $postData['holiday_name'])
+            ->first();
+            
+        log_message('debug', 'CREATE - Existing check result: ' . ($existingCheck ? 'FOUND: ' . json_encode($existingCheck->toArray()) : 'NOT FOUND'));
+        
+        // データ作成（モデルでバリデーション実行）
         $data = [
             'shop_id' => $postData['shop_id'],
             'holiday_name' => $postData['holiday_name'],
@@ -114,14 +117,27 @@ class ShopClosingDayController extends BaseController
             'repeat_end_date' => !empty($postData['repeat_end_date']) ? $postData['repeat_end_date'] : null,
             'is_active' => $postData['is_active'] ?? 1
         ];
+        
+        log_message('debug', 'CREATE - Data to save: ' . json_encode($data));
 
-        if ($this->shopClosingDayModel->save($data)) {
-            return redirect()->to('/admin/shop-closing-days')
-                           ->with('success', '定休日を登録しました。');
-        } else {
+        try {
+            if ($this->shopClosingDayModel->save($data)) {
+                log_message('debug', 'CREATE - Save successful');
+                return redirect()->to('/admin/shop-closing-days')
+                               ->with('success', '定休日を登録しました。');
+            } else {
+                // モデルのバリデーションエラーを取得
+                $errors = $this->shopClosingDayModel->errors();
+                log_message('debug', 'CREATE - Model validation errors: ' . json_encode($errors));
+                return redirect()->back()
+                               ->withInput()
+                               ->with('errors', $errors);
+            }
+        } catch (\RuntimeException $e) {
+            log_message('debug', 'CREATE - Runtime exception: ' . $e->getMessage());
             return redirect()->back()
                            ->withInput()
-                           ->with('error', '登録に失敗しました。');
+                           ->with('error', $e->getMessage());
         }
     }
 
@@ -150,7 +166,7 @@ class ShopClosingDayController extends BaseController
     }
 
     /**
-     * 更新処理
+     * 更新処理（デバッグ版）
      */
     public function update($id)
     {
@@ -162,18 +178,24 @@ class ShopClosingDayController extends BaseController
         }
 
         $postData = $this->request->getPost();
-        $postData['id'] = $id; // バリデーション用にIDを追加
         
-        // バリデーション実行
-        $validation = \Config\Services::validation();
-        if (!$validation->run($postData, 'shop_closing_day_update')) {
-            return redirect()->to("admin/shop-closing-days/edit/{$id}")
-                           ->withInput()
-                           ->with('validation', $validation);
-        }
-
-        // データ更新
+        // デバッグログ
+        log_message('debug', 'UPDATE - ID: ' . $id);
+        log_message('debug', 'UPDATE - Post data: ' . json_encode($postData));
+        log_message('debug', 'UPDATE - Current data: ' . json_encode($closingDay->toArray()));
+        
+        // 重複チェック（デバッグ用）- 自分以外
+        $existingCheck = $this->shopClosingDayModel
+            ->where('shop_id', $postData['shop_id'])
+            ->where('holiday_name', $postData['holiday_name'])
+            ->where('id !=', $id)
+            ->first();
+            
+        log_message('debug', 'UPDATE - Existing check result (excluding self): ' . ($existingCheck ? 'FOUND: ' . json_encode($existingCheck->toArray()) : 'NOT FOUND'));
+        
+        // データ更新（モデルでバリデーション実行）
         $data = [
+            'id' => $id, // バリデーション用
             'shop_id' => $postData['shop_id'],
             'holiday_name' => $postData['holiday_name'],
             'closing_date' => $postData['closing_date'],
@@ -181,14 +203,27 @@ class ShopClosingDayController extends BaseController
             'repeat_end_date' => !empty($postData['repeat_end_date']) ? $postData['repeat_end_date'] : null,
             'is_active' => $postData['is_active'] ?? 1
         ];
+        
+        log_message('debug', 'UPDATE - Data to save: ' . json_encode($data));
 
-        if ($this->shopClosingDayModel->update($id, $data)) {
-            return redirect()->to('/admin/shop-closing-days')
-                           ->with('success', '定休日を更新しました。');
-        } else {
+        try {
+            if ($this->shopClosingDayModel->update($id, $data)) {
+                log_message('debug', 'UPDATE - Update successful');
+                return redirect()->to('/admin/shop-closing-days')
+                               ->with('success', '定休日を更新しました。');
+            } else {
+                // モデルのバリデーションエラーを取得
+                $errors = $this->shopClosingDayModel->errors();
+                log_message('debug', 'UPDATE - Model validation errors: ' . json_encode($errors));
+                return redirect()->back()
+                               ->withInput()
+                               ->with('errors', $errors);
+            }
+        } catch (\RuntimeException $e) {
+            log_message('debug', 'UPDATE - Runtime exception: ' . $e->getMessage());
             return redirect()->back()
                            ->withInput()
-                           ->with('error', '更新に失敗しました。');
+                           ->with('error', $e->getMessage());
         }
     }
 
@@ -237,14 +272,6 @@ class ShopClosingDayController extends BaseController
     {
         $postData = $this->request->getPost();
         
-        // バリデーション実行
-        $validation = \Config\Services::validation();
-        if (!$validation->run($postData, 'shop_closing_day_batch')) {
-            return redirect()->to('admin/shop-closing-days/batch')
-                           ->withInput()
-                           ->with('validation', $validation);
-        }
-
         $shopId = $postData['shop_id'];
         $holidayName = $postData['holiday_name'];
         $startDate = $postData['start_date'];
@@ -253,23 +280,29 @@ class ShopClosingDayController extends BaseController
         $repeatEndDate = !empty($postData['repeat_end_date']) ? $postData['repeat_end_date'] : null;
         $isActive = $postData['is_active'] ?? 1;
 
-        $result = $this->shopClosingDayModel->createBatchClosingDays(
-            $shopId,
-            $holidayName,
-            $startDate,
-            $endDate,
-            $repeatType,
-            $repeatEndDate,
-            $isActive
-        );
+        try {
+            $result = $this->shopClosingDayModel->createBatchClosingDays(
+                $shopId,
+                $holidayName,
+                $startDate,
+                $endDate,
+                $repeatType,
+                $repeatEndDate,
+                $isActive
+            );
 
-        if ($result['success']) {
-            return redirect()->to('/admin/shop-closing-days')
-                           ->with('success', $result['message']);
-        } else {
+            if ($result['success']) {
+                return redirect()->to('/admin/shop-closing-days')
+                               ->with('success', $result['message']);
+            } else {
+                return redirect()->back()
+                               ->withInput()
+                               ->with('error', $result['message']);
+            }
+        } catch (\Exception $e) {
             return redirect()->back()
                            ->withInput()
-                           ->with('error', $result['message']);
+                           ->with('error', '一括作成に失敗しました: ' . $e->getMessage());
         }
     }
 
