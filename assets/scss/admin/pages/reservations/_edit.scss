@@ -7,12 +7,6 @@
 // Page specific styles for reservation editing
 #page-admin-reservations-detail {
     
-    .page-header {
-        .page-title {
-            color: var.$rainbow-blue; // Highlight edit with blue
-        }
-    }
-    
     // Timestamp info styling
     .timestamp-info {
         color: var.$gray-text-muted;

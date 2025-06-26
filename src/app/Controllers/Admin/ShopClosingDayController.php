@@ -25,12 +25,18 @@ class ShopClosingDayController extends BaseController
      */
     public function index()
     {
-        // 検索パラメータを取得
-        $filters = $this->getSearchFilters();
-        
-        // ページネーション設定
-        $perPage = 20;
         $page = (int)($this->request->getGet('page') ?? 1);
+        
+        // 検索条件
+        $filters = [
+            'shop_id' => $this->request->getGet('shop_id'),
+            'holiday_name' => $this->request->getGet('holiday_name'),
+            'repeat_type' => $this->request->getGet('repeat_type'),
+            'is_active' => $this->request->getGet('is_active'),
+        ];
+        
+        $perPage = 20;
+        $page = max(1, $page ?? 1);
         
         // データ取得
         if (!empty(array_filter($filters))) {
@@ -59,8 +65,8 @@ class ShopClosingDayController extends BaseController
         
         $data = [
             'page_title' => '定休日マスタ',
-            'h1_title' => '定休日マスタ管理',
-            'body_id' => 'page-admin-shop-closing-days-index', // 追加
+            'h1_title' => '定休日マスタ',
+            'body_id' => 'page-admin-shop-closing-days-index',
             'closing_days' => $closingDays,
             'shops' => $shops,
             'filters' => $filters,
@@ -82,7 +88,7 @@ class ShopClosingDayController extends BaseController
         $data = [
             'page_title' => '定休日マスタ新規作成',
             'h1_title' => '定休日新規作成',
-            'body_id' => 'page-admin-shop-closing-days-form', // 追加
+            'body_id' => 'page-admin-shop-closing-days-form',
             'shops' => get_shop_list_for_select(),
             'repeat_type_options' => $this->shopClosingDayModel::getRepeatTypeOptions(),
             'form_data' => $this->getDefaultFormData(),
@@ -142,7 +148,7 @@ class ShopClosingDayController extends BaseController
         $data = [
             'page_title' => '定休日マスタ編集',
             'h1_title' => '定休日編集',
-            'body_id' => 'page-admin-shop-closing-days-form', // 追加
+            'body_id' => 'page-admin-shop-closing-days-form',
             'shops' => get_shop_list_for_select(),
             'repeat_type_options' => $this->shopClosingDayModel::getRepeatTypeOptions(),
             'form_data' => $closingDay->getFormData(),
@@ -224,7 +230,7 @@ class ShopClosingDayController extends BaseController
         $data = [
             'page_title' => '定休日一括作成',
             'h1_title' => '定休日一括作成',
-            'body_id' => 'page-admin-shop-closing-days-batch', // 追加
+            'body_id' => 'page-admin-shop-closing-days-batch',
             'shops' => get_shop_list_for_select(),
             'repeat_type_options' => $this->shopClosingDayModel::getRepeatTypeOptions(),
             'form_data' => $this->getDefaultBatchFormData(),

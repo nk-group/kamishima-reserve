@@ -4,29 +4,13 @@
     <?= esc($page_title) ?>
 <?= $this->endSection() ?>
 
-<?= $this->section('page_specific_head') ?>
-    <?php 
-    // Body IDを設定（admin.jsで動的インポートに使用）
-    $body_id = 'page-admin-shop-closing-days-index';
-    ?>
-<?= $this->endSection() ?>
-
 <?= $this->section('page_header_content') ?>
     <div class="page-header">
         <h1 class="page-title">
             <i class="bi bi-calendar-x"></i>
             <?= esc($h1_title) ?>
         </h1>
-        <div class="header-actions">
-            <a href="<?= site_url('admin/shop-closing-days/batch') ?>" class="btn btn-outline-primary">
-                <i class="bi bi-plus-circle-dotted"></i>
-                一括作成
-            </a>
-            <a href="<?= site_url('admin/shop-closing-days/new') ?>" class="btn btn-primary">
-                <i class="bi bi-plus-lg"></i>
-                新規作成
-            </a>
-        </div>
+        <!-- header-info を削除（件数表示不要） -->
     </div>
 <?= $this->endSection() ?>
 
@@ -73,42 +57,24 @@
                         <label for="repeat_type" class="form-label">繰り返し種別</label>
                         <?= form_dropdown(
                             'repeat_type',
-                            ['' => '-- 全種別 --'] + $repeat_type_options,
+                            ['' => '-- すべて --'] + $repeat_type_options,
                             $filters['repeat_type'] ?? '',
                             ['class' => 'form-select', 'id' => 'repeat_type']
                         ) ?>
                     </div>
                     
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <label for="is_active" class="form-label">状態</label>
                         <?= form_dropdown(
                             'is_active',
-                            ['' => '-- 全て --', '1' => '有効', '0' => '無効'],
+                            [
+                                '' => '-- すべて --',
+                                '1' => '有効',
+                                '0' => '無効'
+                            ],
                             $filters['is_active'] ?? '',
                             ['class' => 'form-select', 'id' => 'is_active']
                         ) ?>
-                    </div>
-                    
-                    <div class="col-md-2">
-                        <label for="date_from" class="form-label">期間（開始）</label>
-                        <?= form_input([
-                            'name' => 'date_from',
-                            'id' => 'date_from',
-                            'type' => 'date',
-                            'class' => 'form-control',
-                            'value' => $filters['date_from'] ?? ''
-                        ]) ?>
-                    </div>
-                    
-                    <div class="col-md-2">
-                        <label for="date_to" class="form-label">期間（終了）</label>
-                        <?= form_input([
-                            'name' => 'date_to',
-                            'id' => 'date_to',
-                            'type' => 'date',
-                            'class' => 'form-control',
-                            'value' => $filters['date_to'] ?? ''
-                        ]) ?>
                     </div>
                 </div>
                 
@@ -138,105 +104,109 @@
             <?= form_close() ?>
         </div>
 
-        <?php // 検索結果件数表示 ?>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="filter-count">
-                <i class="bi bi-funnel-fill"></i>
-                検索結果: <?= number_format($total) ?>件
-                <?php if (!empty(array_filter($filters))): ?>
-                    （条件あり）
-                <?php endif; ?>
+        <?php // 検索結果エリア - ここにボタンを配置 ?>
+        <div class="results-section">
+            <div class="results-header">
+                <div class="results-count">
+                    <i class="bi bi-funnel-fill"></i>
+                    検索結果: <?= number_format($total) ?>件
+                    <?php if (!empty(array_filter($filters))): ?>
+                        （条件あり）
+                    <?php endif; ?>
+                </div>
+                <div class="results-actions">
+                    <a href="<?= site_url('admin/shop-closing-days/batch') ?>" class="btn btn-outline-primary">
+                        <i class="bi bi-plus-circle-dotted me-2"></i>一括作成
+                    </a>
+                    <a href="<?= site_url('admin/shop-closing-days/new') ?>" class="btn btn-primary">
+                        <i class="bi bi-plus-lg me-2"></i>新規作成
+                    </a>
+                </div>
             </div>
-        </div>
 
-        <?php // データテーブル ?>
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead class="table-light">
-                    <tr>
-                        <th>店舗名</th>
-                        <th>定休日名</th>
-                        <th>休業日</th>
-                        <th>繰り返し</th>
-                        <th>繰り返し終了日</th>
-                        <th>状態</th>
-                        <th width="140">操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($closing_days)): ?>
+            <?php // データテーブル ?>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
-                                <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
-                                検索条件に該当する定休日が見つかりませんでした。
-                            </td>
+                            <th>店舗名</th>
+                            <th>定休日名</th>
+                            <th>休業日</th>
+                            <th>繰り返し</th>
+                            <th>繰り返し終了日</th>
+                            <th>状態</th>
+                            <th width="140">操作</th>
                         </tr>
-                    <?php else: ?>
-                        <?php foreach ($closing_days as $closingDay): ?>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($closing_days)): ?>
                             <tr>
-                                <td>
-                                    <?php
-                                    // 店舗名を表示（shop_idから店舗名を取得）
-                                    $shopName = $shops[$closingDay->shop_id] ?? '不明な店舗';
-                                    echo esc($shopName);
-                                    ?>
-                                </td>
-                                <td>
-                                    <strong><?= esc($closingDay->holiday_name) ?></strong>
-                                </td>
-                                <td>
-                                    <?= esc($closingDay->getClosingDateJapanese()) ?>
-                                </td>
-                                <td>
-                                    <span class="<?= esc($closingDay->getRepeatTypeBadgeClass()) ?>">
-                                        <?= esc($closingDay->getRepeatTypeName()) ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <?php if (!empty($closingDay->repeat_end_date)): ?>
-                                        <?= esc($closingDay->getRepeatEndDateJapanese()) ?>
-                                    <?php else: ?>
-                                        <span class="text-muted">無期限</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <span class="<?= esc($closingDay->getActiveStatusBadgeClass()) ?>">
-                                        <?= esc($closingDay->getActiveStatusName()) ?>
-                                    </span>
-                                </td>
-                                <td class="table-actions">
-                                    <a href="<?= site_url('admin/shop-closing-days/edit/' . $closingDay->id) ?>" 
-                                       class="btn btn-sm btn-outline-primary"
-                                       title="編集">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <?= form_open(
-                                        'admin/shop-closing-days/delete/' . $closingDay->id,
-                                        [
-                                            'style' => 'display: inline;',
-                                            'onsubmit' => 'return confirm("この定休日を削除してもよろしいですか？")'
-                                        ]
-                                    ) ?>
-                                        <button type="submit" 
-                                                class="btn btn-sm btn-outline-danger"
-                                                title="削除">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    <?= form_close() ?>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="bi bi-calendar-x fs-1 d-block mb-2"></i>
+                                    検索条件に該当する定休日が見つかりませんでした。
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </div>
-
-        <?php // ページネーション ?>
-        <?php if ($total > $per_page): ?>
-            <div class="d-flex justify-content-center">
-                <?= $pager->makeLinks($current_page, $per_page, $total, 'bootstrap4') ?>
+                        <?php else: ?>
+                            <?php foreach ($closing_days as $closingDay): ?>
+                                <tr>
+                                    <td>
+                                        <?php
+                                        // 店舗名を表示（shop_idから店舗名を取得）
+                                        $shopName = $shops[$closingDay->shop_id] ?? '不明';
+                                        echo esc($shopName);
+                                        ?>
+                                    </td>
+                                    <td><?= esc($closingDay->holiday_name) ?></td>
+                                    <td>
+                                        <?= format_closing_date_japanese($closingDay->closing_date) ?>
+                                    </td>
+                                    <td>
+                                        <?= get_repeat_type_badge($closingDay->repeat_type) ?>
+                                    </td>
+                                    <td>
+                                        <?php if ($closingDay->repeat_end_date): ?>
+                                            <?= format_closing_date_japanese($closingDay->repeat_end_date) ?>
+                                        <?php else: ?>
+                                            <span class="text-muted">無期限</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?= get_active_status_badge($closingDay->is_active) ?>
+                                    </td>
+                                    <td>
+                                        <a href="<?= site_url('admin/shop-closing-days/edit/' . $closingDay->id) ?>" 
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="編集">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <?= form_open(
+                                            'admin/shop-closing-days/delete/' . $closingDay->id,
+                                            [
+                                                'style' => 'display: inline;',
+                                                'onsubmit' => 'return confirm("この定休日を削除してもよろしいですか？")'
+                                            ]
+                                        ) ?>
+                                            <button type="submit" 
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    title="削除">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        <?= form_close() ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             </div>
-        <?php endif; ?>
+
+            <?php // ページネーション ?>
+            <?php if ($total > $per_page): ?>
+                <div class="d-flex justify-content-center">
+                    <?= $pager->makeLinks($current_page, $per_page, $total, 'bootstrap4') ?>
+                </div>
+            <?php endif; ?>
+        </div>
 
     </div>
 <?= $this->endSection() ?>

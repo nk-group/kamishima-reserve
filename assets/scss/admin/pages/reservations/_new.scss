@@ -6,13 +6,6 @@
 
 // Page specific styles for new reservation creation
 #page-admin-reservations-new {
-    // Any specific styles for new page can go here
-    
-    .page-header {
-        .page-title {
-            color: var.$rainbow-green; // Highlight new creation with green
-        }
-    }
     
     // Emphasize required fields on new form
     .form-label {

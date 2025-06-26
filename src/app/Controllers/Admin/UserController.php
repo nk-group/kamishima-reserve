@@ -31,6 +31,7 @@ class UserController extends BaseController
 
         $data = [
             'page_title' => 'ユーザーマスタ | 車検予約管理システム',
+            'h1_title'   => 'ユーザーマスタ',
             'body_id'    => 'page-admin-users-index',
             'users'      => $users,
             'pager'      => $pager,
@@ -49,6 +50,7 @@ class UserController extends BaseController
     {
         $data = [
             'page_title'       => '新規ユーザー登録 | 車検予約管理システム',
+            'h1_title'         => '新規ユーザー登録'
             'body_id'          => 'page-admin-users-new',
             'available_groups' => $this->getAvailableGroups(),
         ];
@@ -222,6 +224,7 @@ class UserController extends BaseController
 
         $data = [
             'page_title'       => 'ユーザー編集 | 車検予約管理システム',
+            'h1_title'         => 'ユーザー編集',
             'body_id'          => 'page-admin-users-edit',
             'user'             => $user,
             'user_email'       => $identity ? $identity->secret : '',

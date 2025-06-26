@@ -4,25 +4,12 @@
     <?= esc($page_title) ?>
 <?= $this->endSection() ?>
 
-<?= $this->section('page_specific_head') ?>
-    <?php 
-    // Body IDを設定（admin.jsで動的インポートに使用）
-    $body_id = 'page-admin-shop-closing-days-form';
-    ?>
-<?= $this->endSection() ?>
-
 <?= $this->section('page_header_content') ?>
     <div class="page-header">
         <h1 class="page-title">
-            <i class="bi bi-calendar-plus"></i>
+            <i class="bi bi-<?= !empty($form_data['id']) ? 'pencil-square' : 'plus-lg' ?>"></i>
             <?= esc($h1_title) ?>
         </h1>
-        <div class="header-actions">
-            <a href="<?= site_url('admin/shop-closing-days') ?>" class="btn btn-outline-secondary">
-                <i class="bi bi-arrow-left"></i>
-                一覧に戻る
-            </a>
-        </div>
     </div>
 <?= $this->endSection() ?>
 
@@ -49,21 +36,9 @@
             </div>
         <?php endif; ?>
 
-        <?php 
-        // フォームアクション先を決定
-        $formAction = !empty($form_data['id']) ? 
-                     'admin/shop-closing-days/update/' . $form_data['id'] : 
-                     'admin/shop-closing-days/create';
-        ?>
-
-        <?= form_open($formAction, ['class' => 'needs-validation', 'novalidate' => true]) ?>
+        <?= form_open($form_action ?? 'admin/shop-closing-days/create', ['class' => 'needs-validation', 'novalidate' => true]) ?>
             
-            <?php // ID（編集時のみ） ?>
-            <?php if (!empty($form_data['id'])): ?>
-                <?= form_hidden('id', $form_data['id']) ?>
-            <?php endif; ?>
-
-            <?php // 基本情報セクション ?>
+            <!-- 基本情報セクション -->
             <div class="form-section">
                 <h5>
                     <i class="bi bi-info-circle"></i>
@@ -78,7 +53,7 @@
                         <?= form_dropdown(
                             'shop_id',
                             ['' => '-- 店舗を選択してください --'] + $shops,
-                            (string)(old('shop_id', $form_data['shop_id'] ?? '')),
+                            old('shop_id', $form_data['shop_id'] ?? ''),
                             [
                                 'class' => 'form-select' . (isset($validation) && $validation->hasError('shop_id') ? ' is-invalid' : ''),
                                 'id' => 'shop_id',
@@ -100,7 +75,7 @@
                             'name' => 'holiday_name',
                             'id' => 'holiday_name',
                             'class' => 'form-control' . (isset($validation) && $validation->hasError('holiday_name') ? ' is-invalid' : ''),
-                            'value' => (string)(old('holiday_name', $form_data['holiday_name'] ?? '')),
+                            'value' => old('holiday_name', $form_data['holiday_name'] ?? ''),
                             'maxlength' => 50,
                             'required' => true,
                             'placeholder' => '例: 定休日（毎週火曜日）、年末年始休業'
@@ -115,7 +90,7 @@
                 </div>
             </div>
 
-            <?php // 休業日設定セクション ?>
+            <!-- 休業日設定セクション -->
             <div class="form-section">
                 <h5>
                     <i class="bi bi-calendar-event"></i>
@@ -132,7 +107,7 @@
                             'id' => 'closing_date',
                             'type' => 'date',
                             'class' => 'form-control' . (isset($validation) && $validation->hasError('closing_date') ? ' is-invalid' : ''),
-                            'value' => (string)(old('closing_date', $form_data['closing_date'] ?? '')),
+                            'value' => old('closing_date', $form_data['closing_date'] ?? ''),
                             'required' => true
                         ]) ?>
                         <?php if (isset($validation) && $validation->hasError('closing_date')): ?>
@@ -140,21 +115,17 @@
                                 <?= $validation->getError('closing_date') ?>
                             </div>
                         <?php endif; ?>
-                        <div class="form-help">繰り返し設定時は基準となる日付</div>
                     </div>
                     
                     <div class="col-md-4">
-                        <label for="repeat_type" class="form-label">
-                            繰り返し種別 <span class="required-mark">*</span>
-                        </label>
+                        <label for="repeat_type" class="form-label">繰り返し種別</label>
                         <?= form_dropdown(
                             'repeat_type',
                             $repeat_type_options,
-                            (string)(old('repeat_type', $form_data['repeat_type'] ?? '0')),
+                            old('repeat_type', $form_data['repeat_type'] ?? '0'),
                             [
                                 'class' => 'form-select' . (isset($validation) && $validation->hasError('repeat_type') ? ' is-invalid' : ''),
-                                'id' => 'repeat_type',
-                                'required' => true
+                                'id' => 'repeat_type'
                             ]
                         ) ?>
                         <?php if (isset($validation) && $validation->hasError('repeat_type')): ?>
@@ -165,15 +136,13 @@
                     </div>
                     
                     <div class="col-md-4">
-                        <label for="repeat_end_date" class="form-label">
-                            繰り返し終了日
-                        </label>
+                        <label for="repeat_end_date" class="form-label">繰り返し終了日</label>
                         <?= form_input([
                             'name' => 'repeat_end_date',
                             'id' => 'repeat_end_date',
                             'type' => 'date',
                             'class' => 'form-control' . (isset($validation) && $validation->hasError('repeat_end_date') ? ' is-invalid' : ''),
-                            'value' => (string)(old('repeat_end_date', $form_data['repeat_end_date'] ?? ''))
+                            'value' => old('repeat_end_date', $form_data['repeat_end_date'] ?? '')
                         ]) ?>
                         <?php if (isset($validation) && $validation->hasError('repeat_end_date')): ?>
                             <div class="invalid-feedback">
@@ -190,7 +159,7 @@
                 </div>
             </div>
 
-            <?php // その他設定セクション ?>
+            <!-- その他設定セクション -->
             <div class="form-section">
                 <h5>
                     <i class="bi bi-gear"></i>
@@ -205,7 +174,7 @@
                                 'name' => 'is_active',
                                 'id' => 'is_active',
                                 'value' => '1',
-                                'checked' => (string)(old('is_active', $form_data['is_active'] ?? '1')) === '1',
+                                'checked' => old('is_active', $form_data['is_active'] ?? '1') === '1',
                                 'class' => 'form-check-input'
                             ]) ?>
                             <label class="form-check-label" for="is_active">
@@ -217,7 +186,7 @@
                 </div>
             </div>
 
-            <?php // 送信ボタン ?>
+            <!-- 送信ボタン -->
             <div class="d-flex justify-content-between">
                 <a href="<?= site_url('admin/shop-closing-days') ?>" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-left"></i>
