@@ -92,6 +92,20 @@ class ShopClosingDayModel extends Model
     }
 
     /**
+     * 繰り返し種別の選択肢を取得
+     *
+     * @return array
+     */
+    public static function getRepeatTypeOptions(): array
+    {
+        return [
+            self::REPEAT_TYPE_NONE   => '繰り返しなし（単発）',
+            self::REPEAT_TYPE_WEEKLY => '毎週',
+            self::REPEAT_TYPE_YEARLY => '毎年'
+        ];
+    }
+
+    /**
      * 店舗別の定休日を取得
      *
      * @param int $shopId 店舗ID
@@ -257,67 +271,77 @@ class ShopClosingDayModel extends Model
      * @param string $endDate 終了日
      * @param int $repeatType 繰り返し種別
      * @param string|null $repeatEndDate 繰り返し終了日
-     * @return bool
+     * @param bool $isActive 有効フラグ
+     * @return array 作成結果 ['success' => bool, 'count' => int, 'message' => string]
      */
-    public function createConsecutiveHolidays(
-        int $shopId, 
-        string $holidayName, 
-        string $startDate, 
-        string $endDate, 
+    public function createBatchClosingDays(
+        int $shopId,
+        string $holidayName,
+        string $startDate,
+        string $endDate,
         int $repeatType = self::REPEAT_TYPE_NONE,
-        ?string $repeatEndDate = null
-    ): bool {
-        $data = [];
+        ?string $repeatEndDate = null,
+        bool $isActive = true
+    ): array {
         $start = new \DateTime($startDate);
         $end = new \DateTime($endDate);
         
-        $current = clone $start;
-        while ($current <= $end) {
-            $data[] = [
-                'shop_id' => $shopId,
-                'holiday_name' => $holidayName,
-                'closing_date' => $current->format('Y-m-d'),
-                'repeat_type' => $repeatType,
-                'repeat_end_date' => $repeatEndDate,
-                'is_active' => 1
+        if ($start > $end) {
+            return [
+                'success' => false,
+                'count' => 0,
+                'message' => '開始日は終了日以前で入力してください。'
             ];
-            $current->add(new \DateInterval('P1D'));
         }
+
+        $createdCount = 0;
+        $current = clone $start;
         
-        return $this->insertBatch($data);
-    }
-
-    /**
-     * 繰り返し種別の表示名を取得
-     *
-     * @param int $repeatType
-     * @return string
-     */
-    public static function getRepeatTypeName(int $repeatType): string
-    {
-        switch ($repeatType) {
-            case self::REPEAT_TYPE_NONE:
-                return '単発';
-            case self::REPEAT_TYPE_WEEKLY:
-                return '毎週';
-            case self::REPEAT_TYPE_YEARLY:
-                return '毎年';
-            default:
-                return '不明';
+        $this->db->transStart();
+        
+        try {
+            while ($current <= $end) {
+                $data = [
+                    'shop_id' => $shopId,
+                    'holiday_name' => $holidayName,
+                    'closing_date' => $current->format('Y-m-d'),
+                    'repeat_type' => $repeatType,
+                    'repeat_end_date' => $repeatEndDate,
+                    'is_active' => $isActive ? 1 : 0
+                ];
+                
+                if ($this->insert($data)) {
+                    $createdCount++;
+                }
+                
+                $current->add(new \DateInterval('P1D'));
+            }
+            
+            $this->db->transComplete();
+            
+            if ($this->db->transStatus() === false) {
+                return [
+                    'success' => false,
+                    'count' => 0,
+                    'message' => 'データベースエラーが発生しました。'
+                ];
+            }
+            
+            return [
+                'success' => true,
+                'count' => $createdCount,
+                'message' => "{$createdCount}件の定休日を登録しました。"
+            ];
+            
+        } catch (\Exception $e) {
+            $this->db->transRollback();
+            log_message('error', 'Batch closing days creation failed: ' . $e->getMessage());
+            
+            return [
+                'success' => false,
+                'count' => 0,
+                'message' => 'エラーが発生しました: ' . $e->getMessage()
+            ];
         }
-    }
-
-    /**
-     * 繰り返し種別の選択肢を取得
-     *
-     * @return array
-     */
-    public static function getRepeatTypeOptions(): array
-    {
-        return [
-            self::REPEAT_TYPE_NONE => '単発（一度限り）',
-            self::REPEAT_TYPE_WEEKLY => '毎週（同じ曜日）',
-            self::REPEAT_TYPE_YEARLY => '毎年（同じ月日）'
-        ];
     }
 }

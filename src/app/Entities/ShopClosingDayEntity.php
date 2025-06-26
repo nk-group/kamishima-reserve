@@ -97,26 +97,21 @@ class ShopClosingDayEntity extends Entity
             return '';
         }
 
-        $date = new \DateTime($this->closing_date);
-        $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-        $weekday = $weekdays[(int)$date->format('w')];
-        
-        return $date->format('Y年n月j日') . '(' . $weekday . ')';
-    }
+        try {
+            // DateTimeオブジェクトまたは文字列から日付を取得
+            if ($this->closing_date instanceof \DateTime) {
+                $date = $this->closing_date;
+            } else {
+                $date = new \DateTime($this->closing_date);
+            }
 
-    /**
-     * 休業日を短縮形式で取得
-     *
-     * @return string
-     */
-    public function getClosingDateShort(): string
-    {
-        if (empty($this->closing_date)) {
+            $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+            $weekday = $weekdays[(int)$date->format('w')];
+            
+            return $date->format('Y年n月j日') . '(' . $weekday . ')';
+        } catch (\Exception $e) {
             return '';
         }
-
-        $date = new \DateTime($this->closing_date);
-        return $date->format('m/d');
     }
 
     /**
@@ -130,28 +125,46 @@ class ShopClosingDayEntity extends Entity
             return '';
         }
 
-        $date = new \DateTime($this->repeat_end_date);
-        $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-        $weekday = $weekdays[(int)$date->format('w')];
-        
-        return $date->format('Y年n月j日') . '(' . $weekday . ')';
+        try {
+            // DateTimeオブジェクトまたは文字列から日付を取得
+            if ($this->repeat_end_date instanceof \DateTime) {
+                $date = $this->repeat_end_date;
+            } else {
+                $date = new \DateTime($this->repeat_end_date);
+            }
+
+            $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+            $weekday = $weekdays[(int)$date->format('w')];
+            
+            return $date->format('Y年n月j日') . '(' . $weekday . ')';
+        } catch (\Exception $e) {
+            return '';
+        }
     }
 
     /**
-     * 曜日名を取得
+     * 休業日を短縮形式で取得
      *
      * @return string
      */
-    public function getWeekdayName(): string
+    public function getClosingDateShort(): string
     {
         if (empty($this->closing_date)) {
             return '';
         }
 
-        $date = new \DateTime($this->closing_date);
-        $weekdays = ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日'];
-        
-        return $weekdays[(int)$date->format('w')];
+        try {
+            // DateTimeオブジェクトまたは文字列から日付を取得
+            if ($this->closing_date instanceof \DateTime) {
+                $date = $this->closing_date;
+            } else {
+                $date = new \DateTime($this->closing_date);
+            }
+
+            return $date->format('Y/m/d');
+        } catch (\Exception $e) {
+            return '';
+        }
     }
 
     /**
@@ -165,22 +178,59 @@ class ShopClosingDayEntity extends Entity
             return '';
         }
 
-        $date = new \DateTime($this->closing_date);
-        return $date->format('n月j日');
+        try {
+            // DateTimeオブジェクトまたは文字列から日付を取得
+            if ($this->closing_date instanceof \DateTime) {
+                $date = $this->closing_date;
+            } else {
+                $date = new \DateTime($this->closing_date);
+            }
+
+            return $date->format('n月j日');
+        } catch (\Exception $e) {
+            return '';
+        }
     }
 
     /**
-     * 詳細な説明文を取得
+     * 曜日名を取得（毎週繰り返し用）
      *
      * @return string
      */
-    public function getDetailDescription(): string
+    public function getWeekdayName(): string
     {
-        $description = $this->holiday_name;
+        if (empty($this->closing_date)) {
+            return '';
+        }
+
+        try {
+            // DateTimeオブジェクトまたは文字列から日付を取得
+            if ($this->closing_date instanceof \DateTime) {
+                $date = $this->closing_date;
+            } else {
+                $date = new \DateTime($this->closing_date);
+            }
+
+            $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+            
+            return $weekdays[(int)$date->format('w')];
+        } catch (\Exception $e) {
+            return '';
+        }
+    }
+
+    /**
+     * 詳細な説明を取得
+     *
+     * @return string
+     */
+    public function getDetailedDescription(): string
+    {
+        $description = $this->getClosingDateJapanese();
         
         switch ($this->repeat_type) {
             case self::REPEAT_TYPE_NONE:
-                $description .= ' (' . $this->getClosingDateJapanese() . ')';
+                // 単発はそのまま
                 break;
                 
             case self::REPEAT_TYPE_WEEKLY:
@@ -234,103 +284,63 @@ class ShopClosingDayEntity extends Entity
     public function getFormData(): array
     {
         return [
-            'id' => $this->id,
-            'shop_id' => $this->shop_id,
-            'holiday_name' => $this->holiday_name,
-            'closing_date' => $this->closing_date,
-            'repeat_type' => $this->repeat_type,
-            'repeat_end_date' => $this->repeat_end_date,
-            'is_active' => $this->is_active ? 1 : 0,
+            'id' => $this->id ? (string)$this->id : '',
+            'shop_id' => $this->shop_id ? (string)$this->shop_id : '',
+            'holiday_name' => $this->holiday_name ?? '',
+            'closing_date' => $this->getClosingDateForForm(),
+            'repeat_type' => $this->repeat_type ? (string)$this->repeat_type : '0',
+            'repeat_end_date' => $this->getRepeatEndDateForForm(),
+            'is_active' => $this->is_active ? '1' : '0'
         ];
     }
 
     /**
-     * 編集可能かどうかを判定
-     * 
-     * @return bool
-     */
-    public function isEditable(): bool
-    {
-        // 過去の単発定休日は編集不可
-        if ($this->repeat_type === self::REPEAT_TYPE_NONE) {
-            $closingDate = new \DateTime($this->closing_date);
-            $today = new \DateTime();
-            return $closingDate >= $today;
-        }
-        
-        // 繰り返し定休日は編集可能
-        return true;
-    }
-
-    /**
-     * 削除可能かどうかを判定
+     * フォーム用の休業日を取得
      *
-     * @return bool
+     * @return string
      */
-    public function isDeletable(): bool
+    private function getClosingDateForForm(): string
     {
-        // 基本的に削除は常に可能（論理削除）
-        return true;
-    }
-
-    /**
-     * 今日が対象の休業日かどうかを判定
-     *
-     * @return bool
-     */
-    public function isToday(): bool
-    {
-        if (!$this->is_active) {
-            return false;
+        if (empty($this->closing_date)) {
+            return '';
         }
 
-        $today = new \DateTime();
-        $baseDate = new \DateTime($this->closing_date);
-        
-        // 繰り返し終了日のチェック
-        if (!empty($this->repeat_end_date)) {
-            $endDate = new \DateTime($this->repeat_end_date);
-            if ($today > $endDate) {
-                return false;
-            }
+        // closing_dateがDateTimeオブジェクトの場合とStringの場合に対応
+        if ($this->closing_date instanceof \DateTime) {
+            return $this->closing_date->format('Y-m-d');
         }
-        
-        switch ($this->repeat_type) {
-            case self::REPEAT_TYPE_NONE:
-                return $baseDate->format('Y-m-d') === $today->format('Y-m-d');
-                
-            case self::REPEAT_TYPE_WEEKLY:
-                return $baseDate->format('w') === $today->format('w') && 
-                       $today >= $baseDate;
-                       
-            case self::REPEAT_TYPE_YEARLY:
-                return $baseDate->format('m-d') === $today->format('m-d') && 
-                       $today->format('Y') >= $baseDate->format('Y');
-                       
-            default:
-                return false;
+
+        // 文字列の場合、DateTime形式に変換してからフォーマット
+        try {
+            $date = new \DateTime($this->closing_date);
+            return $date->format('Y-m-d');
+        } catch (\Exception $e) {
+            return '';
         }
     }
 
     /**
-     * JSON形式でのシリアライズ用
+     * フォーム用の繰り返し終了日を取得
      *
-     * @return array
+     * @return string
      */
-    public function toArray(): array
+    private function getRepeatEndDateForForm(): string
     {
-        $data = parent::toArray();
-        
-        // 追加の計算プロパティ
-        $data['repeat_type_name'] = $this->getRepeatTypeName();
-        $data['active_status_name'] = $this->getActiveStatusName();
-        $data['closing_date_japanese'] = $this->getClosingDateJapanese();
-        $data['detail_description'] = $this->getDetailDescription();
-        $data['list_description'] = $this->getListDescription();
-        $data['is_editable'] = $this->isEditable();
-        $data['is_deletable'] = $this->isDeletable();
-        $data['is_today'] = $this->isToday();
-        
-        return $data;
+        if (empty($this->repeat_end_date)) {
+            return '';
+        }
+
+        // repeat_end_dateがDateTimeオブジェクトの場合とString の場合に対応
+        if ($this->repeat_end_date instanceof \DateTime) {
+            return $this->repeat_end_date->format('Y-m-d');
+        }
+
+        // 文字列の場合、DateTime形式に変換してからフォーマット
+        try {
+            $date = new \DateTime($this->repeat_end_date);
+            return $date->format('Y-m-d');
+        } catch (\Exception $e) {
+            return '';
+        }
     }
 }

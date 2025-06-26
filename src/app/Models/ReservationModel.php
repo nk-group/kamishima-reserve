@@ -18,6 +18,7 @@ class ReservationModel extends Model
     protected $allowedFields    = [
         'reservation_no',
         'reservation_status_id',
+        'reservation_guid',
         'work_type_id',
         'shop_id',
         'desired_date',
@@ -25,6 +26,7 @@ class ReservationModel extends Model
         'reservation_start_time',
         'reservation_end_time',
         'customer_name',
+        'customer_kana',
         'email',
         'line_display_name',
         'via_line',
@@ -36,14 +38,20 @@ class ReservationModel extends Model
         'vehicle_license_class',
         'vehicle_license_kana',
         'vehicle_license_number',
-        'vehicle_type_id',
         'vehicle_model_name',
+        'first_registration_date',
         'shaken_expiration_date',
+        'model_spec_number',
+        'classification_number',
+        'loaner_usage',
+        'loaner_name',
+        'customer_requests',
         'notes',
-        'next_inspection_date',   // 次回推奨点検日
-        'send_inspection_notice', // 次回点検案内を送信するか (フラグ)
-        'next_contact_date',      // 次回顧客コンタクト予定日
-        'inspection_notice_sent', // 次回点検案内が送信済みか (フラグ)
+        'next_inspection_date',
+        'send_inspection_notice',
+        'next_work_type_id',
+        'next_contact_date',
+        'inspection_notice_sent',
     ];
 
     protected $useTimestamps    = true;

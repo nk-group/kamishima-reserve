@@ -137,9 +137,10 @@ class ReservationController extends BaseController
             '予約番号', '予約状況', '予約希望日', '開始時刻', '終了時刻',
             'お客様氏名', 'カナ名', 'メールアドレス', 'LINE名', 'LINE経由',
             '電話番号1', '電話番号2', '郵便番号', '住所',
-            '車両地域', '車両分類', '車両かな', '車両番号', '車種名', '車両種別',
-            '車検満了日', '作業種別', '作業店舗', 'メモ',
-            '次回点検日', '次回案内送信', '案内送信済み',
+            '車両地域', '車両分類', '車両かな', '車両番号', '車種名',
+            '初年度登録', '車検満了日', '型式指定番号', '類別区分番号',
+            '代車利用', '代車名', 'お客様要望', 'メモ',
+            '次回点検日', '次回作業種別', '次回連絡日', '次回案内送信', '案内送信済み',
             '登録日時', '更新日時'
         ];
 
@@ -181,12 +182,17 @@ class ReservationController extends BaseController
                 $row['vehicle_license_kana'] ?? '',
                 $row['vehicle_license_number'],
                 $row['vehicle_model_name'] ?? '',
-                $row['vehicle_type_name'] ?? '',
+                $row['first_registration_date'] ?? '',
                 $row['shaken_expiration_date'] ?? '',
-                $row['work_type_name'] ?? '',
-                $row['shop_name'] ?? '',
+                $row['model_spec_number'] ?? '',
+                $row['classification_number'] ?? '',
+                $row['loaner_usage'] ? 'はい' : 'いいえ',
+                $row['loaner_name'] ?? '',
+                $row['customer_requests'] ?? '',
                 $row['notes'] ?? '',
                 $row['next_inspection_date'] ?? '',
+                $row['next_work_type_name'] ?? '',
+                $row['next_contact_date'] ?? '',
                 $row['send_inspection_notice'] ? 'はい' : 'いいえ',
                 $row['inspection_notice_sent'] ? 'はい' : 'いいえ',
                 $row['created_at'],
@@ -391,7 +397,7 @@ class ReservationController extends BaseController
             'work_types' => $this->workTypeModel->findActive(),
             'shops' => $shops,
             'time_slots' => $timeSlots, // 全店舗の時間帯（JS側で絞り込み）
-            'vehicle_types' => $this->vehicleTypeModel->findActive(),
+            // 車両種別は削除（画面から削除するため）
             'default_reservation_status' => $this->reserveStatusModel->getIdByCode('pending'), // 未確定をデフォルト
         ];
     }
@@ -410,7 +416,7 @@ class ReservationController extends BaseController
             'customer_kana' => $postData['customer_kana'] ?? null,
             'email' => $postData['email'] ?? null,
             'line_display_name' => $postData['line_display_name'] ?? null,
-            'via_line' => isset($postData['via_line']) ? 1 : 0,
+            'via_line' => !empty($postData['via_line']) ? 1 : 0,
             'phone_number1' => $postData['phone_number1'] ?? null,
             'phone_number2' => $postData['phone_number2'] ?? null,
             'postal_code' => $postData['postal_code'] ?? null,
@@ -419,44 +425,62 @@ class ReservationController extends BaseController
             'vehicle_license_class' => $postData['vehicle_license_class'] ?? null,
             'vehicle_license_kana' => $postData['vehicle_license_kana'] ?? null,
             'vehicle_license_number' => $postData['vehicle_license_number'] ?? null,
-            'vehicle_type_id' => !empty($postData['vehicle_type_id']) ? (int)$postData['vehicle_type_id'] : null,
             'vehicle_model_name' => $postData['vehicle_model_name'] ?? null,
-            'shaken_expiration_date' => !empty($postData['shaken_expiration_date']) ? $postData['shaken_expiration_date'] : null,
+            'first_registration_date' => $postData['first_registration_date'] ?? null,
+            'shaken_expiration_date' => $postData['shaken_expiration_date'] ?? null,
+            'model_spec_number' => $postData['model_spec_number'] ?? null,
+            'classification_number' => $postData['classification_number'] ?? null,
+            'loaner_usage' => !empty($postData['loaner_usage']) ? 1 : 0,
+            'loaner_name' => $postData['loaner_name'] ?? null,
+            'customer_requests' => $postData['customer_requests'] ?? null,
             'notes' => $postData['notes'] ?? null,
-            'next_inspection_date' => !empty($postData['next_inspection_date']) ? $postData['next_inspection_date'] : null,
-            'send_inspection_notice' => isset($postData['send_inspection_notice']) ? 1 : 0,
-            'inspection_notice_sent' => isset($postData['inspection_notice_sent']) ? 1 : 0,
+            'next_inspection_date' => $postData['next_inspection_date'] ?? null,
+            'next_work_type_id' => !empty($postData['next_work_type_id']) ? (int)$postData['next_work_type_id'] : null,
+            'next_contact_date' => $postData['next_contact_date'] ?? null,
+            'send_inspection_notice' => !empty($postData['send_inspection_notice']) ? 1 : 0,
+            'inspection_notice_sent' => !empty($postData['inspection_notice_sent']) ? 1 : 0,
         ];
 
-        // 時間関連の処理
-        if (!empty($postData['desired_time_slot_id'])) {
-            // 時間帯選択の場合
-            $data['desired_time_slot_id'] = (int)$postData['desired_time_slot_id'];
-            
-            // 時間帯から開始・終了時刻を設定
-            $timeSlot = $this->timeSlotModel->find($postData['desired_time_slot_id']);
-            if ($timeSlot) {
-                $data['reservation_start_time'] = $timeSlot->start_time;
-                $data['reservation_end_time'] = $timeSlot->end_time;
-            }
-        } else {
-            // 直接時刻入力の場合
-            $data['desired_time_slot_id'] = null;
+        // 時間帯処理（既存ロジック）
+        $data['desired_time_slot_id'] = !empty($postData['desired_time_slot_id']) ? (int)$postData['desired_time_slot_id'] : null;
+        
+        if (!empty($postData['reservation_start_time']) || !empty($postData['reservation_end_time'])) {
             $data['reservation_start_time'] = !empty($postData['reservation_start_time']) ? $postData['reservation_start_time'] : null;
             $data['reservation_end_time'] = !empty($postData['reservation_end_time']) ? $postData['reservation_end_time'] : null;
+        }
+
+        // 新規作成時にのみreservation_guidを生成
+        if (!isset($postData['id']) || empty($postData['id'])) {
+            $data['reservation_guid'] = $this->generateGuid();
         }
 
         // 空文字列を明示的にNULLに変換（データベース制約対応）
         foreach ($data as $key => $value) {
             if ($value === '' || $value === '0') {
                 // 外部キーフィールドで空文字列や'0'の場合はNULLに変換
-                if (in_array($key, ['vehicle_type_id', 'desired_time_slot_id', 'reservation_status_id', 'work_type_id', 'shop_id'])) {
+                if (in_array($key, ['desired_time_slot_id', 'reservation_status_id', 'work_type_id', 'shop_id', 'next_work_type_id'])) {
                     $data[$key] = null;
                 }
             }
         }
 
         return $data;
+    }
+
+    /**
+     * GUIDを生成します。
+     */
+    private function generateGuid(): string
+    {
+        // UUID v4を生成（簡易版）
+        return sprintf(
+            '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0x0fff) | 0x4000,
+            mt_rand(0, 0x3fff) | 0x8000,
+            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+        );
     }
 
     /**
@@ -473,8 +497,26 @@ class ReservationController extends BaseController
             'customer_kana' => 'permit_empty|string|max_length[50]',
             'email' => 'required|valid_email|max_length[255]',
             'phone_number1' => 'required|string|max_length[20]',
+            'phone_number2' => 'permit_empty|string|max_length[20]',
+            'postal_code' => 'permit_empty|string|max_length[8]',
+            'address' => 'permit_empty|string|max_length[255]',
+            'vehicle_license_region' => 'permit_empty|string|max_length[10]',
+            'vehicle_license_class' => 'permit_empty|string|max_length[5]',
+            'vehicle_license_kana' => 'permit_empty|string|max_length[5]',
             'vehicle_license_number' => 'required|string|max_length[5]',
             'vehicle_model_name' => 'required|string|max_length[50]',
+            'first_registration_date' => 'permit_empty|valid_date',
+            'shaken_expiration_date' => 'permit_empty|valid_date',
+            'model_spec_number' => 'permit_empty|string|max_length[10]',
+            'classification_number' => 'permit_empty|string|max_length[10]',
+            'loaner_name' => 'permit_empty|string|max_length[20]',
+            'customer_requests' => 'permit_empty|string',
+            'notes' => 'permit_empty|string',
+            'next_inspection_date' => 'permit_empty|valid_date',
+            'next_contact_date' => 'permit_empty|valid_date',
+            'line_display_name' => 'permit_empty|string|max_length[100]',
+            'reservation_start_time' => 'permit_empty|regex_match[/^([01]\d|2[0-3]):([0-5]\d)$/]',
+            'reservation_end_time' => 'permit_empty|regex_match[/^([01]\d|2[0-3]):([0-5]\d)$/]',
         ];
     }
 }

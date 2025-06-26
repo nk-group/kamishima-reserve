@@ -84,7 +84,7 @@ class ShopClosingDayController extends BaseController
             'shops' => get_shop_list_for_select(),
             'repeat_type_options' => $this->shopClosingDayModel::getRepeatTypeOptions(),
             'form_data' => $this->getDefaultFormData(),
-            'validation' => null
+            'validation' => session()->get('validation')
         ];
 
         return view('Admin/ShopClosingDays/form', $data);
@@ -98,8 +98,11 @@ class ShopClosingDayController extends BaseController
         $postData = $this->request->getPost();
         
         // バリデーション実行
-        if (!$this->validateWith('shop_closing_day_create', $postData)) {
-            return $this->new()->with('validation', $this->validator);
+        $validation = \Config\Services::validation();
+        if (!$validation->run($postData, 'shop_closing_day_create')) {
+            return redirect()->to('admin/shop-closing-days/new')
+                           ->withInput()
+                           ->with('validation', $validation);
         }
 
         // データ作成
@@ -130,7 +133,8 @@ class ShopClosingDayController extends BaseController
         $closingDay = $this->shopClosingDayModel->find($id);
         
         if (!$closingDay) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('指定された定休日が見つかりません。');
+            return redirect()->to('/admin/shop-closing-days')
+                           ->with('error', '指定された定休日が見つかりません。');
         }
 
         $data = [
@@ -139,8 +143,7 @@ class ShopClosingDayController extends BaseController
             'shops' => get_shop_list_for_select(),
             'repeat_type_options' => $this->shopClosingDayModel::getRepeatTypeOptions(),
             'form_data' => $closingDay->getFormData(),
-            'closing_day' => $closingDay,
-            'validation' => null
+            'validation' => session()->get('validation')
         ];
 
         return view('Admin/ShopClosingDays/form', $data);
@@ -154,15 +157,19 @@ class ShopClosingDayController extends BaseController
         $closingDay = $this->shopClosingDayModel->find($id);
         
         if (!$closingDay) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('指定された定休日が見つかりません。');
+            return redirect()->to('/admin/shop-closing-days')
+                           ->with('error', '指定された定休日が見つかりません。');
         }
 
         $postData = $this->request->getPost();
         $postData['id'] = $id; // バリデーション用にIDを追加
         
         // バリデーション実行
-        if (!$this->validateWith('shop_closing_day_update', $postData)) {
-            return $this->edit($id)->with('validation', $this->validator);
+        $validation = \Config\Services::validation();
+        if (!$validation->run($postData, 'shop_closing_day_update')) {
+            return redirect()->to("admin/shop-closing-days/edit/{$id}")
+                           ->withInput()
+                           ->with('validation', $validation);
         }
 
         // データ更新
@@ -217,7 +224,7 @@ class ShopClosingDayController extends BaseController
             'shops' => get_shop_list_for_select(),
             'repeat_type_options' => $this->shopClosingDayModel::getRepeatTypeOptions(),
             'form_data' => $this->getDefaultBatchFormData(),
-            'validation' => null
+            'validation' => session()->get('validation')
         ];
 
         return view('Admin/ShopClosingDays/batch_form', $data);
@@ -231,8 +238,11 @@ class ShopClosingDayController extends BaseController
         $postData = $this->request->getPost();
         
         // バリデーション実行
-        if (!$this->validateWith('shop_closing_day_batch', $postData)) {
-            return $this->batch()->with('validation', $this->validator);
+        $validation = \Config\Services::validation();
+        if (!$validation->run($postData, 'shop_closing_day_batch')) {
+            return redirect()->to('admin/shop-closing-days/batch')
+                           ->withInput()
+                           ->with('validation', $validation);
         }
 
         $shopId = $postData['shop_id'];
@@ -241,21 +251,25 @@ class ShopClosingDayController extends BaseController
         $endDate = $postData['end_date'];
         $repeatType = $postData['repeat_type'];
         $repeatEndDate = !empty($postData['repeat_end_date']) ? $postData['repeat_end_date'] : null;
+        $isActive = $postData['is_active'] ?? 1;
 
-        if ($this->shopClosingDayModel->createConsecutiveHolidays(
-            $shopId, $holidayName, $startDate, $endDate, $repeatType, $repeatEndDate
-        )) {
-            // 作成された件数を計算
-            $start = new \DateTime($startDate);
-            $end = new \DateTime($endDate);
-            $days = $start->diff($end)->days + 1;
-            
+        $result = $this->shopClosingDayModel->createBatchClosingDays(
+            $shopId,
+            $holidayName,
+            $startDate,
+            $endDate,
+            $repeatType,
+            $repeatEndDate,
+            $isActive
+        );
+
+        if ($result['success']) {
             return redirect()->to('/admin/shop-closing-days')
-                           ->with('success', "{$days}件の定休日を一括登録しました。");
+                           ->with('success', $result['message']);
         } else {
             return redirect()->back()
                            ->withInput()
-                           ->with('error', '一括登録に失敗しました。');
+                           ->with('error', $result['message']);
         }
     }
 

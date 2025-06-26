@@ -202,17 +202,8 @@ function getFieldValue($fieldName, $reservation = null, $default = '') {
 
     <div class="form-row">
         <div class="form-group">
-            <label for="vehicle_type_id" class="form-label">車両種別</label>
-            <select id="vehicle_type_id" name="vehicle_type_id" class="form-select">
-                <option value="">選択してください</option>
-                <?php foreach ($vehicle_types as $vehicleType): ?>
-                    <option value="<?= esc($vehicleType->id) ?>" 
-                        <?= set_select('vehicle_type_id', $vehicleType->id, 
-                            getFieldValue('vehicle_type_id', $reservation) == $vehicleType->id) ?>>
-                        <?= esc($vehicleType->name) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+            <label for="first_registration_date" class="form-label">初年度登録</label>
+            <?= flatpickr_input('first_registration_date', getFieldValue('first_registration_date', $reservation), [], 'month') ?>
         </div>
         <div class="form-group">
             <label for="shaken_expiration_date" class="form-label">車検満了日</label>
@@ -222,11 +213,67 @@ function getFieldValue($fieldName, $reservation = null, $default = '') {
 
     <div class="form-row">
         <div class="form-group">
-            <label for="notes" class="form-label">お客様要望・メモ</label>
-            <textarea id="notes" name="notes" class="form-control textarea-memo" 
-                      placeholder="お客様からのご要望や車検に関する注意事項等を記載します。"><?= esc(getFieldValue('notes', $reservation)) ?></textarea>
+            <label for="model_spec_number" class="form-label">型式指定番号</label>
+            <input type="text" id="model_spec_number" name="model_spec_number" class="form-control" 
+                   placeholder="例: 50506" 
+                   value="<?= esc(getFieldValue('model_spec_number', $reservation)) ?>">
+        </div>
+        <div class="form-group">
+            <label for="classification_number" class="form-label">類別区分番号</label>
+            <input type="text" id="classification_number" name="classification_number" class="form-control" 
+                   placeholder="例: 0689" 
+                   value="<?= esc(getFieldValue('classification_number', $reservation)) ?>">
         </div>
     </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label">代車</label>
+            <div class="checkbox-group">
+                <input type="checkbox" class="form-check-input" id="loaner_usage" name="loaner_usage" value="1"
+                       <?= getFieldValue('loaner_usage', $reservation) ? 'checked' : '' ?>>
+                <label for="loaner_usage" class="form-check-label">必要</label>
+                <input type="text" id="loaner_name" name="loaner_name" class="form-control ms-3" 
+                       placeholder="代車名" style="max-width: 200px;"
+                       value="<?= esc(getFieldValue('loaner_name', $reservation)) ?>">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label for="customer_requests" class="form-label">お客様要望</label>
+            <textarea id="customer_requests" name="customer_requests" class="form-control textarea-customer-request" 
+                      placeholder="お客様からのご要望など"><?= esc(getFieldValue('customer_requests', $reservation)) ?></textarea>
+        </div>
+    </div>
+</div>
+
+<!-- Notes Section -->
+<div class="form-section">
+    <div class="form-row">
+        <div class="form-group">
+            <label for="notes" class="form-label">メモ</label>
+            <textarea id="notes" name="notes" class="form-control textarea-memo" 
+                      placeholder="車検に関する注意事項等を記載します。"><?= esc(getFieldValue('notes', $reservation)) ?></textarea>
+        </div>
+    </div>
+    
+    <!-- 予約確認用URL（修正画面のみ表示） -->
+    <?php if ($isEdit && $reservation && !empty($reservation->reservation_guid)): ?>
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label">予約確認用URL</label>
+            <div class="input-group">
+                <input type="text" class="form-control" 
+                       value="<?= base_url('customer/reservations/' . esc($reservation->reservation_guid)) ?>" readonly>
+                <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard(this.previousElementSibling)">
+                    <i class="bi bi-clipboard"></i> コピー
+                </button>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
 
 <!-- Inspection Section -->
@@ -243,6 +290,22 @@ function getFieldValue($fieldName, $reservation = null, $default = '') {
             <?= flatpickr_input('next_inspection_date', getFieldValue('next_inspection_date', $reservation), [], 'date') ?>
         </div>
         <div class="form-group">
+            <label for="next_work_type_id" class="form-label">次回作業種別</label>
+            <select id="next_work_type_id" name="next_work_type_id" class="form-select">
+                <option value="">選択してください</option>
+                <?php foreach ($work_types as $workType): ?>
+                    <option value="<?= esc($workType->id) ?>" 
+                        <?= set_select('next_work_type_id', $workType->id, 
+                            getFieldValue('next_work_type_id', $reservation) == $workType->id) ?>>
+                        <?= esc($workType->name) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
             <label class="form-label">次回点検案内</label>
             <div class="checkbox-group">
                 <input type="checkbox" class="form-check-input" id="send_inspection_notice" 
@@ -254,6 +317,10 @@ function getFieldValue($fieldName, $reservation = null, $default = '') {
                 <button type="button" class="btn btn-month" data-months="12">12か月後</button>
                 <button type="button" class="btn btn-month" data-months="24">24か月後</button>
             </div>
+        </div>
+        <div class="form-group">
+            <label for="next_contact_date" class="form-label">次回連絡日</label>
+            <?= flatpickr_input('next_contact_date', getFieldValue('next_contact_date', $reservation), [], 'date') ?>
         </div>
     </div>
 
@@ -273,3 +340,30 @@ function getFieldValue($fieldName, $reservation = null, $default = '') {
         </div>
     </div>
 </div>
+
+<script>
+// URLコピー機能
+function copyToClipboard(inputElement) {
+    inputElement.select();
+    inputElement.setSelectionRange(0, 99999); // モバイル対応
+    
+    try {
+        document.execCommand('copy');
+        
+        // ボタンのテキストを一時的に変更
+        const button = inputElement.nextElementSibling;
+        const originalHtml = button.innerHTML;
+        button.innerHTML = '<i class="bi bi-check"></i> コピー済み';
+        button.classList.add('btn-success');
+        button.classList.remove('btn-outline-secondary');
+        
+        setTimeout(() => {
+            button.innerHTML = originalHtml;
+            button.classList.remove('btn-success');
+            button.classList.add('btn-outline-secondary');
+        }, 2000);
+    } catch (err) {
+        console.error('URLのコピーに失敗しました:', err);
+    }
+}
+</script>

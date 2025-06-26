@@ -68,6 +68,18 @@ $routes->group('admin', ['filter' => 'sessionauth', 'namespace' => 'App\Controll
         $routes->get('arrival-schedule', 'ReportsController::arrivalSchedule', ['as' => 'admin.reports.arrival-schedule']);
         $routes->get('work-instruction-card', 'ReportsController::workInstructionCard', ['as' => 'admin.reports.work-instruction-card']);
     });
+
+    $routes->group('shop-closing-days', ['filter' => 'permission:staff.access'], static function ($routes) {
+        /** @var RouteCollection $routes */
+        $routes->get('', 'ShopClosingDayController::index', ['as' => 'admin.shop-closing-days.index']); // 一覧表示
+        $routes->get('new', 'ShopClosingDayController::new', ['as' => 'admin.shop-closing-days.new']); // 新規作成フォーム
+        $routes->post('create', 'ShopClosingDayController::create', ['as' => 'admin.shop-closing-days.create']); // 新規作成処理
+        $routes->get('edit/(:num)', 'ShopClosingDayController::edit/$1', ['as' => 'admin.shop-closing-days.edit']); // 編集フォーム
+        $routes->post('update/(:num)', 'ShopClosingDayController::update/$1', ['as' => 'admin.shop-closing-days.update']); // 更新処理
+        $routes->post('delete/(:num)', 'ShopClosingDayController::delete/$1', ['as' => 'admin.shop-closing-days.delete']); // 削除処理
+        $routes->get('batch', 'ShopClosingDayController::batch', ['as' => 'admin.shop-closing-days.batch']); // 一括作成フォーム
+        $routes->post('batch-create', 'ShopClosingDayController::batchCreate', ['as' => 'admin.shop-closing-days.batch-create']); // 一括作成処理
+    });    
     
 });
 
