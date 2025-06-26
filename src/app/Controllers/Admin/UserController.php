@@ -50,7 +50,7 @@ class UserController extends BaseController
     {
         $data = [
             'page_title'       => '新規ユーザー登録 | 車検予約管理システム',
-            'h1_title'         => '新規ユーザー登録'
+            'h1_title'         => '新規ユーザー登録',
             'body_id'          => 'page-admin-users-new',
             'available_groups' => $this->getAvailableGroups(),
         ];

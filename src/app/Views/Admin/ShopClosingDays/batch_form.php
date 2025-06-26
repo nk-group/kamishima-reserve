@@ -4,13 +4,6 @@
     <?= esc($page_title) ?>
 <?= $this->endSection() ?>
 
-<?= $this->section('page_specific_head') ?>
-    <?php 
-    // Body IDを設定（admin.jsで動的インポートに使用）
-    $body_id = 'page-admin-shop-closing-days-batch';
-    ?>
-<?= $this->endSection() ?>
-
 <?= $this->section('page_header_content') ?>
     <div class="page-header">
         <h1 class="page-title">
