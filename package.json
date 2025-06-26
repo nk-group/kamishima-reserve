@@ -2,7 +2,7 @@
   "name": "kamishima-reserve",
   "version": "1.0.0",
   "type": "module",
-  "description": "",
+  "description": "車検予約管理システム",
   "main": "index.js",
   "directories": {
     "doc": "docs"
@@ -10,11 +10,23 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:prod": "./scripts/build/build-production.sh",
+    "build:test": "./scripts/build/build-test.sh",
+    "build:clean-test": "./scripts/build/clean-test.sh",
+    "build:restore": "./scripts/build/restore-backup.sh",
     "preview": "vite preview",
+    "watch": "vite build --watch",
+    "clean": "rm -rf src/public/build-vite node_modules/.vite",
+    "ftp:package": "./scripts/deploy/create-package.sh",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "車検",
+    "予約管理",
+    "CodeIgniter",
+    "Vite"
+  ],
+  "author": "kamishima-motors",
   "license": "ISC",
   "devDependencies": {
     "bootstrap": "~5.3.0",

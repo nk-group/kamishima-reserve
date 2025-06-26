@@ -1,19 +1,13 @@
-// assets/js/admin/pages/reservations-list.js
-
 /**
- * 予約一覧ページのJavaScript機能
+ * 予約一覧ページ JavaScript
+ * ファイル名: assets/js/admin/pages/reservations/index.js
  */
-
-// ページロード時に実行
-document.addEventListener('DOMContentLoaded', function() {
-    initReservationList();
-});
 
 /**
  * 予約一覧ページの初期化
  */
-function initReservationList() {
-    console.log('Reservations list page initialized');
+export function initReservationsIndex() {
+    console.log('Reservations Index page initialized.');
     
     // データ取得
     const listData = window.reservationListData || {};
@@ -75,24 +69,26 @@ function initQuickSearch() {
  */
 function setQuickSearchConditions(quickType) {
     const today = new Date();
-    const dateFromInput = document.querySelector('input[name="date_from"]');
-    const dateToInput = document.querySelector('input[name="date_to"]');
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    
+    const form = document.getElementById('search-form');
+    if (!form) return;
     
     switch (quickType) {
         case 'today':
-            // 本日
-            const todayStr = today.toISOString().split('T')[0];
-            if (dateFromInput) dateFromInput.value = todayStr;
-            if (dateToInput) dateToInput.value = todayStr;
+            setDateInputValue(form, 'desired_date_from', formatDate(today));
+            setDateInputValue(form, 'desired_date_to', formatDate(today));
             break;
-            
-        case 'this_month_completed':
-            // 今月
-            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-            const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-            
-            if (dateFromInput) dateFromInput.value = firstDay.toISOString().split('T')[0];
-            if (dateToInput) dateToInput.value = lastDay.toISOString().split('T')[0];
+        case 'tomorrow':
+            setDateInputValue(form, 'desired_date_from', formatDate(tomorrow));
+            setDateInputValue(form, 'desired_date_to', formatDate(tomorrow));
+            break;
+        case 'this_week':
+            const startOfWeek = getStartOfWeek(today);
+            const endOfWeek = getEndOfWeek(today);
+            setDateInputValue(form, 'desired_date_from', formatDate(startOfWeek));
+            setDateInputValue(form, 'desired_date_to', formatDate(endOfWeek));
             break;
     }
 }
@@ -104,31 +100,18 @@ function initSearchForm() {
     const form = document.getElementById('search-form');
     if (!form) return;
     
-    // Enterキーでの送信を有効化
-    form.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            // 検索ボタンがあればそれをクリック、なければフォーム送信
-            const searchBtn = form.querySelector('.btn-search');
-            if (searchBtn) {
-                e.preventDefault();
-                searchBtn.click();
-            }
+    // ページ番号をリセットして検索
+    form.addEventListener('submit', function() {
+        const pageInput = form.querySelector('input[name="page"]');
+        if (pageInput) {
+            pageInput.value = '1';
         }
     });
     
-    // 検索ボタンのクリック処理
-    const searchBtn = form.querySelector('.btn-search');
+    // 検索実行ボタン
+    const searchBtn = document.getElementById('search-btn');
     if (searchBtn) {
-        searchBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // クイック検索パラメータをクリア
-            const quickInput = form.querySelector('input[name="quick_search"]');
-            if (quickInput) {
-                quickInput.remove();
-            }
-            
-            // ページ番号をリセット
+        searchBtn.addEventListener('click', function() {
             const pageInput = form.querySelector('input[name="page"]');
             if (pageInput) {
                 pageInput.value = '1';
@@ -268,85 +251,143 @@ function markAsComplete(reservationId) {
     .then(data => {
         if (data.success) {
             showNotification('予約を完了状態に更新しました', 'success');
-            // ページをリロード
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
+            // ページリロードまたは該当行の更新
+            location.reload();
         } else {
-            showNotification('更新に失敗しました', 'error');
+            showNotification(data.message || '更新に失敗しました', 'error');
         }
     })
     .catch(error => {
-        console.error('更新エラー:', error);
-        showNotification('更新に失敗しました', 'error');
+        console.error('Error:', error);
+        showNotification('通信エラーが発生しました', 'error');
     });
 }
 
 /**
- * レスポンシブ機能
+ * レスポンシブ対応機能
  */
 function initResponsiveFeatures() {
-    // モバイルでのテーブル横スクロール表示
-    const tableContainer = document.querySelector('.table-container');
-    if (tableContainer) {
-        // タッチスクロールのヒント表示
-        if (window.innerWidth <= 768) {
-            const scrollHint = document.createElement('div');
-            scrollHint.className = 'alert alert-info d-md-none';
-            scrollHint.innerHTML = '<i class="bi bi-arrow-left-right me-2"></i>表は左右にスクロールできます';
-            tableContainer.parentNode.insertBefore(scrollHint, tableContainer);
-        }
+    // スマートフォン表示での横スクロール対応など
+    handleTableResponsive();
+    
+    // 検索フォームの折りたたみ機能
+    handleSearchFormCollapse();
+}
+
+// === ユーティリティ関数 ===
+
+/**
+ * 日付をYYYY-MM-DD形式でフォーマット
+ */
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+/**
+ * 週の開始日を取得（月曜日）
+ */
+function getStartOfWeek(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1); // 日曜日の場合は-6、それ以外は1
+    return new Date(d.setDate(diff));
+}
+
+/**
+ * 週の終了日を取得（日曜日）
+ */
+function getEndOfWeek(date) {
+    const d = new Date(date);
+    const day = d.getDay();
+    const diff = d.getDate() + (7 - day);
+    return new Date(d.setDate(diff));
+}
+
+/**
+ * フォームの日付入力フィールドに値を設定
+ */
+function setDateInputValue(form, fieldName, value) {
+    const input = form.querySelector(`input[name="${fieldName}"]`);
+    if (input) {
+        input.value = value;
     }
 }
 
 /**
- * クイック検索フィードバック表示
+ * クイック検索ボタンのフィードバック表示
  */
 function showQuickSearchFeedback(button, quickType) {
     const originalText = button.textContent;
-    const originalClass = button.className;
-    
     button.textContent = '検索中...';
     button.disabled = true;
     
     setTimeout(() => {
         button.textContent = originalText;
-        button.className = originalClass;
         button.disabled = false;
     }, 1000);
 }
 
 /**
- * 通知表示
+ * 通知メッセージ表示
  */
 function showNotification(message, type = 'info') {
-    // 既存の通知があれば削除
-    const existingAlert = document.querySelector('.notification-alert');
-    if (existingAlert) {
-        existingAlert.remove();
-    }
-    
-    // 通知要素を作成
+    // Bootstrap Alertまたはカスタム通知システムを使用
     const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type} alert-dismissible fade show notification-alert`;
-    alertDiv.style.position = 'fixed';
-    alertDiv.style.top = '20px';
-    alertDiv.style.right = '20px';
-    alertDiv.style.zIndex = '9999';
-    alertDiv.style.minWidth = '300px';
-    
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
     alertDiv.innerHTML = `
-        <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'x-circle' : 'info-circle'} me-2"></i>
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
     
-    document.body.appendChild(alertDiv);
+    // 通知エリアに追加（ページ上部など）
+    const container = document.querySelector('.page-content') || document.body;
+    container.insertBefore(alertDiv, container.firstChild);
     
-    // 3秒後に自動削除
+    // 自動削除
     setTimeout(() => {
-        if (alertDiv && alertDiv.parentNode) {
+        if (alertDiv.parentNode) {
             alertDiv.remove();
         }
-    }, 3000);
+    }, 5000);
+}
+
+/**
+ * テーブルのレスポンシブ対応
+ */
+function handleTableResponsive() {
+    const tables = document.querySelectorAll('.table');
+    tables.forEach(table => {
+        if (!table.parentElement.classList.contains('table-responsive')) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'table-responsive';
+            table.parentNode.insertBefore(wrapper, table);
+            wrapper.appendChild(table);
+        }
+    });
+}
+
+/**
+ * 検索フォームの折りたたみ処理
+ */
+function handleSearchFormCollapse() {
+    const collapseBtn = document.querySelector('[data-bs-toggle="collapse"]');
+    if (collapseBtn) {
+        collapseBtn.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            if (icon) {
+                // アイコンの切り替え
+                setTimeout(() => {
+                    const target = document.querySelector(this.getAttribute('data-bs-target'));
+                    if (target && target.classList.contains('show')) {
+                        icon.className = 'bi bi-chevron-up';
+                    } else {
+                        icon.className = 'bi bi-chevron-down';
+                    }
+                }, 300);
+            }
+        });
+    }
 }

@@ -39,10 +39,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             break;
 
+        // === 予約管理（統一されたフォルダ分割パターン） ===
         case 'page-admin-reservations-index':
             try {
-                // このファイルはイベントリスナーを直接セットアップするため、インポートするだけで機能します。
-                await import('./admin/pages/reservations-list.js');
+                const { initReservationsIndex } = await import('./admin/pages/reservations/index.js');
+                initReservationsIndex();
             } catch (e) {
                 console.error('Failed to load reservation list scripts:', e);
             }
@@ -94,8 +95,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             break;
 
-        // case 'page-admin-reservations-detail':
-        //     // 予約詳細ページ用のスクリプトもここに追加できます。
+        // case 'page-admin-other-feature':
+        //     // 他の機能も同様にフォルダ分割パターンで追加可能
         //     break;
     }
 });

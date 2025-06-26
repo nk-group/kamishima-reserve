@@ -149,22 +149,47 @@ docker-compose.override.yml
 #-------------------------
 # JavaScript／フロントエンド関連
 #-------------------------
-# Node
+# Node.js 開発環境（本番ビルド成果物は管理対象とする）
 node_modules/
-npm-debug.log
+npm-debug.log*
 yarn-error.log
-yarn-debug.log
-.pnpm-debug.log
+yarn-debug.log*
+.pnpm-debug.log*
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Vite 開発環境関連（本番ビルドは管理対象）
+.vite/
+.vite-cache/
+
+# テスト用ビルドファイル（Gitで管理しない）
+src/public/build-vite-test/
+
+# 開発・テスト用の一時ビルドファイル（本番ビルドは管理対象とする）
+src/public/build-vite/.dev-temp/
+src/public/build-vite/.test/
+src/public/build-vite/temp/
 
 # Bootstrap (コンパイル済みファイルは含める場合、次の行をコメントアウト)
 # public/assets/bootstrap/
 
 # Flatpickr (コンパイル済みファイルは含める場合、次の行をコメントアウト)
 # public/assets/flatpickr/
+
+#-------------------------
+# FTP デプロイ関連
+#-------------------------
+# FTP用パッケージファイル（作成後は手動で削除推奨）
+ftp-deploy-*.zip
+ftp-package-*.zip
+ftp-complete-*.zip
+ftp-assets-*.zip
+ftp-temp-*/
+
+# ビルド時のバックアップファイル
+src/public/build-vite.backup.*
 
 #-------------------------
 # その他
@@ -195,3 +220,19 @@ yarn-debug.log
 *.conf
 *.config
 config.php
+
+#-------------------------
+# 重要: FTP環境用の管理方針
+#-------------------------
+# 以下のディレクトリ/ファイルは FTP デプロイのため Git で管理する:
+# - src/public/build-vite/    (本番ビルド成果物)
+# - assets/ 配下の開発ソース  (ビルド元ファイル)
+# 
+# 以下は Git で管理しない:
+# - src/public/build-vite-test/ (テスト用ビルド成果物)
+# - ftp-*.zip                   (FTPパッケージファイル)
+# 
+# 開発時は npm run dev でViteサーバーを使用
+# テスト時は npm run build:test でテストビルド
+# リリース時は npm run build:prod で本番ビルドをGitにコミット
+# デプロイ時は npm run ftp:package でZIP作成後アップロード
