@@ -60,6 +60,7 @@ class ShopClosingDayController extends BaseController
         $data = [
             'page_title' => '定休日マスタ',
             'h1_title' => '定休日マスタ管理',
+            'body_id' => 'page-admin-shop-closing-days-index', // 追加
             'closing_days' => $closingDays,
             'shops' => $shops,
             'filters' => $filters,
@@ -81,6 +82,7 @@ class ShopClosingDayController extends BaseController
         $data = [
             'page_title' => '定休日マスタ新規作成',
             'h1_title' => '定休日新規作成',
+            'body_id' => 'page-admin-shop-closing-days-form', // 追加
             'shops' => get_shop_list_for_select(),
             'repeat_type_options' => $this->shopClosingDayModel::getRepeatTypeOptions(),
             'form_data' => $this->getDefaultFormData(),
@@ -91,22 +93,11 @@ class ShopClosingDayController extends BaseController
     }
 
     /**
-     * 新規作成処理（デバッグ版）
+     * 新規作成処理
      */
     public function create()
     {
         $postData = $this->request->getPost();
-        
-        // デバッグログ
-        log_message('debug', 'CREATE - Post data: ' . json_encode($postData));
-        
-        // 重複チェック（デバッグ用）
-        $existingCheck = $this->shopClosingDayModel
-            ->where('shop_id', $postData['shop_id'])
-            ->where('holiday_name', $postData['holiday_name'])
-            ->first();
-            
-        log_message('debug', 'CREATE - Existing check result: ' . ($existingCheck ? 'FOUND: ' . json_encode($existingCheck->toArray()) : 'NOT FOUND'));
         
         // データ作成（モデルでバリデーション実行）
         $data = [
@@ -117,24 +108,19 @@ class ShopClosingDayController extends BaseController
             'repeat_end_date' => !empty($postData['repeat_end_date']) ? $postData['repeat_end_date'] : null,
             'is_active' => $postData['is_active'] ?? 1
         ];
-        
-        log_message('debug', 'CREATE - Data to save: ' . json_encode($data));
 
         try {
             if ($this->shopClosingDayModel->save($data)) {
-                log_message('debug', 'CREATE - Save successful');
                 return redirect()->to('/admin/shop-closing-days')
                                ->with('success', '定休日を登録しました。');
             } else {
                 // モデルのバリデーションエラーを取得
                 $errors = $this->shopClosingDayModel->errors();
-                log_message('debug', 'CREATE - Model validation errors: ' . json_encode($errors));
                 return redirect()->back()
                                ->withInput()
                                ->with('errors', $errors);
             }
         } catch (\RuntimeException $e) {
-            log_message('debug', 'CREATE - Runtime exception: ' . $e->getMessage());
             return redirect()->back()
                            ->withInput()
                            ->with('error', $e->getMessage());
@@ -156,6 +142,7 @@ class ShopClosingDayController extends BaseController
         $data = [
             'page_title' => '定休日マスタ編集',
             'h1_title' => '定休日編集',
+            'body_id' => 'page-admin-shop-closing-days-form', // 追加
             'shops' => get_shop_list_for_select(),
             'repeat_type_options' => $this->shopClosingDayModel::getRepeatTypeOptions(),
             'form_data' => $closingDay->getFormData(),
@@ -166,7 +153,7 @@ class ShopClosingDayController extends BaseController
     }
 
     /**
-     * 更新処理（デバッグ版）
+     * 更新処理
      */
     public function update($id)
     {
@@ -179,20 +166,6 @@ class ShopClosingDayController extends BaseController
 
         $postData = $this->request->getPost();
         
-        // デバッグログ
-        log_message('debug', 'UPDATE - ID: ' . $id);
-        log_message('debug', 'UPDATE - Post data: ' . json_encode($postData));
-        log_message('debug', 'UPDATE - Current data: ' . json_encode($closingDay->toArray()));
-        
-        // 重複チェック（デバッグ用）- 自分以外
-        $existingCheck = $this->shopClosingDayModel
-            ->where('shop_id', $postData['shop_id'])
-            ->where('holiday_name', $postData['holiday_name'])
-            ->where('id !=', $id)
-            ->first();
-            
-        log_message('debug', 'UPDATE - Existing check result (excluding self): ' . ($existingCheck ? 'FOUND: ' . json_encode($existingCheck->toArray()) : 'NOT FOUND'));
-        
         // データ更新（モデルでバリデーション実行）
         $data = [
             'id' => $id, // バリデーション用
@@ -203,24 +176,19 @@ class ShopClosingDayController extends BaseController
             'repeat_end_date' => !empty($postData['repeat_end_date']) ? $postData['repeat_end_date'] : null,
             'is_active' => $postData['is_active'] ?? 1
         ];
-        
-        log_message('debug', 'UPDATE - Data to save: ' . json_encode($data));
 
         try {
             if ($this->shopClosingDayModel->update($id, $data)) {
-                log_message('debug', 'UPDATE - Update successful');
                 return redirect()->to('/admin/shop-closing-days')
                                ->with('success', '定休日を更新しました。');
             } else {
                 // モデルのバリデーションエラーを取得
                 $errors = $this->shopClosingDayModel->errors();
-                log_message('debug', 'UPDATE - Model validation errors: ' . json_encode($errors));
                 return redirect()->back()
                                ->withInput()
                                ->with('errors', $errors);
             }
         } catch (\RuntimeException $e) {
-            log_message('debug', 'UPDATE - Runtime exception: ' . $e->getMessage());
             return redirect()->back()
                            ->withInput()
                            ->with('error', $e->getMessage());
@@ -256,6 +224,7 @@ class ShopClosingDayController extends BaseController
         $data = [
             'page_title' => '定休日一括作成',
             'h1_title' => '定休日一括作成',
+            'body_id' => 'page-admin-shop-closing-days-batch', // 追加
             'shops' => get_shop_list_for_select(),
             'repeat_type_options' => $this->shopClosingDayModel::getRepeatTypeOptions(),
             'form_data' => $this->getDefaultBatchFormData(),
@@ -308,6 +277,9 @@ class ShopClosingDayController extends BaseController
 
     /**
      * AJAX: 指定日が休業日かチェック
+     * 
+     * 注意：このメソッドは他の機能（予約システム等）で使用されている可能性があります。
+     * 削除する前に、プロジェクト全体でこのメソッドが参照されていないことを確認してください。
      */
     public function checkClosingDay()
     {

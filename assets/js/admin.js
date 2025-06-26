@@ -65,9 +65,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 console.error('Failed to load reservation edit scripts:', e);
             }
             break;
+
+        // === 定休日マスタ（フォルダ分割パターン） ===
         case 'page-admin-shop-closing-days-index':
             try {
-                const { initShopClosingDaysIndex } = await import('./admin/pages/shop-closing-days.js');
+                const { initShopClosingDaysIndex } = await import('./admin/pages/shop-closing-days/index.js');
                 initShopClosingDaysIndex();
             } catch (e) {
                 console.error('Failed to load shop closing days index scripts:', e);
@@ -76,7 +78,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         case 'page-admin-shop-closing-days-form':
             try {
-                const { initShopClosingDaysForm } = await import('./admin/pages/shop-closing-days.js');
+                const { initShopClosingDaysForm } = await import('./admin/pages/shop-closing-days/form.js');
                 initShopClosingDaysForm();
             } catch (e) {
                 console.error('Failed to load shop closing days form scripts:', e);
@@ -85,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         case 'page-admin-shop-closing-days-batch':
             try {
-                const { initShopClosingDaysBatch } = await import('./admin/pages/shop-closing-days.js');
+                const { initShopClosingDaysBatch } = await import('./admin/pages/shop-closing-days/batch.js');
                 initShopClosingDaysBatch();
             } catch (e) {
                 console.error('Failed to load shop closing days batch scripts:', e);
