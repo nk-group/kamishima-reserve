@@ -219,7 +219,7 @@ function initClipboardCopy() {
  * 完了ボタン機能
  */
 function initCompleteButtons() {
-    document.querySelectorAll('.btn-complete').forEach(button => {
+    document.querySelectorAll('.btn-action.btn-complete').forEach(button => {
         button.addEventListener('click', function() {
             const reservationId = this.onclick.toString().match(/\d+/)[0];
             markAsComplete(reservationId);

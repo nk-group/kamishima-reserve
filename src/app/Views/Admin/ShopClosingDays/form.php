@@ -188,11 +188,11 @@
 
             <!-- 送信ボタン -->
             <div class="d-flex justify-content-between">
-                <a href="<?= site_url('admin/shop-closing-days') ?>" class="btn btn-outline-secondary">
+                <a href="<?= site_url('admin/shop-closing-days') ?>" class="btn-outline-custom">
                     <i class="bi bi-arrow-left"></i>
                     キャンセル
                 </a>
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn-primary-custom">
                     <i class="bi bi-check-lg"></i>
                     <?= !empty($form_data['id']) ? '更新する' : '登録する' ?>
                 </button>

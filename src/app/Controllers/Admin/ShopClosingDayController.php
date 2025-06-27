@@ -237,7 +237,7 @@ class ShopClosingDayController extends BaseController
             'validation' => session()->get('validation')
         ];
 
-        return view('Admin/ShopClosingDays/batch_form', $data);
+        return $this->render('Admin/ShopClosingDays/batch_form', $data);
     }
 
     /**

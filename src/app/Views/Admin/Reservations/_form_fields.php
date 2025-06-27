@@ -267,7 +267,7 @@ function getFieldValue($fieldName, $reservation = null, $default = '') {
             <div class="input-group">
                 <input type="text" class="form-control" 
                        value="<?= base_url('customer/reservations/' . esc($reservation->reservation_guid)) ?>" readonly>
-                <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard(this.previousElementSibling)">
+                <button type="button" class="btn-copy" onclick="copyToClipboard(this.previousElementSibling)">
                     <i class="bi bi-clipboard"></i> コピー
                 </button>
             </div>
@@ -314,8 +314,8 @@ function getFieldValue($fieldName, $reservation = null, $default = '') {
                 <label for="send_inspection_notice" class="form-check-label">次回点検案内を送る</label>
             </div>
             <div class="btn-group-custom">
-                <button type="button" class="btn btn-month" data-months="12">12か月後</button>
-                <button type="button" class="btn btn-month" data-months="24">24か月後</button>
+                <button type="button" class="btn-month" data-months="12">12か月後</button>
+                <button type="button" class="btn-month" data-months="24">24か月後</button>
             </div>
         </div>
         <div class="form-group">
@@ -355,12 +355,12 @@ function copyToClipboard(inputElement) {
         const originalHtml = button.innerHTML;
         button.innerHTML = '<i class="bi bi-check"></i> コピー済み';
         button.classList.add('btn-success');
-        button.classList.remove('btn-outline-secondary');
+        button.classList.remove('btn-copy');
         
         setTimeout(() => {
             button.innerHTML = originalHtml;
             button.classList.remove('btn-success');
-            button.classList.add('btn-outline-secondary');
+            button.classList.add('btn-copy');
         }, 2000);
     } catch (err) {
         console.error('URLのコピーに失敗しました:', err);

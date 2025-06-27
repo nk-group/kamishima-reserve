@@ -7,38 +7,38 @@
 
 // Form Section
 .form-section {
-    margin-bottom: 40px; // from design HTML
+    margin-bottom: 40px;
 }
 
 // Form Rows and Groups
 .form-row {
-    display: flex; // from design HTML
-    gap: 25px; // from design HTML
-    margin-bottom: 25px; // from design HTML
+    display: flex;
+    gap: 25px;
+    margin-bottom: 25px;
 }
 
 .form-group {
-    flex: 1; // from design HTML
+    flex: 1;
 }
 
 .form-group.narrow {
-    flex: 0 0 120px; // from design HTML
+    flex: 0 0 120px;
 }
 
 .form-group.wide {
-    flex: 2; // from design HTML
+    flex: 2;
 }
 
 // Time Inputs
 .time-inputs {
-    display: flex; // from design HTML
-    align-items: center; // from design HTML
-    gap: 15px; // from design HTML
+    display: flex;
+    align-items: center;
+    gap: 15px;
 }
 
 .time-separator {
-    font-weight: bold; // from design HTML
-    color: var.$gray-text-muted; // from design HTML
+    font-weight: bold;
+    color: var.$gray-text-muted;
 }
 
 .form-label {
@@ -47,19 +47,19 @@
 
 // Section Divider
 .section-divider {
-    border: none; // from design HTML
-    border-top: 2px dotted var.$gray-divider; // from design HTML
-    height: 0; // from design HTML
-    margin: 30px 0; // from design HTML
+    border: none;
+    border-top: 2px dotted var.$gray-divider;
+    height: 0;
+    margin: 30px 0;
 }
 
 // Vehicle Number Group
 .vehicle-number-group {
-    display: flex; // from design HTML
-    gap: 12px; // from design HTML
-    align-items: center; // from design HTML
+    display: flex;
+    gap: 12px;
+    align-items: center;
     .form-control {
-        text-align: center; // from design HTML
+        text-align: center;
         // Note: Specific widths (80px, 60px, 50px) are applied via inline styles in HTML.
         // If these need to be managed in SCSS, specific classes would be required.
     }
@@ -87,97 +87,97 @@
 
 // Inspection Section
 .inspection-section {
-    background: linear-gradient(135deg, var.$blue-lightest, var.$blue-lighter-alt); // from design HTML
-    border: 2px solid var.$blue-border; // from design HTML
-    border-radius: 12px; // from design HTML
-    padding: 30px; // from design HTML
-    margin-top: 25px; // from design HTML
+    background: linear-gradient(135deg, var.$blue-lightest, var.$blue-lighter-alt);
+    border: 2px solid var.$blue-border;
+    border-radius: 12px;
+    padding: 30px;
+    margin-top: 25px;
 }
 
 .inspection-title {
-    color: var.$header-bg-dark-start; // from design HTML
-    font-weight: 700; // from design HTML
-    font-size: 1.3rem; // from design HTML
-    margin-bottom: 20px; // from design HTML
-    display: flex; // from design HTML
-    align-items: center; // from design HTML
-    gap: 10px; // from design HTML
+    color: var.$header-bg-dark-start;
+    font-weight: 700;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 // Button Group Custom (for month buttons)
 .btn-group-custom {
-    display: flex; // from design HTML
-    gap: 12px; // from design HTML
-    margin: 15px 0; // from design HTML
+    display: flex;
+    gap: 12px;
+    margin: 15px 0;
 }
 
 // Action Buttons
 // This is now defined in _buttons.scss for common use.
 // .action-buttons {
-//     display: flex; // from design HTML
-//     justify-content: space-between; // from design HTML
-//     align-items: center; // from design HTML
-//     margin-top: 40px; // from design HTML
-//     padding-top: 25px; // from design HTML
-//     border-top: 2px solid var.$gray-border-light; // from design HTML
+//     display: flex;
+//     justify-content: space-between;
+//     align-items: center;
+//     margin-top: 40px;
+//     padding-top: 25px;
+//     border-top: 2px solid var.$gray-border-light;
 // }
 
 .timestamp-info {
-    color: var.$gray-text-muted; // from design HTML
-    font-size: 0.9rem; // from design HTML
+    color: var.$gray-text-muted;
+    font-size: 0.9rem;
 }
 // LINE Tag Container
 .line-tag-container {
-    background: linear-gradient(135deg, var.$rainbow-green, var.$green-darker); // from design HTML
-    color: var.$white; // from design HTML
-    padding: 12px 16px; // from design HTML
-    border-radius: 8px; // from design HTML
-    font-size: 0.9rem; // from design HTML
-    font-weight: 600; // from design HTML
-    user-select: none; // from design HTML
-    transition: all 0.3s ease; // from design HTML
-    display: flex; // from design HTML
-    align-items: center; // from design HTML
-    gap: 8px; // from design HTML
-    justify-content: center; // from design HTML
-    margin: 0; // from design HTML
-    height: 48px; // from design HTML
-    min-width: 120px; // from design HTML
-    border: 2px solid transparent; // from design HTML
+    background: linear-gradient(135deg, var.$rainbow-green, var.$green-darker);
+    color: var.$white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    user-select: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    margin: 0;
+    height: 48px;
+    min-width: 120px;
+    border: 2px solid transparent;
     &:hover {
-        background: linear-gradient(135deg, var.$green-darker, var.$green-deep-dark); // from design HTML
+        background: linear-gradient(135deg, var.$green-darker, var.$green-deep-dark);
     }
 }
 
 .line-checkbox {
-    width: 16px; // from design HTML
-    height: 16px; // from design HTML
-    margin: 0; // from design HTML
-    cursor: pointer; // from design HTML
-    accent-color: var.$white; // from design HTML
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var.$white;
 }
 
 .line-tag-text {
-    color: var.$white; // from design HTML
-    font-weight: 600; // from design HTML
-    font-size: 0.9rem; // from design HTML
+    color: var.$white;
+    font-weight: 600;
+    font-size: 0.9rem;
 }
 
 .line-text-input {
-    flex: 1; // from design HTML
-    transition: all 0.3s ease; // from design HTML
+    flex: 1;
+    transition: all 0.3s ease;
     &:disabled {
-        background-color: var.$gray-form-disabled-bg; // from design HTML
-        color: var.$gray-text-disabled; // from design HTML
-        cursor: not-allowed; // from design HTML
+        background-color: var.$gray-form-disabled-bg;
+        color: var.$gray-text-disabled;
+        cursor: not-allowed;
     }
 }
 
 // Info Icon
 .info-icon {
-    color: var.$gray-text-muted; // from design HTML
-    margin-left: 8px; // from design HTML
-    cursor: help; // from design HTML
+    color: var.$gray-text-muted;
+    margin-left: 8px;
+    cursor: help;
 }
 
 // Responsive adjustments from reservations-detail.html
@@ -185,23 +185,23 @@
 
 @media (max-width: 768px) {
     .form-row {
-        flex-direction: column; // from design HTML
-        gap: 15px; // from design HTML
+        flex-direction: column;
+        gap: 15px;
     }
     
     .time-inputs {
-        flex-direction: column; // from design HTML
-        align-items: stretch; // from design HTML
-        gap: 10px; // from design HTML
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
     }
     
     .vehicle-number-group {
-        flex-wrap: wrap; // from design HTML
+        flex-wrap: wrap;
     }
     
     .action-buttons {
-        flex-direction: column; // from design HTML
-        gap: 20px; // from design HTML
-        text-align: center; // from design HTML
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
     }
 }

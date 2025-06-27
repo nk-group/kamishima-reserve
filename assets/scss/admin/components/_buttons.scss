@@ -342,3 +342,129 @@
     transform: translateY(0);
   }
 }
+
+//--------------------------------------------------------------------------
+// 🆕 NEW: Copy Button (e.g., URL Copy, Clipboard)
+//--------------------------------------------------------------------------
+.btn-copy {
+  background: var.$white;
+  border: 2px solid var.$secondary;
+  color: var.$secondary;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: var.$secondary;
+    color: var.$white;
+    transform: translateY(-1px);
+  }
+  
+  // 成功状態（JavaScriptで動的に追加される）
+  &.btn-success {
+    background: var.$success;
+    border-color: var.$success;
+    color: var.$white;
+  }
+}
+
+//--------------------------------------------------------------------------
+// 🆕 NEW: Reset Button (e.g., Form Reset, Clear Form)
+//--------------------------------------------------------------------------
+.btn-reset {
+  background: var.$white;
+  border: 2px solid var.$warning;
+  color: var.$warning;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: var.$warning;
+    color: var.$white;
+    transform: translateY(-2px);
+  }
+}
+
+//--------------------------------------------------------------------------
+// 🆕 NEW: Create Batch Button (e.g., Batch Creation)
+//--------------------------------------------------------------------------
+.btn-create-batch {
+  background: linear-gradient(135deg, var.$info, var.$blue-dark);
+  border: none;
+  color: var.$white;
+  padding: 12px 32px;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(var.$info, 0.3);
+  
+  &:hover {
+    background: linear-gradient(135deg, var.$blue-dark, var.$blue-deep-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(var.$info, 0.4);
+    color: var.$white;
+  }
+}
+
+//--------------------------------------------------------------------------
+// 🆕 NEW: Button Size Variants
+//--------------------------------------------------------------------------
+.btn-large {
+  padding: 16px 40px;
+  font-size: 1.1rem;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}
+
+.btn-mini {
+  padding: 2px 6px;
+  font-size: 0.6rem;
+  height: 20px;
+  border-radius: 4px;
+}
+
+//--------------------------------------------------------------------------
+// 🆕 NEW: Button States
+//--------------------------------------------------------------------------
+.btn-loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+  
+  &::after {
+    content: "";
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: btn-spin 1s linear infinite;
+    margin-left: 8px;
+  }
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+//--------------------------------------------------------------------------
+// 🆕 NEW: Responsive Support
+//--------------------------------------------------------------------------
+@media (max-width: 768px) {
+  .btn-responsive {
+    width: 100%;
+    margin-bottom: 8px;
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

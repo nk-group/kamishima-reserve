@@ -26,7 +26,7 @@
                     <button type="submit" class="btn-primary-custom">
                         <i class="bi bi-check-circle me-2"></i>登録
                     </button>
-                    <button type="reset" class="btn-outline-custom">
+                    <button type="reset" class="btn-reset">
                         <i class="bi bi-arrow-clockwise me-2"></i>クリア
                     </button>
                     <a href="<?= route_to('admin.reservations.index') ?>" class="btn-outline-custom">
@@ -46,10 +46,5 @@ window.reservationData = {
     workTypes: <?= json_encode($work_types) ?>,
     currentReservation: null
 };
-
-// デバッグ用：データが正しく渡されているかチェック
-console.log('New page: reservationData loaded:', window.reservationData);
-console.log('Time slots count:', window.reservationData.timeSlots ? window.reservationData.timeSlots.length : 'undefined');
-console.log('Work types count:', window.reservationData.workTypes ? window.reservationData.workTypes.length : 'undefined');
 </script>
 <?= $this->endSection() ?>

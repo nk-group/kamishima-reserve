@@ -13,7 +13,7 @@
 // CodeIgniterが実際に出力するHTML構造に完全に対応した最終的なスタイル
 .pagination {
   display: flex;
-  gap: 12px; // アイテム間のスペースを確保し、「12」に見える問題を解決
+  gap: 12px; // アイテム間のスペースを確保
   padding-left: 0;
   list-style: none;
   margin: 0;
@@ -54,7 +54,7 @@
       z-index: 3;
       box-shadow: 0 2px 8px rgba(var.$rainbow-blue, 0.3);
       cursor: default; // カーソルを標準の矢印に
-      pointer-events: none; // ★★★ クリックイベントを完全に無効化
+      pointer-events: none; // クリックイベントを完全に無効化
     }
   }
 }

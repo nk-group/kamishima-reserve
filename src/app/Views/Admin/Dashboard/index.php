@@ -141,12 +141,12 @@
 
             <div class="calendar-container">
                 <div class="calendar-nav">
-                    <button class="calendar-nav-btn">
+                    <button class="btn-primary-custom btn-small">
                         <i class="bi bi-chevron-left me-1"></i>
                         前月
                     </button>
                     <div class="calendar-month">2025年2月</div>
-                    <button class="calendar-nav-btn">
+                    <button class="btn-primary-custom btn-small">
                         次月
                         <i class="bi bi-chevron-right ms-1"></i>
                     </button>
@@ -176,7 +176,7 @@
                                     <td class="calendar-cell"><div class="calendar-date"><span class="date-number prev-month"></span></div></td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number saturday">1</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -189,7 +189,7 @@
                                 <tr>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number sunday">2</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -199,7 +199,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">3</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -209,7 +209,7 @@
                                     </td>
                                     <td class="calendar-cell holiday">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">4</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -218,7 +218,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">5</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -228,7 +228,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">6</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -238,7 +238,7 @@
                                     </td>
                                     <td class="calendar-cell today">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">7</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -250,7 +250,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number saturday">8</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -261,7 +261,7 @@
                                 <tr>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number sunday">9</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -271,7 +271,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">10</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -280,7 +280,7 @@
                                     </td>
                                     <td class="calendar-cell holiday">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">11</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -289,7 +289,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">12</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -303,7 +303,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">13</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -313,7 +313,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">14</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -322,7 +322,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number saturday">15</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -334,7 +334,7 @@
                                 <tr>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number sunday">16</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -343,7 +343,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">17</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -353,7 +353,7 @@
                                     </td>
                                     <td class="calendar-cell holiday">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">18</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -362,7 +362,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">19</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -372,7 +372,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">20</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -381,7 +381,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">21</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -391,7 +391,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number saturday">22</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -402,7 +402,7 @@
                                 <tr>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number sunday">23</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -411,7 +411,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">24</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -421,7 +421,7 @@
                                     </td>
                                     <td class="calendar-cell holiday">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">25</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -430,7 +430,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">26</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -439,7 +439,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">27</span>
                                         </div>
                                         <div class="calendar-appointments">
@@ -449,7 +449,7 @@
                                     </td>
                                     <td class="calendar-cell">
                                         <div class="calendar-date">
-                                            <button class="new-reservation-btn">＋新規</button>
+                                            <button class="btn-create-new btn-mini">＋新規</button>
                                             <span class="date-number">28</span>
                                         </div>
                                         <div class="calendar-appointments">

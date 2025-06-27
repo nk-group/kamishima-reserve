@@ -11,10 +11,10 @@ $gray-200: #e9ecef;
 $gray-300: #dee2e6;
 $gray-400: #ced4da;
 $gray-500: #adb5bd;
-$gray-600: #6c757d; // Corresponds to $secondary
+$gray-600: #6c757d;
 $gray-700: #495057;
 $gray-800: #343a40;
-$gray-900: #212529; // Corresponds to $dark
+$gray-900: #212529;
 $black:    #000;
 
 //--------------------------------------------------------------------------
@@ -92,17 +92,17 @@ $btn-logout-bg-end: #dc2626;
 $btn-logout-hover-bg-start: #dc2626;
 $btn-logout-hover-bg-end: #b91c1c;
 
-$blue-dark: #2563eb; // from dashboard.html CSS
-$gray-border-light: #e5e7eb; // from dashboard.html CSS
-$pink-light: #ffcce5; // from dashboard.html CSS
-$pink-dark: #d63384; // from dashboard.html CSS
-$orange-dark: #92400e; // from dashboard.html CSS
-$yellow-light: #fbbf24; // from dashboard.html CSS
-$yellow-lightest: #fef3c7; // from dashboard.html CSS
+$blue-dark: #2563eb;
+$gray-border-light: #e5e7eb;
+$pink-light: #ffcce5;
+$pink-dark: #d63384;
+$orange-dark: #92400e;
+$yellow-light: #fbbf24;
+$yellow-lightest: #fef3c7;
 
 // Colors from reservations-list.html
-$green-darker: #059669; // from reservations-list.html
-$green-deep-dark: #047857; // Even darker green for hover states
+$green-darker: #059669;
+$green-deep-dark: #047857;
 $status-confirmed-bg: #d1ecf1;
 $status-confirmed-color: #0c5460;
 $status-pending-bg: #fff3cd;
@@ -112,22 +112,22 @@ $work-general-color: #055160;
 $work-maintenance-bg: #d4edda;
 $work-maintenance-color: #155724;
 
-$blue-lightest-dashboard: #dbeafe; // Renamed to avoid conflict with inspection section blue
-$blue-darker: #1e40af; // from dashboard.html CSS
-$blue-deep-dark: #1d4ed8; // Added: from dashboard.html CSS for hover state
+$blue-lightest-dashboard: #dbeafe;
+$blue-darker: #1e40af;
+$blue-deep-dark: #1d4ed8;
 
 // Main content and Page Header colors from dashboard.html CSS
 $main-content-bg: white;
-$page-header-bg-start: $header-bg-dark-start; // Same as navbar for consistency
-$page-header-bg-end: $header-bg-dark-mid;   // Same as navbar for consistency
+$page-header-bg-start: $header-bg-dark-start;
+$page-header-bg-end: $header-bg-dark-mid;
 $page-header-text-color: white;
 
 $text-color: $dark;
-$body-bg: $gray-light-root; // Use variable from :root
-$border-color: #dee2e6; // from dashboard.html :root (--border-color)
+$body-bg: $gray-light-root;
+$border-color: #dee2e6;
 
-$blue-very-light: #f0f9ff; // from dashboard.html CSS
-$blue-lighter: #e0f2fe; // from dashboard.html CSS
+$blue-very-light: #f0f9ff;
+$blue-lighter: #e0f2fe;
 
 // Header specific (from new design and existing admin.scss)
 $admin-header-bg-start: $header-bg-dark-start;

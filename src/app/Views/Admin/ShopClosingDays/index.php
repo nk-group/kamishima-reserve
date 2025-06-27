@@ -91,11 +91,11 @@
                     </div>
                     
                     <div class="col-md-6 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary me-2">
+                        <button type="submit" class="btn-search me-2">
                             <i class="bi bi-search"></i>
                             検索
                         </button>
-                        <a href="<?= site_url('admin/shop-closing-days') ?>" class="btn btn-outline-secondary">
+                        <a href="<?= site_url('admin/shop-closing-days') ?>" class="btn-clear">
                             <i class="bi bi-arrow-clockwise"></i>
                             リセット
                         </a>
@@ -115,10 +115,10 @@
                     <?php endif; ?>
                 </div>
                 <div class="results-actions">
-                    <a href="<?= site_url('admin/shop-closing-days/batch') ?>" class="btn btn-outline-primary">
+                    <a href="<?= site_url('admin/shop-closing-days/batch') ?>" class="btn-create-batch">
                         <i class="bi bi-plus-circle-dotted me-2"></i>一括作成
                     </a>
-                    <a href="<?= site_url('admin/shop-closing-days/new') ?>" class="btn btn-primary">
+                    <a href="<?= site_url('admin/shop-closing-days/new') ?>" class="btn-create-new">
                         <i class="bi bi-plus-lg me-2"></i>新規作成
                     </a>
                 </div>
@@ -175,7 +175,7 @@
                                     </td>
                                     <td>
                                         <a href="<?= site_url('admin/shop-closing-days/edit/' . $closingDay->id) ?>" 
-                                           class="btn btn-sm btn-outline-primary"
+                                           class="btn-action btn-edit btn-small"
                                            title="編集">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
@@ -187,7 +187,7 @@
                                             ]
                                         ) ?>
                                             <button type="submit" 
-                                                    class="btn btn-sm btn-outline-danger"
+                                                    class="btn-action btn-delete btn-small"
                                                     title="削除">
                                                 <i class="bi bi-trash"></i>
                                             </button>

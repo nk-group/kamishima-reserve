@@ -11,7 +11,7 @@
             <?= esc($h1_title) ?>
         </h1>
         <div class="header-actions">
-            <a href="<?= site_url('admin/shop-closing-days') ?>" class="btn btn-outline-secondary">
+            <a href="<?= site_url('admin/shop-closing-days') ?>" class="btn-outline-custom">
                 <i class="bi bi-arrow-left"></i>
                 一覧に戻る
             </a>
@@ -228,11 +228,11 @@
 
             <?php // 送信ボタン ?>
             <div class="d-flex justify-content-between">
-                <a href="<?= site_url('admin/shop-closing-days') ?>" class="btn btn-outline-secondary">
+                <a href="<?= site_url('admin/shop-closing-days') ?>" class="btn-outline-custom">
                     <i class="bi bi-arrow-left"></i>
                     キャンセル
                 </a>
-                <button type="submit" class="btn btn-primary" id="submit-btn">
+                <button type="submit" class="btn-primary-custom" id="submit-btn">
                     <i class="bi bi-plus-circle-dotted"></i>
                     一括登録する
                 </button>

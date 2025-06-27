@@ -9,45 +9,43 @@
 // "本日の予定" (Today's Schedule) Section from dashboard.html
 //--------------------------------------------------------------------------
 .today-schedule { // Changed from .today-schedule-section to match HTML
-  margin-bottom: 40px; // from dashboard.html CSS
+  margin-bottom: 40px;
 
   .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px; // from dashboard.html CSS (was var.$spacer * 1.5)
+    margin-bottom: 20px;
   }
   // .section-title is styled globally below
   .schedule-card {
-    // This will inherit from the global .card style in components/_cards.scss
-    // Styles from dashboard.html .schedule-card
-    background: white; // Explicitly set, though .card might already do this
-    border: 2px solid var.$gray-border-light; // from dashboard.html CSS
-    border-radius: 12px; // from dashboard.html CSS
-    padding: 25px; // from dashboard.html CSS
-    transition: all 0.3s ease; // from dashboard.html CSS
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05); // from dashboard.html CSS
+    background: white;
+    border: 2px solid var.$gray-border-light;
+    border-radius: 12px;
+    padding: 25px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     &:hover {
-        border-color: var.$rainbow-blue; // from dashboard.html CSS
-        box-shadow: 0 8px 25px rgba(var.$rainbow-blue, 0.15); // from dashboard.html CSS
-        transform: translateY(-2px); // from dashboard.html CSS
+        border-color: var.$rainbow-blue;
+        box-shadow: 0 8px 25px rgba(var.$rainbow-blue, 0.15);
+        transform: translateY(-2px);
     }
   }
 }
 
 // Styles for .section-title used in both Today's Schedule and Calendar sections
-.section-title { // from dashboard.html CSS
+.section-title {
   font-size: 1.3rem;
-  font-weight: 700; // Corrected from 600 to 700 based on dashboard.html
-  color: var.$header-bg-dark-start; // from dashboard.html CSS
-  margin: 0; // from dashboard.html CSS
-  display: flex; // from dashboard.html CSS
-  align-items: center; // from dashboard.html CSS
-  gap: 10px; // from dashboard.html CSS
+  font-weight: 700;
+  color: var.$header-bg-dark-start;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 // Style for .section-date, sibling to .section-title
-.section-date { // from dashboard.html CSS
+.section-date {
   color: var.$gray-text-muted;
   font-size: 1.1rem;
   margin-left: 15px;
@@ -58,73 +56,73 @@
 //--------------------------------------------------------------------------
 .schedule-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); // from dashboard.html CSS
-  gap: 20px; // from dashboard.html CSS
-  margin-bottom: 20px; // from dashboard.html CSS
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
 .schedule-time {
-  display: flex; // from dashboard.html CSS
-  align-items: center; // from dashboard.html CSS
-  gap: 8px; // from dashboard.html CSS
-  color: var.$gray-text-muted; // from dashboard.html CSS
-  font-size: 0.9rem; // from dashboard.html CSS
-  margin-bottom: 12px; // from dashboard.html CSS
-  font-weight: 600; // from dashboard.html CSS
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var.$gray-text-muted;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  font-weight: 600;
 }
 
 .customer-name {
-  font-size: 1.1rem; // from dashboard.html CSS
-  font-weight: 700; // from dashboard.html CSS
-  color: var.$header-bg-dark-start; // from dashboard.html CSS
-  margin-bottom: 10px; // from dashboard.html CSS
-  display: flex; // from dashboard.html CSS
-  align-items: center; // from dashboard.html CSS
-  gap: 8px; // from dashboard.html CSS
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var.$header-bg-dark-start;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .work-type-badge {
-  display: inline-block; // from dashboard.html CSS
-  padding: 6px 14px; // from dashboard.html CSS
-  border-radius: 15px; // from dashboard.html CSS
-  font-size: 0.8rem; // from dashboard.html CSS
-  font-weight: 600; // from dashboard.html CSS
-  margin-bottom: 12px; // from dashboard.html CSS
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 12px;
 }
 
 .badge-clear {
-  background: var.$pink-light; // from dashboard.html CSS
-  color: var.$pink-dark; // from dashboard.html CSS
+  background: var.$pink-light;
+  color: var.$pink-dark;
 }
 
 .schedule-details {
-  font-size: 0.9rem; // from dashboard.html CSS
-  color: var.$gray-text-muted; // from dashboard.html CSS
-  line-height: 1.5; // from dashboard.html CSS
+  font-size: 0.9rem;
+  color: var.$gray-text-muted;
+  line-height: 1.5;
 
   div {
-    margin-bottom: 6px; // from dashboard.html CSS
+    margin-bottom: 6px;
   }
 }
 
 .more-link {
-  text-align: center; // from dashboard.html CSS
-  margin-top: 25px; // from dashboard.html CSS
+  text-align: center;
+  margin-top: 25px;
 
   a {
-    color: var.$rainbow-blue; // from dashboard.html CSS
-    text-decoration: none; // from dashboard.html CSS
-    font-size: 0.9rem; // from dashboard.html CSS
-    font-weight: 600; // from dashboard.html CSS
-    padding: 8px 20px; // from dashboard.html CSS
-    border: 1px solid var.$rainbow-blue; // from dashboard.html CSS
-    border-radius: 20px; // from dashboard.html CSS
-    transition: all 0.3s ease; // from dashboard.html CSS
+    color: var.$rainbow-blue;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 8px 20px;
+    border: 1px solid var.$rainbow-blue;
+    border-radius: 20px;
+    transition: all 0.3s ease;
 
     &:hover {
-      background: var.$rainbow-blue; // from dashboard.html CSS
-      color: white; // from dashboard.html CSS
-      text-decoration: none; // from dashboard.html CSS
+      background: var.$rainbow-blue;
+      color: white;
+      text-decoration: none;
     }
   }
 }
@@ -133,282 +131,241 @@
 // Calendar Section from dashboard.html
 //--------------------------------------------------------------------------
 .calendar-section {
-  border-top: 2px solid var.$gray-border-light; // from dashboard.html CSS
-  padding-top: 30px; // from dashboard.html CSS
+  border-top: 2px solid var.$gray-border-light;
+  padding-top: 30px;
 
   .calendar-header {
-    display: flex; // from dashboard.html CSS
-    justify-content: space-between; // from dashboard.html CSS
-    align-items: center; // from dashboard.html CSS
-    margin-bottom: 20px; // from dashboard.html CSS
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
   }
 
   .calendar-stats {
-    font-size: 0.9rem; // from dashboard.html CSS
-    color: var.$gray-text-muted; // from dashboard.html CSS
-    margin-top: 8px; // from dashboard.html CSS
+    font-size: 0.9rem;
+    color: var.$gray-text-muted;
+    margin-top: 8px;
   }
 
   .shop-select {
-    border: 2px solid var.$gray-border-light; // from dashboard.html CSS
-    border-radius: 8px; // from dashboard.html CSS
-    padding: 8px 15px; // from dashboard.html CSS
-    background: white; // from dashboard.html CSS
-    transition: all 0.3s ease; // from dashboard.html CSS
+    border: 2px solid var.$gray-border-light;
+    border-radius: 8px;
+    padding: 8px 15px;
+    background: white;
+    transition: all 0.3s ease;
 
     &:focus {
-      border-color: var.$rainbow-blue; // from dashboard.html CSS
-      box-shadow: 0 0 0 0.2rem rgba(var.$rainbow-blue, 0.25); // from dashboard.html CSS
+      border-color: var.$rainbow-blue;
+      box-shadow: 0 0 0 0.2rem rgba(var.$rainbow-blue, 0.25);
     }
   }
 
   .calendar-container {
-    background: white; // from dashboard.html CSS
-    border: 2px solid var.$gray-border-light; // from dashboard.html CSS
-    width: 100%; // Explicitly set width to contain its children properly
-    border-radius: 12px; // from dashboard.html CSS
-    overflow: hidden; // from dashboard.html CSS
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); // from dashboard.html CSS
+    background: white;
+    border: 2px solid var.$gray-border-light;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   }
 
   .calendar-nav {
-    background: linear-gradient(135deg, var.$blue-very-light, var.$blue-lighter); // from dashboard.html CSS
-    padding: 15px 20px; // from dashboard.html CSS
-    display: flex; // from dashboard.html CSS
-    justify-content: space-between; // from dashboard.html CSS
-    align-items: center; // from dashboard.html CSS
-    border-bottom: 1px solid var.$gray-border-light; // from dashboard.html CSS
+    background: linear-gradient(135deg, var.$blue-very-light, var.$blue-lighter);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var.$gray-border-light;
   }
 
-  .calendar-month { // from dashboard.html CSS
+  .calendar-month {
     font-size: 1.2rem;
     font-weight: 700;
-    color: var.$header-bg-dark-start; // from dashboard.html CSS (#1f2937)
-  }
-
-  .calendar-nav-btn {
-    background: linear-gradient(135deg, var.$rainbow-blue, var.$blue-dark); // from dashboard.html CSS
-    border: none; // from dashboard.html CSS
-    color: white; // from dashboard.html CSS
-    font-size: 0.9rem; // from dashboard.html CSS
-    cursor: pointer; // from dashboard.html CSS
-    padding: 8px 16px; // from dashboard.html CSS
-    border-radius: 20px; // from dashboard.html CSS
-    font-weight: 600; // from dashboard.html CSS
-    transition: all 0.3s ease; // from dashboard.html CSS
-
-    &:hover {
-      background: linear-gradient(135deg, var.$blue-dark, var.$blue-deep-dark); // Use new variable
-      transform: translateY(-1px); // from dashboard.html CSS
-      box-shadow: 0 4px 12px rgba(var.$rainbow-blue, 0.3); // from dashboard.html CSS
-    }
+    color: var.$header-bg-dark-start;
   }
 
   .calendar-table {
-    width: 100%; // from dashboard.html CSS
-    min-width: 700px; // from dashboard.html CSS (ensures horizontal scroll on smaller screens)
-    border-collapse: collapse; // from dashboard.html CSS
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
   }
 
   .calendar-header-row {
-    background: #f8f9fa; // from dashboard.html CSS (Bootstrap $light)
+    background: #f8f9fa;
   }
 
   .calendar-header-cell {
-    padding: 12px 8px; // from dashboard.html CSS
-    text-align: center; // from dashboard.html CSS
-    font-weight: 600; // from dashboard.html CSS
-    font-size: 0.9rem; // from dashboard.html CSS
-    color: var.$gray-text-muted; // from dashboard.html CSS
-    border-bottom: 1px solid var.$gray-border-light; // from dashboard.html CSS
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var.$gray-text-muted;
+    border-bottom: 1px solid var.$gray-border-light;
 
     &.sunday {
-      color: var.$rainbow-red; // from dashboard.html CSS
+      color: var.$rainbow-red;
     }
 
     &.saturday {
-      color: var.$rainbow-blue; // from dashboard.html CSS (Note: dashboard.html uses #0d6efd, which is Bootstrap $blue. Let's use $rainbow-blue for consistency with other rainbow colors, or add $bootstrap-blue if needed)
+      color: var.$rainbow-blue;
     }
   }
 
   .calendar-cell {
-    padding: 8px 6px; // from dashboard.html CSS
-    vertical-align: top; // from dashboard.html CSS
-    border-bottom: 1px solid var.$gray-border-light; // from dashboard.html CSS
-    border-right: 1px solid var.$gray-border-light; // from dashboard.html CSS
-    min-height: 110px; // from dashboard.html CSS
-    position: relative; // from dashboard.html CSS
-    background: white; // from dashboard.html CSS
-    transition: all 0.3s ease; // from dashboard.html CSS
-    width: 14.28%; // from dashboard.html CSS
+    padding: 8px 6px;
+    vertical-align: top;
+    border-bottom: 1px solid var.$gray-border-light;
+    border-right: 1px solid var.$gray-border-light;
+    min-height: 110px;
+    position: relative;
+    background: white;
+    transition: all 0.3s ease;
+    width: 14.28%;
 
     &.today {
-      background: white; // from dashboard.html CSS
-      border: 2px solid var.$rainbow-yellow; // from dashboard.html CSS
-      box-shadow: 0 0 8px rgba(var.$rainbow-yellow, 0.3); // from dashboard.html CSS
+      background: white;
+      border: 2px solid var.$rainbow-yellow;
+      box-shadow: 0 0 8px rgba(var.$rainbow-yellow, 0.3);
     }
 
     &.holiday {
-      background: #f3f4f6; // from dashboard.html CSS (Bootstrap $gray-200)
+      background: #f3f4f6; // (Bootstrap $gray-200)
     }
 
     &:hover {
-      background: #f8f9fa; // from dashboard.html CSS (Bootstrap $light)
+      background: #f8f9fa; // (Bootstrap $light)
     }
 
     &.today:hover {
-      background: #f8f9fa; // from dashboard.html CSS (Bootstrap $light)
+      background: #f8f9fa; // (Bootstrap $light)
     }
 
     &.holiday:hover {
-      background: var.$gray-border-light; // from dashboard.html CSS
+      background: var.$gray-border-light;
     }
 
     &:last-child {
-      border-right: none; // from dashboard.html CSS
+      border-right: none;
     }
   }
 
   .calendar-date {
-    font-size: 0.85rem; // from dashboard.html CSS
-    font-weight: 600; // from dashboard.html CSS
-    margin-bottom: 6px; // from dashboard.html CSS
-    position: relative; // from dashboard.html CSS
-    display: flex; // from dashboard.html CSS
-    justify-content: space-between; // from dashboard.html CSS
-    align-items: center; // from dashboard.html CSS
-    min-height: 22px; // from dashboard.html CSS
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 22px;
 
     .date-number {
-      text-align: right; // from dashboard.html CSS
+      text-align: right;
 
       &.sunday {
-        color: var.$rainbow-red; // from dashboard.html CSS
+        color: var.$rainbow-red;
       }
 
       &.saturday {
-        color: var.$rainbow-blue; // from dashboard.html CSS (Note: dashboard.html uses #0d6efd, which is Bootstrap $blue. Let's use $rainbow-blue for consistency with other rainbow colors, or add $bootstrap-blue if needed)
+        color: var.$rainbow-blue;
       }
 
       &.prev-month {
-        color: var.$user-role-color; // from dashboard.html CSS
+        color: var.$user-role-color;
       }
-    }
-  }
-
-  .new-reservation-btn {
-    background: #10b981; // from dashboard.html CSS (Bootstrap $green)
-    color: white; // from dashboard.html CSS
-    border: none; // from dashboard.html CSS
-    padding: 2px 6px; // from dashboard.html CSS
-    border-radius: 4px; // from dashboard.html CSS
-    font-size: 0.6rem; // from dashboard.html CSS
-    font-weight: 600; // from dashboard.html CSS
-    cursor: pointer; // from dashboard.html CSS
-    transition: all 0.3s ease; // from dashboard.html CSS
-    z-index: 2; // from dashboard.html CSS
-    height: 20px; // from dashboard.html CSS
-    display: flex; // from dashboard.html CSS
-    align-items: center; // from dashboard.html CSS
-    justify-content: center; // from dashboard.html CSS
-    white-space: nowrap; // from dashboard.html CSS
-
-    &:hover {
-      background: #059669; // from dashboard.html CSS (darker green)
-      transform: scale(1.05); // from dashboard.html CSS
     }
   }
 
   .calendar-appointments {
-    font-size: 0.7rem; // from dashboard.html CSS
-    line-height: 1.3; // from dashboard.html CSS
-    margin-top: 8px; // from dashboard.html CSS
-    margin-bottom: 25px; // from dashboard.html CSS
-    min-height: 60px; // from dashboard.html CSS
+    font-size: 0.7rem;
+    line-height: 1.3;
+    margin-top: 8px;
+    margin-bottom: 25px;
+    min-height: 60px;
   }
 
   .appointment-time {
-    display: block; // from dashboard.html CSS
-    padding: 2px 4px; // from dashboard.html CSS
-    margin-bottom: 2px; // from dashboard.html CSS
-    border-radius: 4px; // from dashboard.html CSS
-    white-space: nowrap; // from dashboard.html CSS
-    overflow: hidden; // from dashboard.html CSS
-    text-overflow: ellipsis; // from dashboard.html CSS
-    font-weight: 500; // from dashboard.html CSS
-    color: var.$orange-dark; // from dashboard.html CSS
-    text-decoration: none; // from dashboard.html CSS
-    cursor: pointer; // from dashboard.html CSS
-    transition: all 0.3s ease; // from dashboard.html CSS
+    display: block;
+    padding: 2px 4px;
+    margin-bottom: 2px;
+    border-radius: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+    color: var.$orange-dark;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
 
     &:hover {
-      background: var.$yellow-light; // from dashboard.html CSS
-      color: var.$orange-dark; // from dashboard.html CSS
-      text-decoration: none; // from dashboard.html CSS
+      background: var.$yellow-light;
+      color: var.$orange-dark;
+      text-decoration: none;
     }
   }
 
   .appointment-booked {
-    background: var.$yellow-lightest; // from dashboard.html CSS
-    color: var.$orange-dark; // from dashboard.html CSS
+    background: var.$yellow-lightest;
+    color: var.$orange-dark;
   }
 
   .appointment-new {
-    background: var.$blue-lightest; // from dashboard.html CSS
-    color: var.$blue-darker; // from dashboard.html CSS
-    font-weight: 600; // from dashboard.html CSS
+    background: var.$blue-lightest;
+    color: var.$blue-darker;
+    font-weight: 600;
   }
 
   .holiday-label {
-    color: var.$rainbow-red; // from dashboard.html CSS
-    font-size: 0.65rem; // from dashboard.html CSS
-    text-align: right; // from dashboard.html CSS
-    font-weight: 600; // from dashboard.html CSS
-    position: absolute; // from dashboard.html CSS
-    bottom: 4px; // from dashboard.html CSS
-    right: 4px; // from dashboard.html CSS
-    background: white; // from dashboard.html CSS
-    padding: 1px 3px; // from dashboard.html CSS
-    border-radius: 2px; // from dashboard.html CSS
+    color: var.$rainbow-red;
+    font-size: 0.65rem;
+    text-align: right;
+    font-weight: 600;
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background: white;
+    padding: 1px 3px;
+    border-radius: 2px;
   }
 
   .calendar-scroll-container {
-    width: 100%; // Explicitly set width to prevent interference with parent width calculation
-    overflow-x: auto; // from dashboard.html CSS
-    overflow-y: hidden; // from dashboard.html CSS
-    -webkit-overflow-scrolling: touch; // from dashboard.html CSS
-    scrollbar-width: none; // from dashboard.html CSS
-    -ms-overflow-style: none; // from dashboard.html CSS
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 
     &::-webkit-scrollbar {
-      display: none; // from dashboard.html CSS
+      display: none;
     }
   }
 
   .calendar-table-wrapper {
-    width: 100%; // from dashboard.html CSS
-    min-width: 100%; // from dashboard.html CSS
+    width: 100%;
+    min-width: 100%;
   }
 
   .calendar-pagination {
-    display: flex; // from dashboard.html CSS
-    justify-content: center; // from dashboard.html CSS
-    align-items: center; // from dashboard.html CSS
-    padding: 12px 0; // from dashboard.html CSS
-    gap: 8px; // from dashboard.html CSS
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 0;
+    gap: 8px;
   }
 
   .pagination-dot {
-    width: 8px; // from dashboard.html CSS
-    height: 8px; // from dashboard.html CSS
-    border-radius: 50%; // from dashboard.html CSS
-    background: var.$user-role-color; // from dashboard.html CSS
-    cursor: pointer; // from dashboard.html CSS
-    transition: all 0.3s ease; // from dashboard.html CSS
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var.$user-role-color;
+    cursor: pointer;
+    transition: all 0.3s ease;
 
     &.active {
-      background: var.$rainbow-blue; // from dashboard.html CSS
-      transform: scale(1.2); // from dashboard.html CSS
+      background: var.$rainbow-blue;
+      transform: scale(1.2);
     }
   }
 }
@@ -419,53 +376,48 @@
 @media (max-width: 768px) {
   .today-schedule {
     .section-header {
-      flex-direction: column; // from dashboard.html CSS
-      align-items: stretch; // from dashboard.html CSS
-      gap: 15px; // from dashboard.html CSS
+      flex-direction: column;
+      align-items: stretch;
+      gap: 15px;
     }
   }
 
   .schedule-grid {
-    grid-template-columns: 1fr; // from dashboard.html CSS
-    gap: 15px; // from dashboard.html CSS
+    grid-template-columns: 1fr;
+    gap: 15px;
   }
 
   .calendar-section {
     .calendar-header {
-      flex-direction: column; // from dashboard.html CSS
-      gap: 15px; // from dashboard.html CSS
-      align-items: stretch; // from dashboard.html CSS
+      flex-direction: column;
+      gap: 15px;
+      align-items: stretch;
     }
 
     .calendar-nav {
-      padding: 12px 15px; // from dashboard.html CSS
+      padding: 12px 15px;
     }
 
     .calendar-cell {
-      min-height: 100px; // from dashboard.html CSS
-      padding: 6px 4px; // from dashboard.html CSS
+      min-height: 100px;
+      padding: 6px 4px;
     }
 
     .calendar-date {
-      font-size: 0.75rem; // from dashboard.html CSS
+      font-size: 0.75rem;
     }
 
     .appointment-time {
-      font-size: 0.6rem; // from dashboard.html CSS
-    }
-
-    .new-reservation-btn {
-      font-size: 0.5rem; // from dashboard.html CSS
-      padding: 1px 3px; // from dashboard.html CSS
+      font-size: 0.6rem;
     }
 
     .calendar-scroll-container {
-      padding-bottom: 10px; // from dashboard.html CSS
-      overflow-x: auto; // Ensure scrolling is enabled on mobile
+      padding-bottom: 10px;
+      overflow-x: auto;
     }
 
     .calendar-table {
-      min-width: 500px; // from dashboard.html CSS
+      min-width: 500px;
     }
   }
 }
