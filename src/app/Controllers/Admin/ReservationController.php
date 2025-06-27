@@ -242,13 +242,6 @@ class ReservationController extends BaseController
     {
         helper(['form', 'app_form']);
 
-        // バリデーション実行
-        if (!$this->validate($this->getValidationRules())) {
-            return redirect()->back()
-                ->withInput()
-                ->with('errors', $this->validator->getErrors());
-        }
-
         $postData = $this->request->getPost();
         
         // データ整形
@@ -264,10 +257,12 @@ class ReservationController extends BaseController
                 return redirect()->to(route_to('admin.reservations.edit', $reservationId))
                     ->with('message', '予約を登録しました。');
             } else {
-                // モデルのエラーを取得
+                // モデルのバリデーションエラーを取得
                 $errors = $this->reservationModel->errors();
                 log_message('error', 'Model validation errors: ' . json_encode($errors));
-                throw new \Exception('データベースへの保存に失敗しました。バリデーションエラー: ' . implode(', ', $errors));
+                return redirect()->back()
+                    ->withInput()
+                    ->with('errors', $errors);
             }
         } catch (\Exception $e) {
             log_message('error', 'Reservation creation failed: ' . $e->getMessage());
@@ -321,13 +316,6 @@ class ReservationController extends BaseController
                 ->with('error', '指定された予約が見つかりません。');
         }
 
-        // バリデーション実行
-        if (!$this->validate($this->getValidationRules())) {
-            return redirect()->back()
-                ->withInput()
-                ->with('errors', $this->validator->getErrors());
-        }
-
         $postData = $this->request->getPost();
         
         // データ整形
@@ -340,7 +328,12 @@ class ReservationController extends BaseController
                 return redirect()->to(route_to('admin.reservations.edit', $id))
                     ->with('message', '予約情報を更新しました。');
             } else {
-                throw new \Exception('データベースの更新に失敗しました。');
+                // モデルのバリデーションエラーを取得
+                $errors = $this->reservationModel->errors();
+                log_message('error', 'Model validation errors: ' . json_encode($errors));
+                return redirect()->back()
+                    ->withInput()
+                    ->with('errors', $errors);
             }
         } catch (\Exception $e) {
             log_message('error', 'Reservation update failed: ' . $e->getMessage());
@@ -488,42 +481,5 @@ class ReservationController extends BaseController
             mt_rand(0, 0x3fff) | 0x8000,
             mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
         );
-    }
-
-    /**
-     * バリデーションルールを取得します。
-     */
-    private function getValidationRules(): array
-    {
-        return [
-            'reservation_status_id' => 'required|integer',
-            'work_type_id' => 'required|integer',
-            'shop_id' => 'required|integer',
-            'desired_date' => 'required|valid_date',
-            'customer_name' => 'required|string|max_length[50]',
-            'customer_kana' => 'permit_empty|string|max_length[50]',
-            'email' => 'required|valid_email|max_length[255]',
-            'phone_number1' => 'required|string|max_length[20]',
-            'phone_number2' => 'permit_empty|string|max_length[20]',
-            'postal_code' => 'permit_empty|string|max_length[8]',
-            'address' => 'permit_empty|string|max_length[255]',
-            'vehicle_license_region' => 'permit_empty|string|max_length[10]',
-            'vehicle_license_class' => 'permit_empty|string|max_length[5]',
-            'vehicle_license_kana' => 'permit_empty|string|max_length[5]',
-            'vehicle_license_number' => 'required|string|max_length[5]',
-            'vehicle_model_name' => 'required|string|max_length[50]',
-            'first_registration_date' => 'permit_empty|valid_date',
-            'shaken_expiration_date' => 'permit_empty|valid_date',
-            'model_spec_number' => 'permit_empty|string|max_length[10]',
-            'classification_number' => 'permit_empty|string|max_length[10]',
-            'loaner_name' => 'permit_empty|string|max_length[20]',
-            'customer_requests' => 'permit_empty|string',
-            'notes' => 'permit_empty|string',
-            'next_inspection_date' => 'permit_empty|valid_date',
-            'next_contact_date' => 'permit_empty|valid_date',
-            'line_display_name' => 'permit_empty|string|max_length[100]',
-            'reservation_start_time' => 'permit_empty|regex_match[/^([01]\d|2[0-3]):([0-5]\d)$/]',
-            'reservation_end_time' => 'permit_empty|regex_match[/^([01]\d|2[0-3]):([0-5]\d)$/]',
-        ];
     }
 }

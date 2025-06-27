@@ -89,39 +89,40 @@ if (!$validation->run($postData, 'user_create')) {
 }
 ```
 
-#### View（ビュー）
-- **ロジック禁止**: 複雑な条件分岐や計算はビューに記述しない
-- **セクション構成**: CodeIgniter のセクション機能を活用
-- **body_id**: レイアウトファイルで動的に設定
+#### **⚠️ 例外：認証系コントローラー**
+
+**UserController など CodeIgniter Shield 認証システムを使用するコントローラーは例外とする**
+
+Shield認証システムの特殊な実装要件により、以下のコントローラーではコントローラー側でのバリデーションを許可する：
+
+- `UserController.php` - ユーザー管理（Shield使用）
+- その他Shield関連のコントローラー
 
 ```php
-// ✅ 良い例
-<?= $this->extend('Layouts/admin_layout') ?>
+// ✅ Shield使用時は例外として許可
+class UserController extends BaseController
+{
+    public function create()
+    {
+        $rules = [
+            'full_name' => 'required|string|max_length[20]',
+            'email' => 'required|valid_email|is_unique[auth_identities.secret]',
+            // Shield特有のバリデーション
+        ];
 
-<?= $this->section('title') ?>
-    <?= esc($page_title) ?>
-<?= $this->endSection() ?>
-
-<?= $this->section('content') ?>
-    <div class="page-content">
-        <?php foreach ($users as $user): ?>
-            <div class="user-card">
-                <h3><?= esc($user->getDisplayName()) ?></h3>
-            </div>
-        <?php endforeach; ?>
-    </div>
-<?= $this->endSection() ?>
-
-// ❌ 悪い例（ビューに複雑なロジック）
-<?php
-$activeUsers = [];
-foreach ($users as $user) {
-    if ($user->is_active && strtotime($user->last_login) > strtotime('-30 days')) {
-        $activeUsers[] = $user;
+        if (!$this->validate($rules, $messages)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+        
+        // Shield特有の処理...
     }
 }
-?>
 ```
+
+**例外理由:**
+- Shield認証システムの複雑な実装要件
+- 標準的なモデルバリデーションでは対応困難な認証特有の処理
+- セキュリティ要件とフレームワーク制約のバランス
 
 ### 2.2 エラーハンドリング
 

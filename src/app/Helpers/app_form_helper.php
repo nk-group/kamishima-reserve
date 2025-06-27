@@ -12,7 +12,7 @@ if (! function_exists('flatpickr_input')) {
      * @param string $name inputのname属性
      * @param string $value 初期値
      * @param array  $attributes inputに追加する属性 (class, id, data-* など)
-     * @param string $type 'date', 'datetime', 'time', 'dynamic' (flatpickr-date-dynamic用)
+     * @param string $type 'date', 'datetime', 'time', 'month', 'dynamic' (flatpickr-date-dynamic用)
      * @return string HTML文字列
      */
     function flatpickr_input(string $name, string $value = '', array $attributes = [], string $type = 'date'): string
@@ -26,6 +26,9 @@ if (! function_exists('flatpickr_input')) {
                 break;
             case 'time':
                 $flatpickr_class = 'flatpickr-time';
+                break;
+            case 'month':
+                $flatpickr_class = 'flatpickr-month';
                 break;
             case 'dynamic': // 動的オプション用
                 $flatpickr_class = 'flatpickr-date-dynamic'; // JS側で定義したクラス名に合わせる
