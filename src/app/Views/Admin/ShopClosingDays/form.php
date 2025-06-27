@@ -102,14 +102,15 @@
                         <label for="closing_date" class="form-label">
                             休業日 <span class="required-mark">*</span>
                         </label>
-                        <?= form_input([
-                            'name' => 'closing_date',
-                            'id' => 'closing_date',
-                            'type' => 'date',
-                            'class' => 'form-control' . (isset($validation) && $validation->hasError('closing_date') ? ' is-invalid' : ''),
-                            'value' => old('closing_date', $form_data['closing_date'] ?? ''),
-                            'required' => true
-                        ]) ?>
+                        <?= flatpickr_input(
+                            'closing_date',
+                            old('closing_date', $form_data['closing_date'] ?? ''),
+                            [
+                                'class' => (isset($validation) && $validation->hasError('closing_date') ? 'is-invalid' : ''),
+                                'required' => true
+                            ],
+                            'date'
+                        ) ?>
                         <?php if (isset($validation) && $validation->hasError('closing_date')): ?>
                             <div class="invalid-feedback">
                                 <?= $validation->getError('closing_date') ?>
@@ -137,13 +138,14 @@
                     
                     <div class="col-md-4">
                         <label for="repeat_end_date" class="form-label">繰り返し終了日</label>
-                        <?= form_input([
-                            'name' => 'repeat_end_date',
-                            'id' => 'repeat_end_date',
-                            'type' => 'date',
-                            'class' => 'form-control' . (isset($validation) && $validation->hasError('repeat_end_date') ? ' is-invalid' : ''),
-                            'value' => old('repeat_end_date', $form_data['repeat_end_date'] ?? '')
-                        ]) ?>
+                        <?= flatpickr_input(
+                            'repeat_end_date',
+                            old('repeat_end_date', $form_data['repeat_end_date'] ?? ''),
+                            [
+                                'class' => (isset($validation) && $validation->hasError('repeat_end_date') ? 'is-invalid' : '')
+                            ],
+                            'date'
+                        ) ?>
                         <?php if (isset($validation) && $validation->hasError('repeat_end_date')): ?>
                             <div class="invalid-feedback">
                                 <?= $validation->getError('repeat_end_date') ?>

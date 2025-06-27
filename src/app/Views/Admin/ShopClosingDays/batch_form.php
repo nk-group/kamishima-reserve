@@ -116,14 +116,15 @@
                         <label for="start_date" class="form-label">
                             開始日 <span class="required-mark">*</span>
                         </label>
-                        <?= form_input([
-                            'name' => 'start_date',
-                            'id' => 'start_date',
-                            'type' => 'date',
-                            'class' => 'form-control' . (isset($validation) && $validation->hasError('start_date') ? ' is-invalid' : ''),
-                            'value' => old('start_date', $form_data['start_date']),
-                            'required' => true
-                        ]) ?>
+                        <?= flatpickr_input(
+                            'start_date',
+                            old('start_date', $form_data['start_date']),
+                            [
+                                'class' => (isset($validation) && $validation->hasError('start_date') ? 'is-invalid' : ''),
+                                'required' => true
+                            ],
+                            'date'
+                        ) ?>
                         <?php if (isset($validation) && $validation->hasError('start_date')): ?>
                             <div class="invalid-feedback">
                                 <?= $validation->getError('start_date') ?>
@@ -135,14 +136,15 @@
                         <label for="end_date" class="form-label">
                             終了日 <span class="required-mark">*</span>
                         </label>
-                        <?= form_input([
-                            'name' => 'end_date',
-                            'id' => 'end_date',
-                            'type' => 'date',
-                            'class' => 'form-control' . (isset($validation) && $validation->hasError('end_date') ? ' is-invalid' : ''),
-                            'value' => old('end_date', $form_data['end_date']),
-                            'required' => true
-                        ]) ?>
+                        <?= flatpickr_input(
+                            'end_date',
+                            old('end_date', $form_data['end_date']),
+                            [
+                                'class' => (isset($validation) && $validation->hasError('end_date') ? 'is-invalid' : ''),
+                                'required' => true
+                            ],
+                            'date'
+                        ) ?>
                         <?php if (isset($validation) && $validation->hasError('end_date')): ?>
                             <div class="invalid-feedback">
                                 <?= $validation->getError('end_date') ?>
@@ -177,13 +179,14 @@
                         <label for="repeat_end_date" class="form-label">
                             繰り返し終了日
                         </label>
-                        <?= form_input([
-                            'name' => 'repeat_end_date',
-                            'id' => 'repeat_end_date',
-                            'type' => 'date',
-                            'class' => 'form-control' . (isset($validation) && $validation->hasError('repeat_end_date') ? ' is-invalid' : ''),
-                            'value' => old('repeat_end_date', $form_data['repeat_end_date'])
-                        ]) ?>
+                        <?= flatpickr_input(
+                            'repeat_end_date',
+                            old('repeat_end_date', $form_data['repeat_end_date']),
+                            [
+                                'class' => (isset($validation) && $validation->hasError('repeat_end_date') ? 'is-invalid' : '')
+                            ],
+                            'date'
+                        ) ?>
                         <?php if (isset($validation) && $validation->hasError('repeat_end_date')): ?>
                             <div class="invalid-feedback">
                                 <?= $validation->getError('repeat_end_date') ?>
