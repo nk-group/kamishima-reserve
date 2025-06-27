@@ -163,6 +163,7 @@ yarn-debug.log*
 # Vite 開発環境関連（本番ビルドは管理対象）
 .vite/
 .vite-cache/
+/src/public/hot
 
 # テスト用ビルドファイル（Gitで管理しない）
 src/public/build-vite-test/

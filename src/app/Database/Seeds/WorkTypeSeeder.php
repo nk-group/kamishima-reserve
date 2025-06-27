@@ -121,10 +121,16 @@ class WorkTypeSeeder extends Seeder
             ],
         ];
 
-        // 既存データがある場合は削除してから挿入
+        // 外部キー制約を一時的に無効にする
+        $this->db->query('SET FOREIGN_KEY_CHECKS = 0');
+
+        // 既存データを削除（TRUNCATE）
         $this->db->table('work_types')->truncate();
         
         // データを挿入
         $this->db->table('work_types')->insertBatch($data);
+
+        // 外部キー制約を再度有効にする
+        $this->db->query('SET FOREIGN_KEY_CHECKS = 1');
     }
 }

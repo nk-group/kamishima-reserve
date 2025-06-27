@@ -53,7 +53,7 @@ if (auth()->loggedIn()) {
                         メンテナンス
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">休日管理</a></li>
+                        <li><a class="dropdown-item" href="<?= site_url(route_to('admin.shop-closing-days.index')) ?>">休日管理</a></li>
                         <li><a class="dropdown-item" href="#">リマインドメール状況</a></li>
                         <li><a class="dropdown-item" href="<?= site_url(route_to('admin.users.index')) ?>">ユーザー管理</a></li>
                         <li><a class="dropdown-item" href="#">データ一括削除</a></li>

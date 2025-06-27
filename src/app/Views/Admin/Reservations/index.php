@@ -178,7 +178,7 @@
                                 <th>車番</th>
                                 <th>作業種別</th>
                                 <th>作業店舗</th>
-                                <th>処理</th>
+                                <th>操作</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -206,13 +206,41 @@
                                     <td><?= esc($reservation->vehicle_model_name) ?></td>
                                     <td><?= esc($reservation->getFullLicensePlate()) ?></td>
                                     <td>
-                                        <?php 
+                                        <?php
                                         $workType = $reservation->getWorkType();
-                                        $workTypeClass = 'work-general';
-                                        if ($workType && $workType->getCode() === 'clear_shaken') $workTypeClass = 'work-clear';
-                                        elseif ($workType && in_array($workType->getCode(), ['general_maintenance', 'other'])) $workTypeClass = 'work-maintenance';
+                                        $backgroundColor = '#e9ecef'; // デフォルトの背景色
+                                        $textColor = '#495057';       // デフォルトのテキスト色
+                                        $borderStyle = '';            // デフォルトのボーダースタイル
+
+                                        if ($workType && !empty($workType->tag_color)) {
+                                            $bgColor = $workType->tag_color;
+                                            $backgroundColor = esc($bgColor, 'attr');
+
+                                            // 16進数カラーコードをRGBに変換
+                                            $hex = ltrim($bgColor, '#');
+                                            if (strlen($hex) === 3) {
+                                                $r = hexdec(str_repeat(substr($hex, 0, 1), 2));
+                                                $g = hexdec(str_repeat(substr($hex, 1, 1), 2));
+                                                $b = hexdec(str_repeat(substr($hex, 2, 1), 2));
+                                            } else {
+                                                $r = hexdec(substr($hex, 0, 2));
+                                                $g = hexdec(substr($hex, 2, 2));
+                                                $b = hexdec(substr($hex, 4, 2));
+                                            }
+
+                                            // 輝度を計算 (YIQ式)
+                                            $luminance = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+
+                                            // 輝度が128以上（明るい色）なら暗いテキスト、未満（暗い色）なら明るいテキスト
+                                            $textColor = ($luminance >= 128) ? '#343a40' : '#ffffff';
+
+                                            // 背景が白(#ffffff)の場合、薄いグレーの枠線を追加して視認性を確保
+                                            if (strtolower($bgColor) === '#ffffff') {
+                                                $borderStyle = 'border: 1px solid #dee2e6;';
+                                            }
+                                        }
                                         ?>
-                                        <span class="work-type-tag <?= $workTypeClass ?>">
+                                        <span class="work-type-tag" style="background-color: <?= $backgroundColor ?>; color: <?= $textColor ?>; <?= $borderStyle ?>">
                                             <?= $workType ? esc($workType->name) : '不明' ?>
                                         </span>
                                     </td>
