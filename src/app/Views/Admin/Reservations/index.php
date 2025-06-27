@@ -128,20 +128,7 @@
                 <div class="results-count">
                     検索結果：<?= number_format($pagination['total']) ?>件
                     <?php if (!empty($statistics['by_status'])): ?>
-                        <small class="text-muted ms-3">
-                            <?php foreach ($statistics['by_status'] as $stat): ?>
-                                <?php 
-                                $statusName = '';
-                                foreach ($reservation_statuses as $id => $name) {
-                                    if ($id == $stat['reservation_status_id']) {
-                                        $statusName = $name;
-                                        break;
-                                    }
-                                }
-                                ?>
-                                <?= esc($statusName) ?>: <?= number_format($stat['count']) ?>件　
-                            <?php endforeach; ?>
-                        </small>
+                        <small class="text-muted ms-3"><?php foreach ($statistics['by_status'] as $stat): ?><?= esc($stat['status_name']) ?>: <?= number_format($stat['count']) ?>件　<?php endforeach; ?></small>
                     <?php endif; ?>
                 </div>
                 <a href="<?= route_to('admin.reservations.new') ?>" class="btn-create-new">
@@ -186,14 +173,16 @@
                                 <tr>
                                     <td><?= esc($reservation->reservation_no) ?></td>
                                     <td>
-                                        <?php 
-                                        $statusClass = 'status-pending';
-                                        if ($reservation->reservation_status_id == 2) $statusClass = 'status-confirmed';
-                                        elseif ($reservation->reservation_status_id == 3) $statusClass = 'status-completed';
-                                        elseif ($reservation->reservation_status_id == 9) $statusClass = 'status-canceled';
+                                        <?php
+                                        $status = $reservation->getReservationStatus();
+                                        $statusClass = 'status-unknown'; // デフォルトクラス
+                                        if ($status) {
+                                            // 'pending' -> 'status-pending' のように動的にクラス名を生成
+                                            $statusClass = 'status-' . esc($status->getCode(), 'attr');
+                                        }
                                         ?>
                                         <span class="status-badge <?= $statusClass ?>">
-                                            <?= esc($reservation_statuses[$reservation->reservation_status_id] ?? '不明') ?>
+                                            <?= $status ? esc($status->name) : '不明' ?>
                                         </span>
                                     </td>
                                     <td>
@@ -254,7 +243,7 @@
                                         <a href="<?= route_to('admin.reservations.edit', $reservation->id) ?>" class="btn-action btn-edit">
                                             修正
                                         </a>
-                                        <?php if ($reservation->reservation_status_id != 3): ?>
+                                        <?php if (!$reservation->isCompleted()): ?>
                                             <button type="button" class="btn-action btn-complete" 
                                                     onclick="markAsComplete(<?= $reservation->id ?>)">
                                                 完了

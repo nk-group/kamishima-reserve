@@ -26,7 +26,7 @@ class ReserveStatusModel extends Model
     /**
      * 予約ステータスの定数: キャンセル
      */
-    public const STATUS_CODE_CANCELLED = 'cancelled';
+    public const STATUS_CODE_CANCELED = 'canceled';
 
     /**
      * 対応するデータベーステーブル名
@@ -51,7 +51,7 @@ class ReserveStatusModel extends Model
      * モデルが返すデータの型
      * @var string
      */
-    protected $returnType = 'array'; // または 'object'
+    protected $returnType = \App\Entities\ReserveStatusEntity::class;
 
     /**
      * ソフトデリートを使用しない

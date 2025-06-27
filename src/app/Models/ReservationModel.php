@@ -5,6 +5,7 @@ namespace App\Models;
 use CodeIgniter\Model;
 use App\Entities\ReservationEntity;
 use CodeIgniter\I18n\Time;
+use App\Enums\ReserveStatusCode;
 
 class ReservationModel extends Model
 {
@@ -251,16 +252,19 @@ class ReservationModel extends Model
 
             case 'incomplete':
                 // 未完了（未確定 + 予約確定）
-                $model->whereIn('reservation_status_id', [1, 2]); // pending, confirmed
+                $model->whereIn('reservation_status_id', [
+                    ReserveStatusCode::PENDING->id(), 
+                    ReserveStatusCode::CONFIRMED->id()
+                ]);
                 break;
 
             case 'this_month_completed':
                 // 今月整備完了予定
                 $firstDay = date('Y-m-01');
                 $lastDay = date('Y-m-t');
-                $model->where('desired_date >=', $firstDay)
-                      ->where('desired_date <=', $lastDay)
-                      ->where('reservation_status_id', 3); // completed
+                $model->where('desired_date >=', $firstDay);
+                $model->where('desired_date <=', $lastDay);
+                $model->where('reservation_status_id', ReserveStatusCode::COMPLETED->id());
                 break;
 
             case 'main_shop':

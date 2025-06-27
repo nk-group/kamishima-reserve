@@ -157,4 +157,15 @@ class ReservationEntity extends Entity
             ($this->attributes['vehicle_license_number'] ?? '')
         );
     }
+
+    /**
+     * この予約が「作業完了」ステータスかどうかを判定します。
+     * @return bool
+     */
+    public function isCompleted(): bool
+    {
+        $status = $this->getReservationStatus();
+        // 関連エンティティが取得でき、かつそのステータスが 'completed' かどうか
+        return $status && $status->isCompleted();
+    }
 }

@@ -9,6 +9,7 @@ use App\Models\WorkTypeModel;
 use App\Models\ShopModel;
 use App\Models\TimeSlotModel;
 use App\Models\VehicleTypeModel;
+use App\Enums\WorkTypeCode; // WorkTypeCode を使用するために追加
 
 class ReservationController extends BaseController
 {
@@ -49,6 +50,13 @@ class ReservationController extends BaseController
         // 統計情報取得
         $statistics = $this->reservationModel->getStatistics($searchParams);
 
+        // 統計情報にステータス名を追加
+        $statusList = $this->reserveStatusModel->getListForForm();
+        foreach ($statistics['by_status'] as &$stat) {
+            $stat['status_name'] = $statusList[$stat['reservation_status_id']] ?? '不明';
+        }
+        unset($stat); // ループ後の参照を解除
+
         $data = [
             'page_title' => '予約検索／一覧 | 車検予約管理システム',
             'h1_title' => '予約検索／一覧',
@@ -65,7 +73,6 @@ class ReservationController extends BaseController
             // フォーム用選択肢
             'work_types' => $this->workTypeModel->findActive(),
             'shops' => $this->shopModel->findActiveShops(),
-            'reservation_statuses' => $this->reserveStatusModel->getListForForm(),
             
             // クイック検索定義
             'quick_searches' => $this->getQuickSearchDefinitions(),
