@@ -56,9 +56,9 @@ class ShopClosingDaysSeeder extends Seeder
         // 一括挿入
         $this->db->table('shop_closing_days')->insertBatch($data);
 
-        echo "定休日マスタのシードデータを登録しました。\n";
-        echo "- Clear車検: 毎週火曜日\n";
-        echo "- 本社工場: 毎週火曜日\n";
-        echo "- モーターショップカミシマ: 毎週水曜日\n";
+        //echo "定休日マスタのシードデータを登録しました。\n";
+        //echo "- Clear車検: 毎週火曜日\n";
+        //echo "- 本社工場: 毎週火曜日\n";
+        //echo "- モーターショップカミシマ: 毎週水曜日\n";
     }
 }

@@ -62,7 +62,7 @@ class CreateWorkTypesTable extends Migration
         
         $this->forge->addKey('id', true); // 主キー
         $this->forge->addKey('code', false, true); // UNIQUEキー
-        $this->forge->addKey('code'); // INDEX
+        //$this->forge->addKey('code'); // INDEX
         $this->forge->addKey('count_category'); // INDEX（集計クエリの高速化）
         
         $this->forge->createTable('work_types');
