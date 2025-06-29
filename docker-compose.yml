@@ -34,11 +34,13 @@ services:
     networks:
       - app-network
 
-  # データベース (MySQL) サービス
+  # データベース (MySQL) サービス - Apple Silicon対応
   db:
     image: mysql:5.7 # MySQLバージョン指定
+    platform: linux/amd64 # Apple Silicon対応: x86_64エミュレーション
     container_name: kamishima_db
     #restart: always
+    command: --innodb_use_native_aio=0 # Apple Silicon対応: AIOを無効化
     environment:
       MYSQL_DATABASE: ${DB_DATABASE:-kamishima_db}
       MYSQL_USER: ${DB_USERNAME:-user}
@@ -55,7 +57,7 @@ services:
 
   # phpMyAdmin サービス
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin:5.2 # phpMyAdminバージョン指定
+    image: phpmyadmin:5.2 # phpMyAdminバージョン指定（ARM64対応版）
     container_name: kamishima_phpmyadmin
     #restart: always
     environment:

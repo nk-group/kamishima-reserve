@@ -218,7 +218,7 @@ src/public/build-vite.backup.*
 *.db
 
 # 一般的な設定ファイル
-*.conf
+#*.conf
 *.config
 config.php
 
