@@ -1,7 +1,7 @@
 # プロジェクト コーディング規約書
 
-**最終更新日:** 2025年6月26日  
-**バージョン:** 1.0
+**最終更新日:** 2025年6月30日  
+**バージョン:** 1.1
 
 ## 1. 基本方針
 
@@ -124,10 +124,182 @@ class UserController extends BaseController
 - 標準的なモデルバリデーションでは対応困難な認証特有の処理
 - セキュリティ要件とフレームワーク制約のバランス
 
-### 2.2 エラーハンドリング
+### 2.2 バリデーション表示統一規約
+
+プロジェクト全体でバリデーションエラー表示の一貫性を保つため、以下の規約に従う。
+
+#### 上部エラー表示の統一
+すべてのフォームページで `_alert_messages` パーシャルを使用する。
+
+```php
+// ✅ 良い例：統一されたエラー表示
+<?= $this->section('content') ?>
+    <div class="page-content">
+        <?= $this->include('Partials/_alert_messages') ?>
+        
+        <?= form_open($form_action) ?>
+            <!-- フォームフィールド -->
+        <?= form_close() ?>
+    </div>
+<?= $this->endSection() ?>
+
+// ❌ 悪い例：直接記述パターン
+<?php if (isset($validation) && $validation->getErrors()): ?>
+    <div class="alert alert-danger">
+        <h6>入力エラーがあります</h6>
+        <ul>
+            <?php foreach ($validation->getErrors() as $error): ?>
+                <li><?= esc($error) ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+```
+
+#### 個別フィールドエラー表示の統一
+各フィールドには統一されたバリデーションパターンを適用する。
+
+```php
+// ✅ 良い例：統一されたフィールドバリデーション
+<div class="form-group">
+    <label for="shop_id" class="form-label">
+        店舗 <span class="required-mark">※</span>
+    </label>
+    <?= form_dropdown(
+        'shop_id',
+        $shops,
+        old('shop_id', $form_data['shop_id'] ?? ''),
+        [
+            'class' => 'form-select' . (isset($validation) && $validation->hasError('shop_id') ? ' is-invalid' : ''),
+            'id' => 'shop_id',
+            'required' => true
+        ]
+    ) ?>
+    <?php if (isset($validation) && $validation->hasError('shop_id')): ?>
+        <div class="invalid-feedback">
+            <?= $validation->getError('shop_id') ?>
+        </div>
+    <?php endif; ?>
+</div>
+```
+
+#### 必須マークの統一
+すべてのフォームで必須項目のマークを統一する。
+
+```php
+// ✅ 良い例：統一された必須マーク
+<label for="field_name" class="form-label">
+    項目名 <span class="required-mark">※</span>
+</label>
+
+// ❌ 悪い例：混在パターン
+<span class="text-danger">※</span>
+<span class="text-danger">*</span>
+```
+
+#### コントローラー側でのエラー連携
+`_alert_messages` パーシャルとの連携のため、エラーは以下の形式で渡す。
+
+```php
+// ✅ 良い例：_alert_messages パーシャル連携
+return redirect()->back()
+    ->withInput()
+    ->with('errors', $this->modelName->errors());
+
+// または単一エラーメッセージ
+return redirect()->back()
+    ->withInput()
+    ->with('error', 'エラーメッセージ');
+```
+
+### 2.3 エラーハンドリング統一規約
+
+プロジェクト全体でエラーハンドリングの一貫性を保つため、以下の統一パターンに従う。
+
+#### 基本パターン
+すべてのコントローラーで以下の統一されたエラーハンドリングパターンを使用する。
+
+```php
+// ✅ 良い例：統一されたエラーハンドリング
+try {
+    if ($this->modelName->save($data)) {
+        return redirect()->to('/target-url')
+                       ->with('message', '操作が完了しました。');
+    } else {
+        $errors = $this->modelName->errors();
+        return redirect()->back()
+                       ->withInput()
+                       ->with('errors', $errors);
+    }
+} catch (\Throwable $e) {
+    log_message('error', '[' . __CLASS__ . '::' . __FUNCTION__ . '] Operation failed: ' . $e->getMessage());
+    
+    if (ENVIRONMENT === 'development') {
+        log_message('debug', '[' . __CLASS__ . '::' . __FUNCTION__ . '] File: ' . $e->getFile() . ', Line: ' . $e->getLine());
+    }
+    
+    return redirect()->back()
+        ->withInput()
+        ->with('error', '処理に失敗しました。再度お試しください。');
+}
+```
+
+#### エラーキャッチの統一
+- **`\Throwable` を使用**: `\Exception` と `\Error` の両方を捕捉
+- **`\Exception` や `\RuntimeException` 単体の使用禁止**
 
 ```php
 // ✅ 良い例
+catch (\Throwable $e) {
+    // 包括的なエラーキャッチ
+}
+
+// ❌ 悪い例
+catch (\Exception $e) {
+    // Error クラスの例外を捕捉できない
+}
+
+catch (\RuntimeException $e) {
+    // 特定例外のみで、他の例外が漏れる可能性
+}
+```
+
+#### ログ出力の統一
+- **基本ログ**: `[ClassName::methodName] operation failed: message` 形式
+- **開発環境詳細ログ**: ファイル名・行番号を追加出力
+
+```php
+// ✅ 良い例：統一されたログ形式
+log_message('error', '[' . __CLASS__ . '::' . __FUNCTION__ . '] User creation failed: ' . $e->getMessage());
+
+if (ENVIRONMENT === 'development') {
+    log_message('debug', '[' . __CLASS__ . '::' . __FUNCTION__ . '] File: ' . $e->getFile() . ', Line: ' . $e->getLine());
+}
+
+// ❌ 悪い例：非統一のログ形式
+log_message('error', 'User creation failed: ' . $e->getMessage());
+log_message('error', 'Failed data: ' . json_encode($userData)); // 冗長
+```
+
+#### ユーザー向けメッセージの統一
+- **汎用的で安全なメッセージ**: 技術的詳細を含まない
+- **一貫性のある文言**: 操作毎に統一されたメッセージ
+
+```php
+// ✅ 良い例：統一されたメッセージ
+->with('error', '登録に失敗しました。再度お試しください。');
+->with('error', '更新に失敗しました。再度お試しください。');
+->with('error', '削除に失敗しました。再度お試しください。');
+
+// ❌ 悪い例：非統一・技術的詳細含む
+->with('error', 'Database error occurred');
+->with('error', $e->getMessage()); // 技術的エラーメッセージをそのまま表示
+```
+
+### 2.4 従来のエラーハンドリング（参考）
+
+```php
+// 参考：従来のエラーハンドリング例
 try {
     if ($this->userModel->save($data)) {
         return redirect()->to('/admin/users')
@@ -145,7 +317,7 @@ try {
 }
 ```
 
-### 2.3 デバッグコードの禁止
+### 2.5 デバッグコードの禁止
 
 ```php
 // ❌ 本番環境に残してはいけないコード
@@ -521,6 +693,10 @@ export function initShopClosingDaysBatch() { /* 一括作成専用 */ }
 - [ ] コントローラーにビジネスロジックが含まれていないか
 - [ ] body_id が適切に設定されているか
 - [ ] デバッグコードが残っていないか
+- [ ] **バリデーション表示が統一パターンに従っているか**
+- [ ] **エラーハンドリングが統一パターンに従っているか**
+- [ ] **必須マークが `<span class="required-mark">※</span>` で統一されているか**
+- [ ] **`_alert_messages` パーシャルが使用されているか**
 
 **JavaScript**
 - [ ] SCSS/JS ファイルが機能毎にフォルダ分割されているか

@@ -16,25 +16,7 @@
 <?= $this->section('content') ?>
     <div class="page-content shop-closing-days-form">
         
-        <?php // バリデーションエラー表示 ?>
-        <?php if (isset($validation) && $validation->getErrors()): ?>
-            <div class="alert alert-danger">
-                <h6><i class="bi bi-exclamation-triangle-fill"></i> 入力エラーがあります</h6>
-                <ul class="mb-0">
-                    <?php foreach ($validation->getErrors() as $error): ?>
-                        <li><?= esc($error) ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        <?php endif; ?>
-
-        <?php if (session()->getFlashdata('error')): ?>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                <?= session()->getFlashdata('error') ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
+        <?= $this->include('Partials/_alert_messages') ?>
 
         <?= form_open($form_action ?? 'admin/shop-closing-days/create', ['class' => 'needs-validation', 'novalidate' => true]) ?>
             

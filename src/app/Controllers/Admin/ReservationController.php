@@ -264,9 +264,13 @@ class ReservationController extends BaseController
                     ->withInput()
                     ->with('errors', $errors);
             }
-        } catch (\Exception $e) {
-            log_message('error', 'Reservation creation failed: ' . $e->getMessage());
-            log_message('error', 'Failed data: ' . json_encode($reservationData));
+        } catch (\Throwable $e) {
+            log_message('error', '[' . __CLASS__ . '::' . __FUNCTION__ . '] Reservation creation failed: ' . $e->getMessage());
+            
+            if (ENVIRONMENT === 'development') {
+                log_message('debug', '[' . __CLASS__ . '::' . __FUNCTION__ . '] File: ' . $e->getFile() . ', Line: ' . $e->getLine());
+            }
+            
             return redirect()->back()
                 ->withInput()
                 ->with('error', '予約の登録に失敗しました。再度お試しください。');
@@ -335,8 +339,13 @@ class ReservationController extends BaseController
                     ->withInput()
                     ->with('errors', $errors);
             }
-        } catch (\Exception $e) {
-            log_message('error', 'Reservation update failed: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            log_message('error', '[' . __CLASS__ . '::' . __FUNCTION__ . '] Reservation update failed: ' . $e->getMessage());
+            
+            if (ENVIRONMENT === 'development') {
+                log_message('debug', '[' . __CLASS__ . '::' . __FUNCTION__ . '] File: ' . $e->getFile() . ', Line: ' . $e->getLine());
+            }
+            
             return redirect()->back()
                 ->withInput()
                 ->with('error', '予約の更新に失敗しました。再度お試しください。');
@@ -364,8 +373,13 @@ class ReservationController extends BaseController
             } else {
                 throw new \Exception('データベースからの削除に失敗しました。');
             }
-        } catch (\Exception $e) {
-            log_message('error', 'Reservation deletion failed: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            log_message('error', '[' . __CLASS__ . '::' . __FUNCTION__ . '] Reservation deletion failed: ' . $e->getMessage());
+            
+            if (ENVIRONMENT === 'development') {
+                log_message('debug', '[' . __CLASS__ . '::' . __FUNCTION__ . '] File: ' . $e->getFile() . ', Line: ' . $e->getLine());
+            }
+            
             return redirect()->to(route_to('admin.reservations.index'))
                 ->with('error', '予約の削除に失敗しました。再度お試しください。');
         }

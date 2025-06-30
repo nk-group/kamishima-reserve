@@ -202,8 +202,8 @@
 
             <?php // ページネーション ?>
             <?php if ($total > $per_page): ?>
-                <div class="d-flex justify-content-center">
-                    <?= $pager->makeLinks($current_page, $per_page, $total, 'bootstrap4') ?>
+                <div class="pagination-container">
+                    <?= $pager->links('default', 'default_full') ?>
                 </div>
             <?php endif; ?>
         </div>

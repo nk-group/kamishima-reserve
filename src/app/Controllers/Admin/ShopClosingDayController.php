@@ -25,8 +25,8 @@ class ShopClosingDayController extends BaseController
      */
     public function index()
     {
-        $page = (int)($this->request->getGet('page') ?? 1);
-        
+        $perPage = 20;
+
         // 検索条件
         $filters = [
             'shop_id' => $this->request->getGet('shop_id'),
@@ -34,50 +34,43 @@ class ShopClosingDayController extends BaseController
             'repeat_type' => $this->request->getGet('repeat_type'),
             'is_active' => $this->request->getGet('is_active'),
         ];
-        
-        $perPage = 20;
-        $page = max(1, $page ?? 1);
-        
-        // データ取得
-        if (!empty(array_filter($filters))) {
-            // フィルター条件がある場合
-            $closingDays = $this->shopClosingDayModel->searchClosingDays($filters);
-            $total = count($closingDays);
-            
-            // 手動でページネーション
-            $offset = ($page - 1) * $perPage;
-            $closingDays = array_slice($closingDays, $offset, $perPage);
-        } else {
-            // 全件取得（ページネーション付き）
-            $total = $this->shopClosingDayModel->countAllResults(false);
-            $closingDays = $this->shopClosingDayModel
-                ->orderBy('shop_id', 'ASC')
-                ->orderBy('closing_date', 'ASC')
-                ->paginate($perPage, 'default', $page);
+        // 空の値をフィルタから除去
+        $cleanFilters = array_filter($filters, fn($value) => $value !== null && $value !== '');
+
+        // モデルのクエリビルダを準備
+        $builder = $this->shopClosingDayModel;
+
+        if (!empty($cleanFilters['shop_id'])) {
+            $builder->where('shop_id', $cleanFilters['shop_id']);
+        }
+        if (!empty($cleanFilters['holiday_name'])) {
+            $builder->like('holiday_name', $cleanFilters['holiday_name']);
+        }
+        if (isset($cleanFilters['repeat_type']) && $cleanFilters['repeat_type'] !== '') {
+            $builder->where('repeat_type', $cleanFilters['repeat_type']);
+        }
+        if (isset($cleanFilters['is_active']) && $cleanFilters['is_active'] !== '') {
+            $builder->where('is_active', $cleanFilters['is_active']);
         }
         
-        // 店舗一覧を取得（フィルター用）
-        $shops = get_shop_list_for_select();
-        
-        // ページネーション設定
-        $pager = \Config\Services::pager();
-        $pager->setPath('admin/shop-closing-days');
+        // ソート順
+        $builder->orderBy('shop_id', 'ASC')->orderBy('closing_date', 'ASC');
+
+        // ページネーション付きでデータを取得
+        $closingDays = $builder->paginate($perPage);
+        $pager = $this->shopClosingDayModel->pager;
         
         $data = [
-            'page_title' => '定休日マスタ',
-            'h1_title' => '定休日マスタ',
-            'body_id' => 'page-admin-shop-closing-days-index',
             'closing_days' => $closingDays,
-            'shops' => $shops,
+            'shops' => get_shop_list_for_select(),
             'filters' => $filters,
             'pager' => $pager,
-            'total' => $total,
-            'current_page' => $page,
+            'total' => $pager->getTotal(),
             'per_page' => $perPage,
             'repeat_type_options' => $this->shopClosingDayModel::getRepeatTypeOptions()
         ];
 
-        return view('Admin/ShopClosingDays/index', $data);
+        return $this->render('Admin/ShopClosingDays/index', $data);
     }
 
     /**
@@ -95,7 +88,7 @@ class ShopClosingDayController extends BaseController
             'validation' => session()->get('validation')
         ];
 
-        return view('Admin/ShopClosingDays/form', $data);
+        return $this->render('Admin/ShopClosingDays/form', $data);
     }
 
     /**
@@ -117,7 +110,7 @@ class ShopClosingDayController extends BaseController
 
         try {
             if ($this->shopClosingDayModel->save($data)) {
-                return redirect()->to('/admin/shop-closing-days')
+                return redirect()->to(route_to('admin.shop-closing-days.index'))
                                ->with('success', '定休日を登録しました。');
             } else {
                 // モデルのバリデーションエラーを取得
@@ -126,10 +119,16 @@ class ShopClosingDayController extends BaseController
                                ->withInput()
                                ->with('errors', $errors);
             }
-        } catch (\RuntimeException $e) {
+        } catch (\Throwable $e) {
+            log_message('error', '[' . __CLASS__ . '::' . __FUNCTION__ . '] Closing day creation failed: ' . $e->getMessage());
+            
+            if (ENVIRONMENT === 'development') {
+                log_message('debug', '[' . __CLASS__ . '::' . __FUNCTION__ . '] File: ' . $e->getFile() . ', Line: ' . $e->getLine());
+            }
+            
             return redirect()->back()
                            ->withInput()
-                           ->with('error', $e->getMessage());
+                           ->with('error', '定休日の登録に失敗しました。再度お試しください。');
         }
     }
 
@@ -141,7 +140,7 @@ class ShopClosingDayController extends BaseController
         $closingDay = $this->shopClosingDayModel->find($id);
         
         if (!$closingDay) {
-            return redirect()->to('/admin/shop-closing-days')
+            return redirect()->to(route_to('admin.shop-closing-days.index'))
                            ->with('error', '指定された定休日が見つかりません。');
         }
 
@@ -155,7 +154,7 @@ class ShopClosingDayController extends BaseController
             'validation' => session()->get('validation')
         ];
 
-        return view('Admin/ShopClosingDays/form', $data);
+        return $this->render('Admin/ShopClosingDays/form', $data);
     }
 
     /**
@@ -166,7 +165,7 @@ class ShopClosingDayController extends BaseController
         $closingDay = $this->shopClosingDayModel->find($id);
         
         if (!$closingDay) {
-            return redirect()->to('/admin/shop-closing-days')
+            return redirect()->to(route_to('admin.shop-closing-days.index'))
                            ->with('error', '指定された定休日が見つかりません。');
         }
 
@@ -185,7 +184,7 @@ class ShopClosingDayController extends BaseController
 
         try {
             if ($this->shopClosingDayModel->update($id, $data)) {
-                return redirect()->to('/admin/shop-closing-days')
+                return redirect()->to(route_to('admin.shop-closing-days.index'))
                                ->with('success', '定休日を更新しました。');
             } else {
                 // モデルのバリデーションエラーを取得
@@ -194,10 +193,16 @@ class ShopClosingDayController extends BaseController
                                ->withInput()
                                ->with('errors', $errors);
             }
-        } catch (\RuntimeException $e) {
+        } catch (\Throwable $e) {
+            log_message('error', '[' . __CLASS__ . '::' . __FUNCTION__ . '] Closing day update failed: ' . $e->getMessage());
+            
+            if (ENVIRONMENT === 'development') {
+                log_message('debug', '[' . __CLASS__ . '::' . __FUNCTION__ . '] File: ' . $e->getFile() . ', Line: ' . $e->getLine());
+            }
+            
             return redirect()->back()
                            ->withInput()
-                           ->with('error', $e->getMessage());
+                           ->with('error', '定休日の更新に失敗しました。再度お試しください。');
         }
     }
 
@@ -209,16 +214,26 @@ class ShopClosingDayController extends BaseController
         $closingDay = $this->shopClosingDayModel->find($id);
         
         if (!$closingDay) {
-            return redirect()->to('/admin/shop-closing-days')
+            return redirect()->to(route_to('admin.shop-closing-days.index'))
                            ->with('error', '指定された定休日が見つかりません。');
         }
 
-        if ($this->shopClosingDayModel->delete($id)) {
-            return redirect()->to('/admin/shop-closing-days')
-                           ->with('success', '定休日を削除しました。');
-        } else {
-            return redirect()->to('/admin/shop-closing-days')
-                           ->with('error', '削除に失敗しました。');
+        try {
+            if ($this->shopClosingDayModel->delete($id)) {
+                return redirect()->to(route_to('admin.shop-closing-days.index'))
+                               ->with('success', '定休日を削除しました。');
+            } else {
+                throw new \Exception('データベースからの削除に失敗しました。');
+            }
+        } catch (\Throwable $e) {
+            log_message('error', '[' . __CLASS__ . '::' . __FUNCTION__ . '] Closing day deletion failed: ' . $e->getMessage());
+            
+            if (ENVIRONMENT === 'development') {
+                log_message('debug', '[' . __CLASS__ . '::' . __FUNCTION__ . '] File: ' . $e->getFile() . ', Line: ' . $e->getLine());
+            }
+            
+            return redirect()->to(route_to('admin.shop-closing-days.index'))
+                           ->with('error', '定休日の削除に失敗しました。再度お試しください。');
         }
     }
 
@@ -267,17 +282,23 @@ class ShopClosingDayController extends BaseController
             );
 
             if ($result['success']) {
-                return redirect()->to('/admin/shop-closing-days')
+                return redirect()->to(route_to('admin.shop-closing-days.index'))
                                ->with('success', $result['message']);
             } else {
                 return redirect()->back()
                                ->withInput()
                                ->with('error', $result['message']);
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            log_message('error', '[' . __CLASS__ . '::' . __FUNCTION__ . '] Batch creation failed: ' . $e->getMessage());
+            
+            if (ENVIRONMENT === 'development') {
+                log_message('debug', '[' . __CLASS__ . '::' . __FUNCTION__ . '] File: ' . $e->getFile() . ', Line: ' . $e->getLine());
+            }
+            
             return redirect()->back()
                            ->withInput()
-                           ->with('error', '一括作成に失敗しました: ' . $e->getMessage());
+                           ->with('error', '一括作成に失敗しました。再度お試しください。');
         }
     }
 

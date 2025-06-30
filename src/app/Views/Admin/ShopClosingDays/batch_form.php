@@ -30,25 +30,7 @@
             </p>
         </div>
 
-        <?php // バリデーションエラー表示 ?>
-        <?php if (isset($validation) && $validation->getErrors()): ?>
-            <div class="alert alert-danger">
-                <h6><i class="bi bi-exclamation-triangle-fill"></i> 入力エラーがあります</h6>
-                <ul class="mb-0">
-                    <?php foreach ($validation->getErrors() as $error): ?>
-                        <li><?= esc($error) ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        <?php endif; ?>
-
-        <?php if (session()->getFlashdata('error')): ?>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                <?= session()->getFlashdata('error') ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
+        <?= $this->include('Partials/_alert_messages') ?>
 
         <?= form_open('admin/shop-closing-days/batch-create', ['class' => 'needs-validation', 'novalidate' => true]) ?>
             
@@ -121,6 +103,7 @@
                             old('start_date', $form_data['start_date']),
                             [
                                 'class' => (isset($validation) && $validation->hasError('start_date') ? 'is-invalid' : ''),
+                                'id' => 'start_date',
                                 'required' => true
                             ],
                             'date'
@@ -141,6 +124,7 @@
                             old('end_date', $form_data['end_date']),
                             [
                                 'class' => (isset($validation) && $validation->hasError('end_date') ? 'is-invalid' : ''),
+                                'id' => 'end_date',
                                 'required' => true
                             ],
                             'date'
@@ -150,11 +134,12 @@
                                 <?= $validation->getError('end_date') ?>
                             </div>
                         <?php endif; ?>
+                        <div class="form-help">開始日から終了日まで全ての日が対象になります</div>
                     </div>
                     
                     <div class="col-md-4">
                         <label for="repeat_type" class="form-label">
-                            繰り返し種別 <span class="required-mark">※</span>
+                            繰り返し種別 <span class="required-mark">*</span>
                         </label>
                         <?= form_dropdown(
                             'repeat_type',
@@ -175,15 +160,16 @@
                 </div>
                 
                 <div class="row mt-3">
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label for="repeat_end_date" class="form-label">
-                            繰り返し終了日
+                            繰り返し終了日 (任意)
                         </label>
                         <?= flatpickr_input(
                             'repeat_end_date',
-                            old('repeat_end_date', $form_data['repeat_end_date']),
+                            old('repeat_end_date', $form_data['repeat_end_date'] ?? ''),
                             [
-                                'class' => (isset($validation) && $validation->hasError('repeat_end_date') ? 'is-invalid' : '')
+                                'class' => (isset($validation) && $validation->hasError('repeat_end_date') ? 'is-invalid' : ''),
+                                'id' => 'repeat_end_date'
                             ],
                             'date'
                         ) ?>
