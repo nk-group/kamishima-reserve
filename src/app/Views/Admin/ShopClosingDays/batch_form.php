@@ -62,7 +62,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label for="shop_id" class="form-label">
-                            店舗 <span class="required-mark">*</span>
+                            店舗 <span class="required-mark">※</span>
                         </label>
                         <?= form_dropdown(
                             'shop_id',
@@ -83,7 +83,7 @@
                     
                     <div class="col-md-6">
                         <label for="holiday_name" class="form-label">
-                            定休日名 <span class="required-mark">*</span>
+                            定休日名 <span class="required-mark">※</span>
                         </label>
                         <?= form_input([
                             'name' => 'holiday_name',
@@ -114,7 +114,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <label for="start_date" class="form-label">
-                            開始日 <span class="required-mark">*</span>
+                            開始日 <span class="required-mark">※</span>
                         </label>
                         <?= flatpickr_input(
                             'start_date',
@@ -134,7 +134,7 @@
                     
                     <div class="col-md-4">
                         <label for="end_date" class="form-label">
-                            終了日 <span class="required-mark">*</span>
+                            終了日 <span class="required-mark">※</span>
                         </label>
                         <?= flatpickr_input(
                             'end_date',
@@ -154,7 +154,7 @@
                     
                     <div class="col-md-4">
                         <label for="repeat_type" class="form-label">
-                            繰り返し種別 <span class="required-mark">*</span>
+                            繰り返し種別 <span class="required-mark">※</span>
                         </label>
                         <?= form_dropdown(
                             'repeat_type',

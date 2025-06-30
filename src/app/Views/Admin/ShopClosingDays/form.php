@@ -48,7 +48,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label for="shop_id" class="form-label">
-                            店舗 <span class="required-mark">*</span>
+                            店舗 <span class="required-mark">※</span>
                         </label>
                         <?= form_dropdown(
                             'shop_id',
@@ -69,7 +69,7 @@
                     
                     <div class="col-md-6">
                         <label for="holiday_name" class="form-label">
-                            定休日名 <span class="required-mark">*</span>
+                            定休日名 <span class="required-mark">※</span>
                         </label>
                         <?= form_input([
                             'name' => 'holiday_name',
@@ -100,7 +100,7 @@
                 <div class="row">
                     <div class="col-md-4">
                         <label for="closing_date" class="form-label">
-                            休業日 <span class="required-mark">*</span>
+                            休業日 <span class="required-mark">※</span>
                         </label>
                         <?= flatpickr_input(
                             'closing_date',

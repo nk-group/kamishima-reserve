@@ -26,7 +26,7 @@
             <?php // <input type="hidden" name="_method" value="POST"> は不要なため削除 ?>
 
             <div class="mb-3">
-                <label for="full_name" class="form-label">氏名 <span class="text-danger">*</span></label>
+                <label for="full_name" class="form-label">氏名 <span class="text-danger">※</span></label>
                 <input type="text" class="form-control" id="full_name" name="full_name" value="<?= old('full_name', esc($user->full_name ?? '')) ?>" required>
                 <div class="invalid-feedback">
                     氏名は必須です。
@@ -34,7 +34,7 @@
             </div>
 
             <div class="mb-3">
-                <label for="email" class="form-label">Eメールアドレス <span class="text-danger">*</span></label>
+                <label for="email" class="form-label">Eメールアドレス <span class="text-danger">※</span></label>
                 <input type="email" class="form-control" id="email" name="email" value="<?= old('email', esc($user_email ?? '')) // コントローラから渡された $user_email を使用 ?>" required>
                 <div class="invalid-feedback">
                     有効なEメールアドレスを入力してください。
@@ -69,7 +69,7 @@
             <hr class="my-3">
 
             <div class="mb-3">
-                <label for="groups" class="form-label">所属グループ <span class="text-danger">*</span></label>
+                <label for="groups" class="form-label">所属グループ <span class="text-danger">※</span></label>
                 <select class="form-select" id="groups" name="groups[]" multiple required size="3">
                     <?php foreach ($available_groups as $groupName => $groupTitle): ?>
                         <option value="<?= esc($groupName, 'attr') ?>" <?= (is_array(old('groups', $user_groups)) && in_array($groupName, old('groups', $user_groups))) ? 'selected' : '' ?>>

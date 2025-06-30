@@ -22,7 +22,7 @@
             <?php // <input type="hidden" name="_method" value="POST"> は不要なため削除 (new.phpには元々存在しないが念のため) ?>
 
             <div class="mb-3">
-                <label for="full_name" class="form-label">氏名 <span class="text-danger">*</span></label>
+                <label for="full_name" class="form-label">氏名 <span class="text-danger">※</span></label>
                 <input type="text" class="form-control" id="full_name" name="full_name" value="<?= old('full_name', '') // 再入力時の値保持 ?>" required>
                 <div class="invalid-feedback">
                     氏名は必須です。
@@ -30,7 +30,7 @@
             </div>
 
             <div class="mb-3">
-                <label for="email" class="form-label">Eメールアドレス <span class="text-danger">*</span></label>
+                <label for="email" class="form-label">Eメールアドレス <span class="text-danger">※</span></label>
                 <input type="email" class="form-control" id="email" name="email" value="<?= old('email', '') ?>" required>
                 <div class="invalid-feedback">
                     有効なEメールアドレスを入力してください。
@@ -44,7 +44,7 @@
             </div>
 
             <div class="mb-3">
-                <label for="password" class="form-label">パスワード <span class="text-danger">*</span></label>
+                <label for="password" class="form-label">パスワード <span class="text-danger">※</span></label>
                 <input type="password" class="form-control" id="password" name="password" required>
                 <div class="invalid-feedback">
                     パスワードは必須です。
@@ -52,7 +52,7 @@
             </div>
 
             <div class="mb-3">
-                <label for="password_confirm" class="form-label">パスワード（確認用） <span class="text-danger">*</span></label>
+                <label for="password_confirm" class="form-label">パスワード（確認用） <span class="text-danger">※</span></label>
                 <input type="password" class="form-control" id="password_confirm" name="password_confirm" required>
                 <div class="invalid-feedback">
                     確認用パスワードを入力してください。
@@ -60,7 +60,7 @@
             </div>
 
             <div class="mb-3">
-                <label for="groups" class="form-label">所属グループ <span class="text-danger">*</span></label>
+                <label for="groups" class="form-label">所属グループ <span class="text-danger">※</span></label>
                 <select class="form-select" id="groups" name="groups[]" multiple required size="3">
                     <?php
                         // Config/AuthGroups.php で定義されているグループを取得して表示
