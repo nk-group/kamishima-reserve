@@ -81,6 +81,12 @@ $routes->group('admin', ['filter' => 'sessionauth', 'namespace' => 'App\Controll
         $routes->post('batch-create', 'ShopClosingDayController::batchCreate', ['as' => 'admin.shop-closing-days.batch-create']); // 一括作成処理
     });    
     
+
+    // --- リマインドメール管理ルート ---
+    $routes->group('reminders', ['filter' => 'permission:staff.access'], static function ($routes) {
+        /** @var RouteCollection $routes */
+        $routes->get('', 'ReminderController::index', ['as' => 'admin.reminders.index']); // 送信予定一覧
+    });    
 });
 
 

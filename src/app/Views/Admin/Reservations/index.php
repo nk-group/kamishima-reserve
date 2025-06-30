@@ -126,7 +126,7 @@
         <div class="results-section">
             <div class="results-header">
                 <div class="results-count">
-                    検索結果：<?= number_format($pagination['total']) ?>件
+                    検索結果：<?= number_format($total) ?>件
                     <?php if (!empty($statistics['by_status'])): ?>
                         <small class="text-muted ms-3"><?php foreach ($statistics['by_status'] as $stat): ?><?= esc($stat['status_name']) ?>: <?= number_format($stat['count']) ?>件　<?php endforeach; ?></small>
                     <?php endif; ?>
@@ -143,20 +143,20 @@
                         <thead>
                             <tr>
                                 <th>
-                                    <a href="<?= buildSortUrl('reservation_no') ?>" class="sort-link">
+                                    <a href="<?= buildSortUrl('reservation_no', 'admin.reservations.index') ?>" class="sort-link">
                                         予約番号
                                         <?= renderSortIcon('reservation_no') ?>
                                     </a>
                                 </th>
                                 <th>予約状況</th>
                                 <th>
-                                    <a href="<?= buildSortUrl('desired_date') ?>" class="sort-link">
+                                    <a href="<?= buildSortUrl('desired_date', 'admin.reservations.index') ?>" class="sort-link">
                                         予約希望日
                                         <?= renderSortIcon('desired_date') ?>
                                     </a>
                                 </th>
                                 <th>
-                                    <a href="<?= buildSortUrl('customer_name') ?>" class="sort-link">
+                                    <a href="<?= buildSortUrl('customer_name', 'admin.reservations.index') ?>" class="sort-link">
                                         お名前
                                         <?= renderSortIcon('customer_name') ?>
                                     </a>
@@ -257,42 +257,9 @@
                 </div>
 
                 <!-- Pagination -->
-                <?php if ($pagination['total_pages'] > 1): ?>
+                <?php if (isset($pager) && $pager->getPageCount() > 1): ?>
                     <div class="pagination-container">
-                        <ul class="pagination">
-                            <?php if ($pagination['has_previous']): ?>
-                                <li><a href="<?= buildPageUrl($pagination['previous_page']) ?>">前へ</a></li>
-                            <?php endif; ?>
-                            
-                            <?php 
-                            $startPage = max(1, $pagination['current_page'] - 2);
-                            $endPage = min($pagination['total_pages'], $pagination['current_page'] + 2);
-                            ?>
-                            
-                            <?php if ($startPage > 1): ?>
-                                <li><a href="<?= buildPageUrl(1) ?>">1</a></li>
-                                <?php if ($startPage > 2): ?>
-                                    <li><span>...</span></li>
-                                <?php endif; ?>
-                            <?php endif; ?>
-                            
-                            <?php for ($i = $startPage; $i <= $endPage; $i++): ?>
-                                <li class="<?= $i == $pagination['current_page'] ? 'active' : '' ?>">
-                                    <a href="<?= buildPageUrl($i) ?>"><?= $i ?></a>
-                                </li>
-                            <?php endfor; ?>
-                            
-                            <?php if ($endPage < $pagination['total_pages']): ?>
-                                <?php if ($endPage < $pagination['total_pages'] - 1): ?>
-                                    <li><span>...</span></li>
-                                <?php endif; ?>
-                                <li><a href="<?= buildPageUrl($pagination['total_pages']) ?>"><?= $pagination['total_pages'] ?></a></li>
-                            <?php endif; ?>
-                            
-                            <?php if ($pagination['has_next']): ?>
-                                <li><a href="<?= buildPageUrl($pagination['next_page']) ?>">次へ</a></li>
-                            <?php endif; ?>
-                        </ul>
+                        <?= $pager->links('default', 'default_full') ?>
                     </div>
                 <?php endif; ?>
 
@@ -320,8 +287,7 @@
 <script>
 // PHP側のデータをJavaScript側に渡す
 window.reservationListData = {
-    searchParams: <?= json_encode($search_params) ?>,
-    pagination: <?= json_encode($pagination) ?>,
+    searchParams: <?= json_encode($search_params ?? []) ?>,
     quickSearches: <?= json_encode($quick_searches) ?>
 };
 

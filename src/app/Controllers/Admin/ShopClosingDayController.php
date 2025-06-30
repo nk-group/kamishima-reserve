@@ -17,7 +17,7 @@ class ShopClosingDayController extends BaseController
         $this->shopModel = new ShopModel();
         
         // ヘルパーを読み込み
-        helper(['form', 'url', 'shop_closing_day']);
+        helper(['form', 'url', 'shop_closing_day', 'pagination']);
     }
 
     /**
@@ -26,6 +26,10 @@ class ShopClosingDayController extends BaseController
     public function index()
     {
         $perPage = 20;
+
+        // ソート条件
+        $sort = $this->request->getGet('sort') ?? 'shop_id';
+        $direction = $this->request->getGet('direction') ?? 'asc';
 
         // 検索条件
         $filters = [
@@ -53,8 +57,13 @@ class ShopClosingDayController extends BaseController
             $builder->where('is_active', $cleanFilters['is_active']);
         }
         
-        // ソート順
-        $builder->orderBy('shop_id', 'ASC')->orderBy('closing_date', 'ASC');
+        // ソート処理
+        $allowedSortColumns = ['shop_id', 'holiday_name', 'closing_date', 'repeat_type', 'is_active'];
+        if (in_array($sort, $allowedSortColumns)) {
+            $builder->orderBy($sort, $direction);
+        }
+        // 2番目のソートキー
+        $builder->orderBy('id', 'ASC');
 
         // ページネーション付きでデータを取得
         $closingDays = $builder->paginate($perPage);

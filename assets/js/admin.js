@@ -95,6 +95,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             break;
 
+        // === リマインドメール管理 ===
+        case 'page-admin-reminders-index':
+            try {
+                const { initRemindersIndex } = await import('./admin/pages/reminders/index.js');
+                initRemindersIndex();
+            } catch (e) {
+                console.error('Failed to load reminders index scripts:', e);
+            }
+            break;
+
         // case 'page-admin-other-feature':
         //     // 他の機能も同様にフォルダ分割パターンで追加可能
         //     break;

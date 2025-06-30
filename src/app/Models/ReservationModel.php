@@ -119,73 +119,11 @@ class ReservationModel extends Model
     }
 
     /**
-     * 指定された条件で予約を検索します（強化版）。
-     * @param array $params 検索条件
-     * @param int   $perPage 1ページあたりの件数
-     * @param int   $page ページ番号
-     * @return array 検索結果とページネーション情報
-     */
-    public function searchReservations(array $params = [], int $perPage = 20, int $page = 1): array
-    {
-        // 基本的な条件構築
-        $this->buildSearchConditions($this, $params);
-
-        // 総件数を取得（ページネーション用）
-        $totalCount = $this->countAllResults(false); // falseで元のクエリを保持
-        
-        // 再度条件を適用（countAllResultsで条件がリセットされるため）
-        $this->buildSearchConditions($this, $params);
-
-        // ソート条件
-        $sortColumn = $params['sort'] ?? 'desired_date';
-        $sortDirection = $params['direction'] ?? 'DESC';
-        
-        // 安全なソートカラムの検証
-        $allowedSortColumns = [
-            'desired_date', 'reservation_no', 'customer_name', 
-            'created_at', 'updated_at', 'reservation_status_id'
-        ];
-        
-        if (!in_array($sortColumn, $allowedSortColumns)) {
-            $sortColumn = 'desired_date';
-        }
-        
-        if (!in_array(strtoupper($sortDirection), ['ASC', 'DESC'])) {
-            $sortDirection = 'DESC';
-        }
-
-        // ソート適用
-        $this->orderBy($sortColumn, $sortDirection);
-        $this->orderBy('id', 'DESC'); // 同一日時の場合のサブソート
-
-        // ページネーション適用（手動）
-        $offset = ($page - 1) * $perPage;
-        $results = $this->limit($perPage, $offset)->findAll();
-
-        // ページネーション情報計算
-        $totalPages = (int) ceil($totalCount / $perPage);
-        
-        return [
-            'data' => $results,
-            'pagination' => [
-                'current_page' => $page,
-                'per_page' => $perPage,
-                'total' => $totalCount,
-                'total_pages' => $totalPages,
-                'has_previous' => $page > 1,
-                'has_next' => $page < $totalPages,
-                'previous_page' => $page > 1 ? $page - 1 : null,
-                'next_page' => $page < $totalPages ? $page + 1 : null,
-            ]
-        ];
-    }
-
-    /**
      * 検索条件をクエリビルダーに適用します。
      * @param \CodeIgniter\Model $model
      * @param array $params
      */
-    private function buildSearchConditions($model, array $params): void
+    public function buildSearchConditions($model, array $params): void
     {
         // 名前検索（部分一致）
         if (!empty($params['customer_name'])) {

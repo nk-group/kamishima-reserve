@@ -378,6 +378,31 @@ VALUES
 | 更新日時         | updated_at                | DATETIME            | ○        |     |     |        |         |       | CodeIgniterのタイムスタンプ機能で自動設定                        |
 | 削除日時 (論理削除用) | deleted_at                | DATETIME            |          |     |     |        | NULL    |       | CodeIgniterのソフトデリート機能用                            |
 
+
+**10. リマインドメール送信ログ (reminder_logs)**
+
+* **日本語テーブル名:** リマインドメール送信ログ
+* **物理テーブル名:** `reminder_logs`
+* **説明:** リマインドメールの送信履歴と結果を記録します。
+
+**テーブル構造**
+
+| 論理名 (日本語) | 物理名 (英語) | データ型 | NOT NULL | PK | FK | UNIQUE | DEFAULT | INDEX | 備考 |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| ログID | `id` | INT UNSIGNED | ○ | ○ | | | | ○ | 主キー、自動増分 |
+| 予約ID | `reservation_id` | INT UNSIGNED | ○ | | ○ | ○ | | ○ | `reservations.id` への外部キー。同一予約に複数ログは不要なためUNIQUE。 |
+| 送信ステータス | `status` | ENUM('success', 'failed') | ○ | | | | | ○ | 'success': 成功, 'failed': 失敗 |
+| 送信完了日時 | `sent_at` | DATETIME | ○ | | | | | | メール送信が完了した日時 |
+| エラーメッセージ | `error_message` | TEXT | | | | | NULL | | 送信失敗時のエラー詳細 |
+| 作成日時 | `created_at` | DATETIME | ○ | | | | | | CodeIgniterのタイムスタンプ機能で自動設定 |
+| 更新日時 | `updated_at` | DATETIME | ○ | | | | | | CodeIgniterのタイムスタンプ機能で自動設定 |
+
+-----
+
+
+**9. システム環境設定 (app_config)**
+
+
 環境設定
 未来の予約
 送信メールアカウント

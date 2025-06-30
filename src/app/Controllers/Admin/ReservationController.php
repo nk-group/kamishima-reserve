@@ -39,14 +39,27 @@ class ReservationController extends BaseController
 
         // 検索パラメータを取得
         $searchParams = $this->getSearchParams();
-        
-        // ページネーション情報を取得
-        $page = (int)($this->request->getGet('page') ?? 1);
         $perPage = 20;
 
-        // 検索実行
-        $searchResult = $this->reservationModel->searchReservations($searchParams, $perPage, $page);
-        
+        // クエリビルダを準備
+        $builder = $this->reservationModel;
+        $this->reservationModel->buildSearchConditions($builder, $searchParams);
+
+        // ソート条件
+        $sort = $searchParams['sort'] ?? 'desired_date';
+        $direction = $searchParams['direction'] ?? 'DESC';
+        $allowedSortColumns = ['desired_date', 'reservation_no', 'customer_name', 'created_at', 'updated_at', 'reservation_status_id'];
+        if (in_array($sort, $allowedSortColumns)) {
+            $builder->orderBy($sort, $direction);
+        } else {
+            $builder->orderBy('desired_date', 'DESC');
+        }
+        $builder->orderBy('id', 'DESC'); // 2番目のソートキー
+
+        // ページネーション付きでデータを取得
+        $reservations = $builder->paginate($perPage);
+        $pager = $this->reservationModel->pager;
+
         // 統計情報取得
         $statistics = $this->reservationModel->getStatistics($searchParams);
 
@@ -63,8 +76,9 @@ class ReservationController extends BaseController
             'body_id' => 'page-admin-reservations-index',
             
             // 検索結果
-            'reservations' => $searchResult['data'],
-            'pagination' => $searchResult['pagination'],
+            'reservations' => $reservations,
+            'pager' => $pager,
+            'total' => $pager->getTotal(),
             'statistics' => $statistics,
             
             // 検索条件

@@ -15,24 +15,8 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
-    <div class="page-content shop-closing-days-index">
-        
-        <?php // フラッシュメッセージ表示 ?>
-        <?php if (session()->getFlashdata('success')): ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="bi bi-check-circle-fill"></i>
-                <?= session()->getFlashdata('success') ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-
-        <?php if (session()->getFlashdata('error')): ?>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                <?= session()->getFlashdata('error') ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
+    <div class="page-content shop-closing-days-index">        
+        <?= $this->include('Partials/_alert_messages') ?>
 
         <?php // 検索フォーム ?>
         <div class="search-form">
@@ -41,7 +25,7 @@
                 検索条件
             </h5>
             
-            <?= form_open('admin/shop-closing-days', ['method' => 'get', 'class' => 'needs-validation', 'novalidate' => true]) ?>
+            <?= form_open(route_to('admin.shop-closing-days.index'), ['method' => 'get', 'class' => 'needs-validation', 'novalidate' => true]) ?>
                 <div class="row">
                     <div class="col-md-3">
                         <label for="shop_id" class="form-label">店舗</label>
@@ -95,7 +79,7 @@
                             <i class="bi bi-search"></i>
                             検索
                         </button>
-                        <a href="<?= site_url('admin/shop-closing-days') ?>" class="btn-clear">
+                        <a href="<?= route_to('admin.shop-closing-days.index') ?>" class="btn-clear">
                             <i class="bi bi-arrow-clockwise"></i>
                             リセット
                         </a>
@@ -115,10 +99,10 @@
                     <?php endif; ?>
                 </div>
                 <div class="results-actions">
-                    <a href="<?= site_url('admin/shop-closing-days/batch') ?>" class="btn-create-batch">
+                    <a href="<?= route_to('admin.shop-closing-days.batch') ?>" class="btn-create-batch">
                         <i class="bi bi-plus-circle-dotted me-2"></i>一括作成
                     </a>
-                    <a href="<?= site_url('admin/shop-closing-days/new') ?>" class="btn-create-new">
+                    <a href="<?= route_to('admin.shop-closing-days.new') ?>" class="btn-create-new">
                         <i class="bi bi-plus-lg me-2"></i>新規作成
                     </a>
                 </div>
@@ -129,12 +113,32 @@
                 <table class="table table-hover">
                     <thead class="table-light">
                         <tr>
-                            <th>店舗名</th>
-                            <th>定休日名</th>
-                            <th>休業日</th>
-                            <th>繰り返し</th>
+                            <th>
+                                <a href="<?= buildSortUrl('shop_id', 'admin.shop-closing-days.index') ?>" class="sort-link">
+                                    店舗名
+                                    <?= renderSortIcon('shop_id') ?>
+                                </a>
+                            </th>
+                            <th>
+                                <a href="<?= buildSortUrl('holiday_name', 'admin.shop-closing-days.index') ?>" class="sort-link">
+                                    定休日名
+                                    <?= renderSortIcon('holiday_name') ?>
+                                </a>
+                            </th>
+                            <th>
+                                <a href="<?= buildSortUrl('closing_date', 'admin.shop-closing-days.index') ?>" class="sort-link">
+                                    休業日
+                                    <?= renderSortIcon('closing_date') ?>
+                                </a>
+                            </th>
+                            <th>
+                                <a href="<?= buildSortUrl('repeat_type', 'admin.shop-closing-days.index') ?>" class="sort-link">
+                                    繰り返し
+                                    <?= renderSortIcon('repeat_type') ?>
+                                </a>
+                            </th>
                             <th>繰り返し終了日</th>
-                            <th>状態</th>
+                            <th>状態</th> <?php // is_active はソート対象外の例 ?>
                             <th width="140">操作</th>
                         </tr>
                     </thead>
@@ -174,13 +178,13 @@
                                         <?= get_active_status_badge($closingDay->is_active) ?>
                                     </td>
                                     <td>
-                                        <a href="<?= site_url('admin/shop-closing-days/edit/' . $closingDay->id) ?>" 
+                                        <a href="<?= route_to('admin.shop-closing-days.edit', $closingDay->id) ?>" 
                                            class="btn-action btn-edit btn-small"
                                            title="編集">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
                                         <?= form_open(
-                                            'admin/shop-closing-days/delete/' . $closingDay->id,
+                                            route_to('admin.shop-closing-days.delete', $closingDay->id),
                                             [
                                                 'style' => 'display: inline;',
                                                 'onsubmit' => 'return confirm("この定休日を削除してもよろしいですか？")'
