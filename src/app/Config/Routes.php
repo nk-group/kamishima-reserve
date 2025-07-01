@@ -20,6 +20,7 @@ $routes->group('admin', ['filter' => 'sessionauth', 'namespace' => 'App\Controll
         $routes->get('/', 'DashboardController::index', ['as' => 'admin.dashboard']);
         $routes->get('calendar-data', 'DashboardController::calendarData', ['as' => 'admin.dashboard.calendar-data']);
         $routes->get('today-reservations-more', 'DashboardController::todayReservationsMore', ['as' => 'admin.dashboard.today-reservations-more']);
+        $routes->get('calendar-table', 'DashboardController::calendarTable', ['as' => 'admin.dashboard.calendar-table']);
     });
 
     // 予約管理（staff権限）

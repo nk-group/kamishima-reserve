@@ -472,31 +472,56 @@ class ReservationModel extends Model
         $monthStart = $yearMonth . '-01';
         $monthEnd = date('Y-m-t', strtotime($monthStart));
         
+        log_message('debug', "[ReservationModel::getShopClosingDays] Searching for month: {$yearMonth}, shop_id: " . ($shopId ?: 'all'));
+        log_message('debug', "[ReservationModel::getShopClosingDays] Date range: {$monthStart} to {$monthEnd}");
+        
         $builder = $closingDayModel->builder();
         
-        // 店舗絞り込み
+        // 店舗絞り込み（修正: 条件を明確に分離）
         if (!empty($shopId)) {
             $builder->where('shop_id', $shopId);
+            log_message('debug', "[ReservationModel::getShopClosingDays] Filtering by shop_id: {$shopId}");
+        } else {
+            log_message('debug', "[ReservationModel::getShopClosingDays] No shop filter applied - showing all shops");
         }
         
         // アクティブな休日のみ
         $builder->where('is_active', 1);
         
         // 期間内の休日を取得（繰り返し設定も考慮）
+        // 修正: クエリ条件を明確に分離し、デバッグしやすくする
+        $builder->groupStart();
+        
+        // 単発の休日：期間内に該当するもの
         $builder->groupStart()
-                ->where('repeat_type', 0) // 単発
+                ->where('repeat_type', 0)
                 ->where('closing_date >=', $monthStart)
                 ->where('closing_date <=', $monthEnd)
-                ->groupEnd()
-                ->orGroupStart()
-                ->where('repeat_type !=', 0) // 繰り返し
+                ->groupEnd();
+                
+        // 繰り返しの休日：基準日が設定されていて、終了日が期間と重複するもの
+        $builder->orGroupStart()
+                ->where('repeat_type !=', 0)
                 ->groupStart()
-                ->where('repeat_end_date IS NULL')
-                ->orWhere('repeat_end_date >=', $monthStart)
+                    ->where('repeat_end_date IS NULL') // 無期限
+                    ->orWhere('repeat_end_date >=', $monthStart) // 終了日が期間開始以降
                 ->groupEnd()
                 ->groupEnd();
+                
+        $builder->groupEnd();
+        
+        // デバッグ用: 生成されたクエリをログに出力
+        $query = $builder->getCompiledSelect(false); // falseで実際の実行は行わない
+        log_message('debug', "[ReservationModel::getShopClosingDays] Generated SQL: {$query}");
         
         $closingDays = $builder->get()->getResultArray();
+        
+        log_message('debug', "[ReservationModel::getShopClosingDays] Found " . count($closingDays) . " closing day records");
+        
+        // デバッグ用: 取得したデータの詳細をログ出力
+        foreach ($closingDays as $index => $closingDay) {
+            log_message('debug', "[ReservationModel::getShopClosingDays] Record {$index}: shop_id={$closingDay['shop_id']}, date={$closingDay['closing_date']}, repeat_type={$closingDay['repeat_type']}, name={$closingDay['holiday_name']}");
+        }
         
         // 実際の休日日付を計算
         $holidays = [];
@@ -504,8 +529,12 @@ class ReservationModel extends Model
             $dates = $this->calculateHolidayDates($closingDay, $monthStart, $monthEnd);
             foreach ($dates as $date) {
                 $holidays[$date] = $closingDay['holiday_name'];
+                log_message('debug', "[ReservationModel::getShopClosingDays] Calculated holiday: {$date} = {$closingDay['holiday_name']} (shop_id: {$closingDay['shop_id']})");
             }
         }
+        
+        log_message('debug', "[ReservationModel::getShopClosingDays] Final holidays count: " . count($holidays));
+        log_message('debug', "[ReservationModel::getShopClosingDays] Final holidays: " . json_encode($holidays));
         
         return $holidays;
     }
@@ -525,10 +554,13 @@ class ReservationModel extends Model
         $startDate = new \DateTime($monthStart);
         $endDate = new \DateTime($monthEnd);
         
+        log_message('debug', "[ReservationModel::calculateHolidayDates] Processing: {$closingDay['holiday_name']}, type: {$closingDay['repeat_type']}, base_date: {$closingDay['closing_date']}");
+        
         switch ($closingDay['repeat_type']) {
             case 0: // 単発
                 if ($baseDate >= $startDate && $baseDate <= $endDate) {
                     $dates[] = $baseDate->format('Y-m-d');
+                    log_message('debug', "[ReservationModel::calculateHolidayDates] Single holiday added: {$baseDate->format('Y-m-d')}");
                 }
                 break;
                 
@@ -544,7 +576,11 @@ class ReservationModel extends Model
                 
                 // 毎週追加
                 while ($current <= $endDate) {
-                    $dates[] = $current->format('Y-m-d');
+                    // 基準日以降のみ追加（繰り返し開始日チェック）
+                    if ($current >= $baseDate) {
+                        $dates[] = $current->format('Y-m-d');
+                        log_message('debug', "[ReservationModel::calculateHolidayDates] Weekly holiday added: {$current->format('Y-m-d')}");
+                    }
                     $current->add(new \DateInterval('P7D'));
                 }
                 break;
@@ -561,14 +597,21 @@ class ReservationModel extends Model
                                                    sprintf('%02d', $targetMonth) . '-' . 
                                                    sprintf('%02d', $targetDay));
                         if ($holidayDate >= $startDate && $holidayDate <= $endDate) {
-                            $dates[] = $holidayDate->format('Y-m-d');
+                            // 基準年以降のみ追加
+                            if ($holidayDate->format('Y') >= $baseDate->format('Y')) {
+                                $dates[] = $holidayDate->format('Y-m-d');
+                                log_message('debug', "[ReservationModel::calculateHolidayDates] Yearly holiday added: {$holidayDate->format('Y-m-d')}");
+                            }
                         }
                     } catch (\Exception $e) {
                         // 無効な日付（例：2月30日）はスキップ
+                        log_message('debug', "[ReservationModel::calculateHolidayDates] Invalid date skipped: {$currentYear}-{$targetMonth}-{$targetDay}");
                     }
                 }
                 break;
         }
+        
+        log_message('debug', "[ReservationModel::calculateHolidayDates] Generated " . count($dates) . " dates for {$closingDay['holiday_name']}");
         
         return $dates;
     }

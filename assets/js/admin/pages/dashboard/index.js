@@ -47,7 +47,8 @@ export function initDashboard() {
         
         // 前月ボタン
         if (prevMonthBtn) {
-            prevMonthBtn.addEventListener('click', function() {
+            prevMonthBtn.addEventListener('click', function(e) {
+                e.preventDefault();
                 const date = new Date(currentMonth + '-01');
                 date.setMonth(date.getMonth() - 1);
                 currentMonth = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
@@ -57,7 +58,8 @@ export function initDashboard() {
         
         // 次月ボタン
         if (nextMonthBtn) {
-            nextMonthBtn.addEventListener('click', function() {
+            nextMonthBtn.addEventListener('click', function(e) {
+                e.preventDefault();
                 const date = new Date(currentMonth + '-01');
                 date.setMonth(date.getMonth() + 1);
                 currentMonth = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
@@ -273,7 +275,7 @@ export function initDashboard() {
      * カレンダーテーブルの更新
      */
     function updateCalendarTable(calendarData) {
-        // サーバーサイドレンダリングのパーシャルを再取得
+        // サーバーサイドでレンダリングされたパーシャルビューを取得
         const params = new URLSearchParams({
             month: currentMonth
         });
@@ -282,10 +284,72 @@ export function initDashboard() {
             params.append('shop_id', selectedShopId);
         }
         
-        // パーシャルビューを取得するためのエンドポイントが必要
-        // 簡易的にはlocation.reloadを使用するか、
-        // カレンダーテーブルのHTMLを動的生成する
-        location.reload(); // 暫定的な実装
+        // カレンダーテーブルパーシャル用の新しいエンドポイントを呼び出し
+        fetch(`/admin/dashboard/calendar-table?${params.toString()}`)
+            .then(response => response.text())
+            .then(html => {
+                const container = document.getElementById('calendar-container');
+                if (container) {
+                    container.innerHTML = html;
+                }
+            })
+            .catch(error => {
+                console.error('Calendar table update error:', error);
+                // フォールバック: 動的生成を試行
+                generateCalendarTableDynamic(calendarData);
+            });
+    }
+    
+    /**
+     * カレンダーテーブルの動的生成（フォールバック）
+     */
+    function generateCalendarTableDynamic(calendarData) {
+        const container = document.getElementById('calendar-container');
+        if (!container || !calendarData) return;
+        
+        const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+        
+        let html = `
+            <table class="calendar-table">
+                <thead>
+                    <tr>
+                        ${weekdays.map(day => `<th>${day}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+        
+        // カレンダーデータが配列形式であることを前提
+        if (Array.isArray(calendarData)) {
+            calendarData.forEach(week => {
+                html += '<tr>';
+                week.forEach(day => {
+                    const classes = [];
+                    if (!day.is_current_month) classes.push('other-month');
+                    if (day.is_today) classes.push('today');
+                    if (day.is_weekend) classes.push('weekend');
+                    if (day.is_holiday) classes.push('holiday');
+                    
+                    html += `
+                        <td class="${classes.join(' ')}" data-date="${day.date}">
+                            <div class="date-number">${day.day_num}</div>
+                            ${day.is_holiday ? `<div class="holiday-name">${escapeHtml(day.holiday_name || '')}</div>` : ''}
+                            <div class="reservation-count">
+                                ${day.reservation_count > 0 ? `${day.reservation_count}件` : ''}
+                            </div>
+                        </td>
+                    `;
+                });
+                html += '</tr>';
+            });
+        }
+        
+        html += `
+                </tbody>
+            </table>
+        `;
+        
+        container.innerHTML = html;
     }
     
     /**

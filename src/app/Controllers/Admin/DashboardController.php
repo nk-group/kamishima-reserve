@@ -160,6 +160,53 @@ class DashboardController extends BaseController
     }
 
     /**
+     * Ajax用カレンダーテーブル取得（新規追加）
+     */
+    public function calendarTable(): ResponseInterface
+    {
+        try {
+            $currentMonth = $this->request->getGet('month') ?? date('Y-m');
+            $selectedShopId = $this->request->getGet('shop_id');
+            
+            // バリデーション
+            if (!preg_match('/^\d{4}-\d{2}$/', $currentMonth)) {
+                return $this->response->setStatusCode(400)->setBody('無効な月形式です');
+            }
+            
+            if (!empty($selectedShopId) && !is_numeric($selectedShopId)) {
+                return $this->response->setStatusCode(400)->setBody('無効な店舗IDです');
+            }
+            
+            $selectedShopId = !empty($selectedShopId) ? (int)$selectedShopId : null;
+            
+            // データ取得
+            $calendarData = $this->reservationModel->getCalendarData($currentMonth, $selectedShopId);
+            $closingDays = $this->reservationModel->getShopClosingDays($currentMonth, $selectedShopId);
+            
+            // カレンダー表示用データの準備
+            $calendarViewData = $this->prepareCalendarViewData($currentMonth, $calendarData, $closingDays);
+            
+            // パーシャルビューをレンダリング
+            $html = view('Admin/Dashboard/_calendar_table', [
+                'calendar_view_data' => $calendarViewData,
+                'selected_shop_id' => $selectedShopId
+            ]);
+            
+            return $this->response->setBody($html);
+            
+        } catch (\Throwable $e) {
+            log_message('error', '[' . __CLASS__ . '::' . __FUNCTION__ . '] Calendar table ajax error: ' . $e->getMessage());
+            
+            return $this->response->setStatusCode(500)->setBody('
+                <div class="alert alert-danger" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    カレンダーテーブルの取得中にエラーが発生しました。
+                </div>
+            ');
+        }
+    }
+
+    /**
      * 本日予約の「もっと見る」用Ajax
      */
     public function todayReservationsMore(): ResponseInterface
@@ -209,6 +256,7 @@ class DashboardController extends BaseController
             log_message('debug', '[DashboardController::prepareCalendarViewData] Processing month: ' . $month);
             log_message('debug', '[DashboardController::prepareCalendarViewData] Calendar data count: ' . count($calendarData));
             log_message('debug', '[DashboardController::prepareCalendarViewData] Closing days count: ' . count($closingDays));
+            log_message('debug', '[DashboardController::prepareCalendarViewData] Closing days: ' . json_encode($closingDays));
             
             // カレンダーのグリッドを準備（6週間分）
             $calendar = [];
@@ -231,7 +279,7 @@ class DashboardController extends BaseController
                     $isWeekend = in_array((int)$currentDate->format('w'), [0, 6]); // 日曜日、土曜日
                     $isHoliday = isset($closingDays[$dateStr]);
                     
-                    // その日の予約データ
+                    // その日の予約データ（定休日でも予約データは表示）
                     $dayReservations = $calendarData[$dateStr] ?? [];
                     
                     // 作業種別別件数を集計
@@ -239,6 +287,11 @@ class DashboardController extends BaseController
                     foreach ($dayReservations as $reservation) {
                         $workTypeCode = $reservation['work_type_code'] ?? 'other';
                         $workTypeCounts[$workTypeCode] = ($workTypeCounts[$workTypeCode] ?? 0) + 1;
+                    }
+                    
+                    // デバッグ用ログ（該当日に予約または定休日がある場合のみ）
+                    if (!empty($dayReservations) || $isHoliday) {
+                        log_message('debug', "[DashboardController::prepareCalendarViewData] Date: {$dateStr}, Reservations: " . count($dayReservations) . ", Holiday: " . ($isHoliday ? 'Yes' : 'No'));
                     }
                     
                     $calendar[$week][$day] = [
