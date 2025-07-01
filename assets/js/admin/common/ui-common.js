@@ -1,3 +1,4 @@
+// assets/js/admin/common/ui-interactions.js
 import { Tooltip } from 'bootstrap';
 
 /**

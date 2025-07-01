@@ -86,4 +86,153 @@ abstract class BaseController extends Controller
         // レイアウトの適用は、$viewName で指定されたビューファイル内の $this->extend() に任せます。
         return view($viewName, $renderData);
     }
+
+    /**
+     * ユーザー個人設定を取得するAPIメソッド
+     *
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function getUserPreferences()
+    {
+        helper('user_preference');
+        
+        // ログインチェック
+        if (!auth()->loggedIn()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'ログインが必要です。'
+            ])->setStatusCode(401);
+        }
+
+        try {
+            // 店舗一覧を取得
+            $shopModel = model('App\Models\ShopModel');
+            $shops = $shopModel->where('active', 1)
+                              ->orderBy('sort_order', 'ASC')
+                              ->findAll();
+            
+            $shopOptions = ['' => '-- 店舗を選択してください --'];
+            foreach ($shops as $shop) {
+                $shopOptions[$shop->id] = $shop->name;
+            }
+
+            // 現在の設定値を取得
+            $preferences = [
+                'default_shop_id' => user_preference('default_shop_id'),
+                'pagination_per_page' => user_preference('pagination_per_page', 20),
+            ];
+
+            // オプション情報
+            $options = [
+                'shops' => $shopOptions,
+                'pagination_options' => [
+                    10 => '10件',
+                    20 => '20件', 
+                    50 => '50件',
+                    100 => '100件',
+                ],
+            ];
+
+            return $this->response->setJSON([
+                'success' => true,
+                'preferences' => $preferences,
+                'options' => $options
+            ]);
+
+        } catch (\Throwable $e) {
+            log_message('error', '[BaseController::getUserPreferences] Error: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => '設定の取得に失敗しました。'
+            ])->setStatusCode(500);
+        }
+    }
+
+    /**
+     * ユーザー個人設定を保存するAPIメソッド
+     *
+     * @return \CodeIgniter\HTTP\ResponseInterface
+     */
+    public function saveUserPreferences()
+    {
+        helper('user_preference');
+        
+        // ログインチェック
+        if (!auth()->loggedIn()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'ログインが必要です。'
+            ])->setStatusCode(401);
+        }
+
+        // POST以外は拒否
+        if (!$this->request->is('post')) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => '不正なリクエストです。'
+            ])->setStatusCode(405);
+        }
+
+        try {
+            // バリデーション
+            $validationRules = [
+                'default_shop_id' => 'permit_empty|integer|greater_than[0]',
+                'pagination_per_page' => 'required|integer|in_list[10,20,50,100]',
+            ];
+
+            $validationMessages = [
+                'default_shop_id' => [
+                    'integer' => '有効な店舗を選択してください。',
+                    'greater_than' => '有効な店舗を選択してください。',
+                ],
+                'pagination_per_page' => [
+                    'required' => 'ページネーション件数を選択してください。',
+                    'integer' => '有効なページネーション件数を選択してください。',
+                    'in_list' => '有効なページネーション件数を選択してください。',
+                ],
+            ];
+
+            if (!$this->validate($validationRules, $validationMessages)) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => '入力内容に問題があります。',
+                    'errors' => $this->validator->getErrors()
+                ])->setStatusCode(400);
+            }
+
+            // 設定値を保存
+            $defaultShopId = $this->request->getPost('default_shop_id');
+            $paginationPerPage = $this->request->getPost('pagination_per_page');
+
+            $success = true;
+
+            // デフォルト店舗ID保存（空の場合はnull）
+            if ($defaultShopId === '' || $defaultShopId === null) {
+                $success = $success && set_user_preference('default_shop_id', null);
+            } else {
+                $success = $success && set_user_preference('default_shop_id', (int)$defaultShopId);
+            }
+
+            // ページネーション件数保存
+            $success = $success && set_user_preference('pagination_per_page', (int)$paginationPerPage);
+
+            if ($success) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => '設定を保存しました。'
+                ]);
+            } else {
+                throw new \RuntimeException('設定の保存に失敗しました。');
+            }
+
+        } catch (\Throwable $e) {
+            log_message('error', '[BaseController::saveUserPreferences] Error: ' . $e->getMessage());
+            
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => '設定の保存に失敗しました。再度お試しください。'
+            ])->setStatusCode(500);
+        }
+    }
 }

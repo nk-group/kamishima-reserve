@@ -67,6 +67,10 @@ if (auth()->loggedIn()) {
                     <div class="user-name"><?= esc(auth()->user()->full_name ?? auth()->user()->username ?? 'ゲスト') ?></div>
                     <div class="user-role"><?= esc($userRoleDisplay) ?></div>
                 </div>
+                <!-- 個人設定アイコン追加 -->
+                <button type="button" class="btn btn-user-settings" id="userSettingsBtn" title="個人設定">
+                    <i class="bi bi-gear-fill"></i>
+                </button>
                 <a href="<?= site_url('logout') ?>" class="btn btn-logout">
                     <i class="bi bi-door-open-fill logout-icon"></i>
                     ログアウト

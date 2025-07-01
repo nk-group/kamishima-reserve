@@ -8,7 +8,10 @@ import { initCommon } from './common.js';
 import './admin/plugins/flatpickr-init.js';
 
 // 共通UIインタラクション（ツールチップ、フォーム制御など）をインポート
-import { initAdminUIInteractions } from './admin/ui-interactions.js';
+import { initAdminUIInteractions } from './admin/common/ui-common.js';
+
+// 個人設定機能をインポート
+import { initUserPreferences } from './admin/common/user-preferences.js';
 
 // 共通フォームバリデーションスクリプトをインポート
 import { initFormValidation } from './admin/utils/form-validation.js';
@@ -23,6 +26,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     initCommon();
     initAdminUIInteractions(); // 共通UI初期化関数を呼び出し
     initFormValidation(); // 共通フォームバリデーションを初期化
+
+    // 個人設定機能の初期化
+    initUserPreferences();
 
     // --- ページ固有のスクリプトを動的インポートで読み込む ---
     // 例: 管理者ダッシュボード

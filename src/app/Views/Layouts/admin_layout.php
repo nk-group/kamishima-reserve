@@ -25,6 +25,9 @@
 
     <?= $this->include('Partials/_admin_footer') // 新しいフッターパーシャルを読み込み (ファイル名変更) ?>
 
+    <?php // 個人設定モーダルをインクルード ?>
+    <?= $this->include('Partials/_user_preferences_modal') ?>
+
     <?= $this->renderSection('page_specific_scripts') ?>
 </body>
 </html>

@@ -23,6 +23,12 @@ $routes->group('admin', ['filter' => 'sessionauth', 'namespace' => 'App\Controll
         $routes->get('calendar-table', 'DashboardController::calendarTable', ['as' => 'admin.dashboard.calendar-table']);
     });
 
+    // 個人設定（全ログインユーザー共通）
+    $routes->group('user-preferences', static function ($routes) {
+        $routes->get('/', 'UserPreferencesController::index', ['as' => 'admin.user-preferences.index']);
+        $routes->post('save', 'UserPreferencesController::save', ['as' => 'admin.user-preferences.save']);
+    });
+
     // 予約管理（staff権限）
     $routes->group('reservations', ['filter' => 'permission:staff.access'], static function ($routes) {
         $routes->get('/', 'ReservationController::index', ['as' => 'admin.reservations.index']);

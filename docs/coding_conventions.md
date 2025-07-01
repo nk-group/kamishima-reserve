@@ -1,7 +1,7 @@
 # プロジェクト コーディング規約書
 
 **最終更新日:** 2025年6月30日  
-**バージョン:** 1.1
+**バージョン:** 1.2
 
 ## 1. 基本方針
 
@@ -353,6 +353,9 @@ assets/
     │   ├── admin.js                # エントリーポイント
     │   ├── plugins/                # 外部ライブラリ設定
     │   ├── utils/                  # 共通ユーティリティ
+    │   ├── common/                 # 全ページ共通機能
+    │   │   ├── user-preferences.js # 個人設定機能（機能専用）
+    │   │   └── ui-common.js        # UI操作関連共通（特定用途共通）
     │   └── pages/                  # ページ固有JavaScript
     │       ├── shop-closing-days/  # 機能毎にフォルダ分離
     │       │   ├── index.js        # 一覧ページ専用
@@ -423,6 +426,38 @@ assets/js/admin/pages/
 assets/js/admin/pages/
 └── shop-closing-days.js # すべての機能が混在
 ```
+
+#### **3.3.1 共通ファイル命名規則（assets/js/admin/common/）**
+
+`assets/js/admin/common/`配下のファイルは、以下の2つのパターンで命名する。
+
+**パターン1: 機能専用ファイル**
+- `[機能名].js`
+- 特定の機能に専用のファイル
+- 例: `user-preferences.js`（個人設定機能専用）
+
+**パターン2: 特定用途共通ファイル**
+- `[用途]-common.js`
+- 複数の機能で共通利用される特定用途のファイル
+- 例: `ui-common.js`（UI操作関連共通）、`modal-common.js`（モーダル関連共通）
+
+```javascript
+// ✅ 良い例: 一貫性のある命名
+assets/js/admin/common/
+├── user-preferences.js    # 個人設定機能専用
+├── ui-common.js          # UI操作関連共通
+├── modal-common.js       # モーダル関連共通（将来追加時）
+└── api-common.js         # API通信関連共通（将来追加時）
+
+// ❌ 悪い例: 混在した命名
+assets/js/admin/common/
+├── user-preferences.js
+└── ui-interactions.js    # -common サフィックスがない
+```
+
+**判断基準:**
+- **単一機能に特化** → `[機能名].js`
+- **複数機能で共通利用** → `[用途]-common.js`
 
 #### 動的インポートパターン
 ```javascript
@@ -704,6 +739,7 @@ export function initShopClosingDaysBatch() { /* 一括作成専用 */ }
 - [ ] 共通機能が再利用可能な形で抽出されているか
 - [ ] 動的インポートが正しく設定されているか
 - [ ] 各ファイルが単一責任の原則に従っているか
+- [ ] **共通ファイルの命名規則に従っているか（[機能名].js または [用途]-common.js）**
 
 **セキュリティ**
 - [ ] XSS対策（esc関数使用）ができているか
