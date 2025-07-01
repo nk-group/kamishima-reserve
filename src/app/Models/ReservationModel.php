@@ -297,4 +297,279 @@ class ReservationModel extends Model
             'by_work_type' => $workTypeArray,
         ];
     }
+
+    /**
+     * 本日の予約一覧を取得
+     * 
+     * @param int|null $shopId 店舗ID（nullの場合は全店舗）
+     * @return array
+     */
+    public function getTodayReservations(?int $shopId = null): array
+    {
+        $builder = $this->builder();
+        
+        // 本日の予約を取得
+        $builder->where('desired_date', date('Y-m-d'));
+        
+        // 店舗絞り込み
+        if (!empty($shopId)) {
+            $builder->where('shop_id', $shopId);
+        }
+        
+        // 関連データをJOIN
+        $builder->select('
+            reservations.*,
+            reserve_statuses.name as status_name,
+            work_types.name as work_type_name,
+            shops.name as shop_name
+        ')
+        ->join('reserve_statuses', 'reserve_statuses.id = reservations.reservation_status_id', 'left')
+        ->join('work_types', 'work_types.id = reservations.work_type_id', 'left')
+        ->join('shops', 'shops.id = reservations.shop_id', 'left');
+        
+        // 時間順にソート
+        $builder->orderBy('reservation_start_time', 'ASC')
+               ->orderBy('id', 'ASC');
+        
+        return $builder->get()->getResultArray();
+    }
+
+    /**
+     * 指定月のカレンダー用データを取得
+     * 
+     * @param string $yearMonth YYYY-MM形式
+     * @param int|null $shopId 店舗ID（nullの場合は全店舗）
+     * @return array
+     */
+    public function getCalendarData(string $yearMonth, ?int $shopId = null): array
+    {
+        $builder = $this->builder();
+        
+        // 月の開始日と終了日を計算
+        $monthStart = $yearMonth . '-01';
+        $monthEnd = date('Y-m-t', strtotime($monthStart));
+        
+        // 期間内の予約を取得
+        $builder->where('desired_date >=', $monthStart)
+               ->where('desired_date <=', $monthEnd);
+        
+        // 店舗絞り込み
+        if (!empty($shopId)) {
+            $builder->where('shop_id', $shopId);
+        }
+        
+        // 関連データをJOIN
+        $builder->select('
+            DATE(reservations.desired_date) as date,
+            reservations.id as reservation_id,
+            reservations.reservation_start_time,
+            reservations.customer_name,
+            work_types.name as work_type_name,
+            work_types.code as work_type_code,
+            shops.name as shop_name
+        ')
+        ->join('work_types', 'work_types.id = reservations.work_type_id', 'left')
+        ->join('shops', 'shops.id = reservations.shop_id', 'left');
+        
+        // 日付と時間順にソート
+        $builder->orderBy('desired_date', 'ASC')
+               ->orderBy('reservation_start_time', 'ASC');
+        
+        $results = $builder->get()->getResultArray();
+        
+        // 日付ごとにグループ化
+        $calendarData = [];
+        foreach ($results as $row) {
+            $date = $row['date'];
+            if (!isset($calendarData[$date])) {
+                $calendarData[$date] = [];
+            }
+            $calendarData[$date][] = $row;
+        }
+        
+        return $calendarData;
+    }
+
+    /**
+     * 月別統計情報を取得
+     * 
+     * @param string $yearMonth YYYY-MM形式
+     * @param int|null $shopId 店舗ID（nullの場合は全店舗）
+     * @return array
+     */
+    public function getMonthlyStatistics(string $yearMonth, ?int $shopId = null): array
+    {
+        $builder = $this->builder();
+        
+        // 月の開始日と終了日を計算
+        $monthStart = $yearMonth . '-01';
+        $monthEnd = date('Y-m-t', strtotime($monthStart));
+        
+        // 期間内の予約を対象
+        $builder->where('desired_date >=', $monthStart)
+               ->where('desired_date <=', $monthEnd);
+        
+        // 店舗絞り込み
+        if (!empty($shopId)) {
+            $builder->where('shop_id', $shopId);
+        }
+        
+        // 合計件数を取得
+        $totalCount = $builder->countAllResults(false); // falseで条件を保持
+        
+        // 作業種別別集計
+        $workTypeStats = $this->builder()
+            ->select('work_types.code, work_types.name, COUNT(*) as count')
+            ->join('work_types', 'work_types.id = reservations.work_type_id', 'left')
+            ->where('desired_date >=', $monthStart)
+            ->where('desired_date <=', $monthEnd);
+        
+        if (!empty($shopId)) {
+            $workTypeStats->where('shop_id', $shopId);
+        }
+        
+        $workTypeStats = $workTypeStats->groupBy('work_type_id')
+                                      ->get()
+                                      ->getResultArray();
+        
+        // 統計データを整理
+        $statistics = [
+            'total' => $totalCount,
+            'clear_shaken' => 0,
+            'general_maintenance' => 0,
+            'other' => 0
+        ];
+        
+        foreach ($workTypeStats as $stat) {
+            switch ($stat['code']) {
+                case 'clear_shaken':
+                    $statistics['clear_shaken'] = $stat['count'];
+                    break;
+                case 'general_maintenance':
+                    $statistics['general_maintenance'] = $stat['count'];
+                    break;
+                default:
+                    $statistics['other'] += $stat['count'];
+                    break;
+            }
+        }
+        
+        return $statistics;
+    }
+
+    /**
+     * 店舗別休日情報を取得
+     * 
+     * @param string $yearMonth YYYY-MM形式
+     * @param int|null $shopId 店舗ID（nullの場合は全店舗）
+     * @return array
+     */
+    public function getShopClosingDays(string $yearMonth, ?int $shopId = null): array
+    {
+        $closingDayModel = new \App\Models\ShopClosingDayModel();
+        
+        // 月の開始日と終了日を計算
+        $monthStart = $yearMonth . '-01';
+        $monthEnd = date('Y-m-t', strtotime($monthStart));
+        
+        $builder = $closingDayModel->builder();
+        
+        // 店舗絞り込み
+        if (!empty($shopId)) {
+            $builder->where('shop_id', $shopId);
+        }
+        
+        // アクティブな休日のみ
+        $builder->where('is_active', 1);
+        
+        // 期間内の休日を取得（繰り返し設定も考慮）
+        $builder->groupStart()
+                ->where('repeat_type', 0) // 単発
+                ->where('closing_date >=', $monthStart)
+                ->where('closing_date <=', $monthEnd)
+                ->groupEnd()
+                ->orGroupStart()
+                ->where('repeat_type !=', 0) // 繰り返し
+                ->groupStart()
+                ->where('repeat_end_date IS NULL')
+                ->orWhere('repeat_end_date >=', $monthStart)
+                ->groupEnd()
+                ->groupEnd();
+        
+        $closingDays = $builder->get()->getResultArray();
+        
+        // 実際の休日日付を計算
+        $holidays = [];
+        foreach ($closingDays as $closingDay) {
+            $dates = $this->calculateHolidayDates($closingDay, $monthStart, $monthEnd);
+            foreach ($dates as $date) {
+                $holidays[$date] = $closingDay['holiday_name'];
+            }
+        }
+        
+        return $holidays;
+    }
+
+    /**
+     * 休日の実際の日付を計算
+     * 
+     * @param array $closingDay 休日データ
+     * @param string $monthStart 月開始日
+     * @param string $monthEnd 月終了日
+     * @return array
+     */
+    private function calculateHolidayDates(array $closingDay, string $monthStart, string $monthEnd): array
+    {
+        $dates = [];
+        $baseDate = new \DateTime($closingDay['closing_date']);
+        $startDate = new \DateTime($monthStart);
+        $endDate = new \DateTime($monthEnd);
+        
+        switch ($closingDay['repeat_type']) {
+            case 0: // 単発
+                if ($baseDate >= $startDate && $baseDate <= $endDate) {
+                    $dates[] = $baseDate->format('Y-m-d');
+                }
+                break;
+                
+            case 1: // 毎週
+                $targetDayOfWeek = (int)$baseDate->format('w'); // 0=日曜日, 6=土曜日
+                $current = clone $startDate;
+                
+                // 月初の該当曜日を見つける
+                while ((int)$current->format('w') !== $targetDayOfWeek) {
+                    $current->add(new \DateInterval('P1D'));
+                    if ($current > $endDate) break;
+                }
+                
+                // 毎週追加
+                while ($current <= $endDate) {
+                    $dates[] = $current->format('Y-m-d');
+                    $current->add(new \DateInterval('P7D'));
+                }
+                break;
+                
+            case 2: // 毎年
+                $targetMonth = (int)$baseDate->format('m');
+                $targetDay = (int)$baseDate->format('d');
+                $currentYear = (int)$startDate->format('Y');
+                
+                // 該当月かチェック
+                if ((int)$startDate->format('m') === $targetMonth) {
+                    try {
+                        $holidayDate = new \DateTime($currentYear . '-' . 
+                                                   sprintf('%02d', $targetMonth) . '-' . 
+                                                   sprintf('%02d', $targetDay));
+                        if ($holidayDate >= $startDate && $holidayDate <= $endDate) {
+                            $dates[] = $holidayDate->format('Y-m-d');
+                        }
+                    } catch (\Exception $e) {
+                        // 無効な日付（例：2月30日）はスキップ
+                    }
+                }
+                break;
+        }
+        
+        return $dates;
+    }
 }

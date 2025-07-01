@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     switch (bodyId) {
         case 'page-admin-dashboard':
             try {
-                const { initDashboard } = await import('./admin/pages/dashboard.js');
+                const { initDashboard } = await import('./admin/pages/dashboard/index.js');
                 initDashboard();
             } catch (e) {
                 console.error('Failed to load dashboard scripts:', e);
