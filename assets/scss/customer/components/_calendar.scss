@@ -1,0 +1,633 @@
+//==========================================================================
+// Customer Calendar Component Styles
+//==========================================================================
+
+@use '../base/variables' as var;
+
+//--------------------------------------------------------------------------
+// Calendar Container Base
+//--------------------------------------------------------------------------
+.calendar-container {
+  background: var.$white;
+  border: 2px solid var.$border-color;
+  border-radius: var.$card-border-radius;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  width: 100%;
+}
+
+//--------------------------------------------------------------------------
+// Calendar Header (Navigation + Title)
+//--------------------------------------------------------------------------
+.calendar-header {
+  background: linear-gradient(135deg, var.$clear-blue-pale, var.$gray-100);
+  padding: var.$spacer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var.$border-color;
+  min-height: var.$calendar-header-height;
+}
+
+.calendar-month-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var.$text-color;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.calendar-nav {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+//--------------------------------------------------------------------------
+// Month Calendar Styles
+//--------------------------------------------------------------------------
+.calendar-month {
+  .calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var.$white;
+  }
+
+  .calendar-header-row {
+    background: var.$gray-100;
+  }
+
+  .calendar-header-cell {
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var.$text-color;
+    border-bottom: 1px solid var.$border-color;
+
+    // 日曜日
+    &.sunday {
+      color: var.$clear-red;
+    }
+
+    // 土曜日  
+    &.saturday {
+      color: var.$clear-blue;
+    }
+  }
+
+  .calendar-cell {
+    padding: 8px 6px;
+    vertical-align: top;
+    border-bottom: 1px solid var.$border-color;
+    border-right: 1px solid var.$border-color;
+    min-height: var.$calendar-cell-size;
+    position: relative;
+    background: var.$white;
+    transition: var.$transition-base;
+    width: 14.28%; // 7等分
+    cursor: pointer;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &:hover {
+      background: var.$gray-100;
+    }
+
+    // 今日
+    &.today {
+      background: var.$clear-blue-pale;
+      border: 2px solid var.$clear-blue;
+      box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
+    }
+
+    &.today:hover {
+      background: var.$clear-blue-pale;
+    }
+
+    // 定休日
+    &.holiday {
+      background: var.$gray-200;
+      cursor: not-allowed;
+    }
+
+    &.holiday:hover {
+      background: var.$gray-300;
+    }
+
+    // 過去の日付（選択不可）
+    &.past-date {
+      background: var.$gray-100;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    // 範囲外の日付（6ヶ月超）
+    &.out-of-range {
+      background: var.$gray-100;
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+  }
+
+  .calendar-date {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 22px;
+
+    .date-number {
+      // 日曜日
+      &.sunday {
+        color: var.$clear-red;
+      }
+
+      // 土曜日
+      &.saturday {
+        color: var.$clear-blue;
+      }
+
+      // 前月・次月の日付
+      &.other-month {
+        color: var.$gray-500;
+      }
+    }
+  }
+
+  // 空き状況マーク
+  .availability-mark {
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-top: 4px;
+
+    // ○ 余裕あり
+    &.available {
+      color: var.$availability-full;
+    }
+
+    // △ 残りわずか
+    &.limited {
+      color: var.$availability-limited;
+    }
+
+    // × 空きなし
+    &.full {
+      color: var.$availability-none;
+    }
+
+    // 定休日（マーク非表示）
+    &.closed {
+      display: none;
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Week Calendar Styles  
+//--------------------------------------------------------------------------
+.calendar-week {
+  .calendar-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var.$white;
+    min-width: 700px; // 横スクロール対応
+  }
+
+  .calendar-header-row {
+    background: var.$gray-100;
+  }
+
+  .calendar-header-cell {
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var.$text-color;
+    border-bottom: 1px solid var.$border-color;
+    border-right: 1px solid var.$border-color;
+
+    &:first-child {
+      min-width: 100px; // 時間帯列
+    }
+
+    &:last-child {
+      border-right: none;
+    }
+
+    // 日曜日
+    &.sunday {
+      color: var.$clear-red;
+    }
+
+    // 土曜日
+    &.saturday {
+      color: var.$clear-blue;
+    }
+
+    // 今日のヘッダー
+    &.today {
+      background: var.$clear-blue-pale;
+      color: var.$clear-blue-dark;
+    }
+  }
+
+  .time-slot-row {
+    &:hover {
+      background: var.$gray-100;
+    }
+  }
+
+  .time-slot-label {
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var.$text-color;
+    background: var.$gray-100;
+    border-bottom: 1px solid var.$border-color;
+    border-right: 1px solid var.$border-color;
+    min-width: 100px;
+  }
+
+  .time-slot-cell {
+    padding: 8px 6px;
+    text-align: center;
+    border-bottom: 1px solid var.$border-color;
+    border-right: 1px solid var.$border-color;
+    min-height: 48px;
+    position: relative;
+    transition: var.$transition-base;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    // 予約可能
+    &.available {
+      background: var.$availability-full-bg;
+      cursor: pointer;
+
+      &:hover {
+        background: var.$availability-full;
+        transform: scale(var.$hover-scale);
+      }
+
+      .time-slot-button {
+        background: var.$availability-full;
+        color: var.$white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: var.$btn-border-radius;
+        font-size: 0.8rem;
+        font-weight: 600;
+        width: 100%;
+        min-height: 36px;
+        transition: var.$transition-base;
+
+        &:hover {
+          background: var.$clear-green;
+          transform: translateY(-1px);
+        }
+      }
+    }
+
+    // 残りわずか
+    &.limited {
+      background: var.$availability-limited-bg;
+      cursor: pointer;
+
+      &:hover {
+        background: var.$availability-limited;
+      }
+
+      .time-slot-button {
+        background: var.$availability-limited;
+        color: var.$white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: var.$btn-border-radius;
+        font-size: 0.8rem;
+        font-weight: 600;
+        width: 100%;
+        min-height: 36px;
+        transition: var.$transition-base;
+
+        &:hover {
+          background: var.$clear-orange;
+          transform: translateY(-1px);
+        }
+      }
+    }
+
+    // 予約不可
+    &.full {
+      background: var.$availability-none-bg;
+      cursor: not-allowed;
+
+      .unavailable-mark {
+        color: var.$availability-none;
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+    }
+
+    // 定休日
+    &.closed {
+      background: var.$gray-200;
+      cursor: not-allowed;
+
+      .closed-mark {
+        color: var.$gray-500;
+        font-size: 0.8rem;
+        font-weight: 600;
+      }
+    }
+
+    // 今日の列
+    &.today {
+      border-left: 3px solid var.$clear-blue;
+      border-right: 3px solid var.$clear-blue;
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Calendar Scroll Container (Week Calendar)
+//--------------------------------------------------------------------------
+.calendar-scroll-container {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var.$gray-400 var.$gray-200;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var.$gray-200;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var.$gray-400;
+    border-radius: 4px;
+
+    &:hover {
+      background: var.$gray-500;
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Calendar Navigation Pagination
+//--------------------------------------------------------------------------
+.calendar-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var.$spacer 0;
+  gap: 8px;
+  background: var.$gray-100;
+  border-top: 1px solid var.$border-color;
+}
+
+.pagination-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var.$gray-400;
+  cursor: pointer;
+  transition: var.$transition-base;
+
+  &.active {
+    background: var.$clear-blue;
+    transform: scale(1.2);
+  }
+
+  &:hover {
+    background: var.$clear-blue-light;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Calendar Loading State
+//--------------------------------------------------------------------------
+.calendar-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  background: var.$white;
+
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var.$gray-300;
+    border-top: 3px solid var.$clear-blue;
+    border-radius: 50%;
+    animation: calendar-spin 1s linear infinite;
+  }
+
+  .loading-text {
+    margin-left: var.$spacer;
+    color: var.$gray-600;
+    font-size: 0.9rem;
+  }
+}
+
+@keyframes calendar-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+//--------------------------------------------------------------------------
+// Calendar Legend (空き状況の説明)
+//--------------------------------------------------------------------------
+.calendar-legend {
+  padding: var.$spacer;
+  background: var.$gray-100;
+  border-top: 1px solid var.$border-color;
+  display: flex;
+  justify-content: center;
+  gap: var.$spacer * 1.5;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var.$text-color;
+
+  .legend-mark {
+    font-weight: 700;
+    font-size: 1rem;
+
+    &.available {
+      color: var.$availability-full;
+    }
+
+    &.limited {
+      color: var.$availability-limited;
+    }
+
+    &.full {
+      color: var.$availability-none;
+    }
+
+    &.closed {
+      color: var.$gray-500;
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Responsive Adjustments
+//--------------------------------------------------------------------------
+@media (max-width: var.$breakpoint-md) {
+  .calendar-header {
+    flex-direction: column;
+    gap: var.$spacer;
+    align-items: stretch;
+    padding: var.$spacer * 0.75;
+  }
+
+  .calendar-month-title {
+    text-align: center;
+    font-size: 1.1rem;
+  }
+
+  .calendar-nav {
+    justify-content: center;
+  }
+
+  // 月表示調整
+  .calendar-month {
+    .calendar-cell {
+      min-height: var.$calendar-cell-size-md;
+      padding: 6px 4px;
+    }
+
+    .calendar-date {
+      font-size: 0.8rem;
+    }
+
+    .availability-mark {
+      font-size: 1rem;
+    }
+  }
+
+  // 週表示調整
+  .calendar-week {
+    .calendar-header-cell,
+    .time-slot-label {
+      font-size: 0.8rem;
+      padding: 10px 6px;
+    }
+
+    .time-slot-cell {
+      min-height: 44px;
+
+      .time-slot-button {
+        font-size: 0.75rem;
+        padding: 6px 8px;
+        min-height: 32px;
+      }
+    }
+  }
+
+  .calendar-legend {
+    gap: var.$spacer;
+    
+    .legend-item {
+      font-size: 0.8rem;
+    }
+  }
+}
+
+@media (max-width: var.$breakpoint-sm) {
+  .calendar-header {
+    padding: var.$spacer * 0.5;
+  }
+
+  .calendar-month-title {
+    font-size: 1rem;
+  }
+
+  // 月表示調整
+  .calendar-month {
+    .calendar-cell {
+      min-height: var.$calendar-cell-size-sm;
+      padding: 4px 2px;
+    }
+
+    .calendar-date {
+      font-size: 0.75rem;
+      margin-bottom: 4px;
+    }
+
+    .availability-mark {
+      font-size: 0.9rem;
+      margin-top: 2px;
+    }
+  }
+
+  // 週表示調整
+  .calendar-week {
+    .calendar-table {
+      min-width: 500px; // より小さなデバイス対応
+    }
+
+    .calendar-header-cell,
+    .time-slot-label {
+      font-size: 0.75rem;
+      padding: 8px 4px;
+    }
+
+    .time-slot-cell {
+      min-height: var.$calendar-cell-size-sm;
+      padding: 4px;
+
+      .time-slot-button {
+        font-size: 0.7rem;
+        padding: 4px 6px;
+        min-height: 28px;
+      }
+
+      .unavailable-mark {
+        font-size: 1rem;
+      }
+
+      .closed-mark {
+        font-size: 0.7rem;
+      }
+    }
+  }
+
+  .calendar-legend {
+    flex-direction: column;
+    gap: var.$spacer * 0.5;
+    text-align: center;
+    
+    .legend-item {
+      justify-content: center;
+      font-size: 0.75rem;
+    }
+  }
+
+  .calendar-scroll-container {
+    padding-bottom: 10px; // スクロールバー分のスペース
+  }
+}

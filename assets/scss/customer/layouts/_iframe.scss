@@ -1,0 +1,397 @@
+//==========================================================================
+// Customer iFrame Layout Styles
+//==========================================================================
+
+@use '../base/variables' as var;
+
+//--------------------------------------------------------------------------
+// iFrame Environment Detection & Base Setup
+//--------------------------------------------------------------------------
+
+// iFrame Body Wrapper (Applied when is_iframe = true)
+.iframe-body {
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  overflow-x: hidden; // 横スクロール防止
+  overflow-y: auto;   // 縦スクロール許可
+  background: var.$body-bg;
+  min-height: 100vh;  // 最小高さ確保
+  
+  // iframe内では不要な要素を除去
+  .customer-header,
+  .customer-footer {
+    display: none;
+  }
+}
+
+//--------------------------------------------------------------------------
+// iFrame Container & Content Wrapper
+//--------------------------------------------------------------------------
+.iframe-container {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  min-height: 400px; // 最小表示高さ
+  
+  // 親サイトとのシームレス統合
+  &.seamless {
+    border: none;
+    margin: 0;
+    padding: 0;
+    background: inherit; // 親サイトの背景色を継承
+  }
+}
+
+.iframe-content-wrapper {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: var.$spacer;
+  background: var.$white;
+  min-height: 300px;
+  
+  // コンテンツ領域の基本設定
+  .main-content {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+  }
+}
+
+//--------------------------------------------------------------------------
+// iFrame Height Management
+//--------------------------------------------------------------------------
+.iframe-height-adjustable {
+  transition: height 0.3s ease;
+  
+  // 動的な高さ調整時のスムーズなアニメーション
+  &.resizing {
+    transition: height 0.1s ease;
+  }
+  
+  // 高さ計算エラー防止
+  &.height-calculating {
+    min-height: 200px;
+  }
+}
+
+//--------------------------------------------------------------------------
+// iFrame Content Padding & Spacing Adjustments
+//--------------------------------------------------------------------------
+.iframe-content {
+  // iframe内では外側の余白を削減
+  .calendar-container,
+  .card,
+  .form-section {
+    margin-bottom: var.$spacer * 0.75; // 通常より小さく
+  }
+  
+  // iframe内でのページタイトル調整
+  .page-title {
+    font-size: 1.4rem; // 通常より小さく
+    margin-bottom: var.$spacer;
+    padding-bottom: var.$spacer * 0.5;
+    border-bottom: 2px solid var.$clear-blue-pale;
+  }
+  
+  // 大きなマージンを持つ要素の調整
+  .reservation-complete-card,
+  .reservation-card {
+    margin: var.$spacer 0; // 上下マージンのみ
+  }
+}
+
+//--------------------------------------------------------------------------
+// iFrame Responsive Behavior
+//--------------------------------------------------------------------------
+.iframe-responsive {
+  // iframe内では固定幅を避ける
+  .container,
+  .container-fluid {
+    max-width: 100%;
+    padding-left: var.$spacer * 0.75;
+    padding-right: var.$spacer * 0.75;
+  }
+  
+  // テーブルの横スクロール対応
+  .table-responsive {
+    margin: 0 calc(-1 * var.$spacer * 0.75); // ラッパーのパディング分はみ出し
+    border-radius: 0;
+  }
+  
+  // カレンダーの横スクロール最適化
+  .calendar-scroll-container {
+    margin: 0 calc(-1 * var.$spacer * 0.75);
+    padding: 0 var.$spacer * 0.75;
+  }
+}
+
+//--------------------------------------------------------------------------
+// iFrame Border & Shadow Removal
+//--------------------------------------------------------------------------
+.iframe-borderless {
+  // iframe内では境界線やシャドウを最小化
+  .card,
+  .calendar-container,
+  .form-section {
+    border: 1px solid var.$border-color; // 太いボーダーを細く
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); // 軽いシャドウに変更
+  }
+  
+  // hover効果も抑制
+  .card:hover,
+  .calendar-cell:hover {
+    transform: none; // hover時の移動を無効化
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); // 軽いホバーエフェクト
+  }
+}
+
+//--------------------------------------------------------------------------
+// iFrame Loading State
+//--------------------------------------------------------------------------
+.iframe-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  background: var.$white;
+  
+  .loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var.$gray-300;
+    border-top: 3px solid var.$clear-blue;
+    border-radius: 50%;
+    animation: iframe-spin 1s linear infinite;
+    margin-bottom: var.$spacer;
+  }
+  
+  .loading-text {
+    color: var.$gray-600;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+}
+
+@keyframes iframe-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+//--------------------------------------------------------------------------
+// iFrame Communication & Error States
+//--------------------------------------------------------------------------
+.iframe-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  background: var.$white;
+  border: 2px dashed var.$clear-orange;
+  border-radius: var.$card-border-radius;
+  padding: var.$spacer * 2;
+  text-align: center;
+  
+  .error-icon {
+    font-size: 2rem;
+    color: var.$clear-orange;
+    margin-bottom: var.$spacer;
+  }
+  
+  .error-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var.$text-color;
+    margin-bottom: var.$spacer * 0.5;
+  }
+  
+  .error-message {
+    font-size: 0.9rem;
+    color: var.$gray-600;
+    line-height: 1.5;
+    margin-bottom: var.$spacer;
+  }
+  
+  .error-retry {
+    background: var.$clear-blue;
+    color: var.$white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var.$btn-border-radius;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var.$transition-base;
+    
+    &:hover {
+      background: var.$clear-blue-dark;
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// iFrame Size Constraints
+//--------------------------------------------------------------------------
+.iframe-size-constraints {
+  // 最小サイズの保証
+  min-width: 320px;  // スマホ最小幅
+  min-height: 200px; // 最小高さ
+  
+  // 最大サイズの制限（必要に応じて）
+  &.max-width-constrained {
+    max-width: 800px; // デスクトップでの最大幅
+    margin: 0 auto;
+  }
+  
+  // アスペクト比の維持（特定用途）
+  &.aspect-ratio-maintained {
+    aspect-ratio: 4 / 3; // 必要に応じて調整
+  }
+}
+
+//--------------------------------------------------------------------------
+// iFrame Focus Management
+//--------------------------------------------------------------------------
+.iframe-focus-management {
+  // iframe内でのフォーカス可視化強化
+  *:focus {
+    outline: 2px solid var.$clear-blue;
+    outline-offset: 2px;
+    z-index: var.$z-index-dropdown;
+  }
+  
+  // スキップリンク（アクセシビリティ）
+  .skip-to-content {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var.$clear-blue;
+    color: var.$white;
+    padding: 8px 16px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    z-index: var.$z-index-modal;
+    transition: top 0.3s ease;
+    
+    &:focus {
+      top: 6px;
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// iFrame Print Styles
+//--------------------------------------------------------------------------
+@media print {
+  .iframe-container,
+  .iframe-content-wrapper {
+    background: var.$white;
+    box-shadow: none;
+    border: none;
+  }
+  
+  .iframe-loading,
+  .iframe-error {
+    display: none;
+  }
+  
+  // 印刷時の余白調整
+  .iframe-content {
+    margin: 0;
+    padding: 10mm;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Responsive Adjustments for iFrame
+//--------------------------------------------------------------------------
+@media (max-width: var.$breakpoint-md) {
+  .iframe-content-wrapper {
+    padding: var.$spacer * 0.75;
+  }
+  
+  .iframe-content {
+    .page-title {
+      font-size: 1.2rem;
+      margin-bottom: var.$spacer * 0.75;
+    }
+    
+    .calendar-container,
+    .card,
+    .form-section {
+      margin-bottom: var.$spacer * 0.5;
+    }
+  }
+  
+  .iframe-responsive {
+    .container,
+    .container-fluid {
+      padding-left: var.$spacer * 0.5;
+      padding-right: var.$spacer * 0.5;
+    }
+  }
+}
+
+@media (max-width: var.$breakpoint-sm) {
+  .iframe-content-wrapper {
+    padding: var.$spacer * 0.5;
+  }
+  
+  .iframe-content {
+    .page-title {
+      font-size: 1.1rem;
+      margin-bottom: var.$spacer * 0.5;
+    }
+  }
+  
+  .iframe-size-constraints {
+    min-width: 280px; // より小さなデバイス対応
+  }
+  
+  .iframe-error {
+    padding: var.$spacer;
+    
+    .error-title {
+      font-size: 1rem;
+    }
+    
+    .error-message {
+      font-size: 0.85rem;
+    }
+  }
+  
+  .iframe-focus-management {
+    .skip-to-content {
+      font-size: 0.8rem;
+      padding: 6px 12px;
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// iFrame Dark Mode Support (Future Enhancement)
+//--------------------------------------------------------------------------
+@media (prefers-color-scheme: dark) {
+  .iframe-container.auto-theme {
+    background: #1a1a1a;
+    color: #ffffff;
+    
+    .iframe-content-wrapper {
+      background: #2d2d2d;
+    }
+    
+    .iframe-loading,
+    .iframe-error {
+      background: #2d2d2d;
+      color: #ffffff;
+    }
+  }
+}
