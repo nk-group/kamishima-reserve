@@ -1,0 +1,158 @@
+//==========================================================================
+// Customer Form Component Styles
+//==========================================================================
+
+@use '../base/variables' as var;
+
+// General form styling
+.form-label {
+  color: var.$text-color;
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+  font-size: 0.9rem;
+}
+
+.form-control,
+.form-select {
+  border: 2px solid var.$form-border;
+  border-radius: var.$input-border-radius;
+  padding: var.$input-padding-y var.$input-padding-x;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  background: var.$form-bg;
+  font-size: var.$input-font-size;
+  height: var.$input-height;
+  &:focus {
+    border-color: var.$form-border-focus;
+    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
+    background: var.$white;
+  }
+}
+
+select[multiple],
+select[size]:not([size="1"]) {
+  height: auto;
+  padding: 8px 16px;
+}
+
+textarea.form-control {
+  height: auto;
+  padding-top: 12px;
+  min-height: calc(var.$input-height * 2);
+}
+
+.form-check-input {
+  &:checked {
+    background-color: var.$clear-blue;
+    border-color: var.$clear-blue;
+  }
+}
+
+// These are general flex/gap styles for checkbox groups,
+// specific grid layouts will be handled in page-specific SCSS.
+.checkbox-group {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+//--------------------------------------------------------------------------
+// Required Field Indicator
+//--------------------------------------------------------------------------
+.required {
+  color: var.$clear-red;
+  font-weight: 600;
+}
+
+//--------------------------------------------------------------------------
+// Form Sections (e.g., Customer Info, Vehicle Info)
+//--------------------------------------------------------------------------
+.form-section {
+  margin-bottom: var.$spacer * 2;
+  padding: var.$card-padding;
+  background: var.$content-bg;
+  border: 1px solid var.$border-color;
+  border-radius: var.$card-border-radius;
+}
+
+.form-section-title {
+  font-size: var.$h4-font-size;
+  font-weight: var.$headings-font-weight;
+  color: var.$clear-blue;
+  margin-bottom: var.$spacer;
+  padding-bottom: var.$spacer * 0.5;
+  border-bottom: 2px solid var.$clear-blue-pale;
+}
+
+//--------------------------------------------------------------------------
+// Form Rows (for multi-column layouts)
+//--------------------------------------------------------------------------
+.form-row {
+  display: flex;
+  gap: var.$spacer;
+  margin-bottom: var.$spacer;
+}
+
+.form-group {
+  flex: 1;
+}
+
+//--------------------------------------------------------------------------
+// Vehicle Number Input Group
+//--------------------------------------------------------------------------
+.vehicle-number-group {
+  display: flex;
+  gap: var.$spacer * 0.5;
+  align-items: end;
+}
+
+.vehicle-number-item {
+  display: flex;
+  flex-direction: column;
+  
+  &.region { flex: 2; }
+  &.class { flex: 1.5; }
+  &.kana { flex: 1; }
+  &.number { flex: 2; }
+}
+
+//--------------------------------------------------------------------------
+// Responsive Adjustments
+//--------------------------------------------------------------------------
+@media (max-width: var.$breakpoint-sm) {
+  .form-control,
+  .form-select {
+    font-size: max(16px, var.$input-font-size); // iOS zoom防止
+    padding: 12px 16px;
+    height: 48px;
+  }
+  
+  textarea.form-control {
+    min-height: 96px;
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: var.$spacer * 0.75;
+  }
+  
+  .vehicle-number-group {
+    flex-wrap: wrap;
+    gap: var.$spacer * 0.75;
+    
+    .vehicle-number-item {
+      flex: 1 1 45%;
+      min-width: 120px;
+    }
+  }
+  
+  .form-section {
+    padding: var.$card-padding-sm;
+  }
+}

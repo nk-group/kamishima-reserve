@@ -1,0 +1,204 @@
+//==========================================================================
+// Customer Variables - Clear車検予約システム顧客向け（iframe組み込み用）
+//==========================================================================
+
+//--------------------------------------------------------------------------
+// Color System (Bootstrap互換)
+//--------------------------------------------------------------------------
+$white:    #fff;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+$black:    #000;
+
+//--------------------------------------------------------------------------
+// Clear車検ブランドカラー（上嶋自動車様サイト調和）
+//--------------------------------------------------------------------------
+
+// メインカラー（穏やか・信頼感重視）
+$clear-blue:      #4a90e2;    // 穏やかなブルー
+$clear-blue-light: #6aa3e7;   // ホバー・アクセント用
+$clear-blue-dark:  #357abd;   // アクティブ・押下時用
+$clear-blue-pale:  #e6f2ff;   // 背景・薄い表示用
+
+// Clear車検機能色
+$clear-green:     #28a745;    // 予約可能・成功表示用
+$clear-orange:    #fd7e14;    // 注意・残りわずか用
+$clear-red:       #dc3545;    // エラー・満席用
+$clear-gray:      #6c757d;    // テキスト・無効状態用
+
+// Bootstrap互換カラー
+$primary:   $clear-blue;
+$secondary: $gray-600;
+$success:   $clear-green;
+$info:      #17a2b8;
+$warning:   $clear-orange;
+$danger:    $clear-red;
+$light:     $gray-100;
+$dark:      $gray-800;
+
+//--------------------------------------------------------------------------
+// 空き状況表示色（視認性重視）
+//--------------------------------------------------------------------------
+$availability-full:     $clear-green;    // ○ 余裕あり
+$availability-limited:  $clear-orange;   // △ 残りわずか  
+$availability-none:     $clear-red;      // × 空きなし
+$availability-closed:   $gray-400;       // 定休日
+
+//--------------------------------------------------------------------------
+// レイアウト・背景色
+//--------------------------------------------------------------------------
+$body-bg:              #f5f5f5;    // 上嶋自動車様サイトに合わせた薄いグレー
+$content-bg:           $white;     // コンテンツ背景
+$border-color:         #e0e0e0;    // 境界線
+$border-light:         #e0e0e0;    // 薄いボーダー
+$border-medium:        #cccccc;    // 中程度ボーダー
+
+// テキスト色
+$text-color:           #333333;    // メインテキスト
+$text-muted:           $clear-gray; // 薄いテキスト
+
+// シャドウ
+$shadow-light:         rgba(0, 0, 0, 0.05);
+$shadow-medium:        rgba(0, 0, 0, 0.1);
+
+//--------------------------------------------------------------------------
+// フォーム・UIコンポーネント
+//--------------------------------------------------------------------------
+$form-bg:              $white;
+$form-border:          #d1d5db;     // 自然なボーダー色
+$form-border-focus:    $clear-blue; // フォーカス時
+$form-text:            $text-color; // フォーム内テキスト
+$form-placeholder:     #9ca3af;     // プレースホルダー
+$form-disabled-bg:     #f9fafb;     // 無効状態背景
+$form-disabled-text:   $gray-500;   // 無効状態テキスト
+
+//--------------------------------------------------------------------------
+// タイポグラフィ
+//--------------------------------------------------------------------------
+$font-family-base:     'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic Medium', 'Meiryo', 'MS Gothic', sans-serif;
+$font-family-heading:  $font-family-base;
+
+$font-size-base:       16px;
+$font-size-sm:         14px;
+$font-size-lg:         18px;
+$font-size-xl:         20px;
+
+$font-weight-normal:   400;
+$font-weight-medium:   500;
+$font-weight-semibold: 600;
+$font-weight-bold:     700;
+
+$line-height-base:     1.7;     // 日本語読みやすさ重視
+$line-height-sm:       1.5;
+$line-height-lg:       1.8;
+
+// 見出しサイズ
+$h1-font-size:         28px;    // 大見出し
+$h2-font-size:         24px;    // 中見出し
+$h3-font-size:         20px;    // 小見出し
+$h4-font-size:         18px;    // セクション見出し
+$h5-font-size:         16px;    // サブ見出し
+$h6-font-size:         14px;    // 詳細見出し
+
+$headings-font-weight: $font-weight-semibold;
+$headings-color:       $text-color;
+
+//--------------------------------------------------------------------------
+// スペーシング
+//--------------------------------------------------------------------------
+$spacer: 16px;
+
+$spacers: (
+  0: 0,
+  1: $spacer * 0.25,    // 4px
+  2: $spacer * 0.5,     // 8px
+  3: $spacer,           // 16px
+  4: $spacer * 1.5,     // 24px
+  5: $spacer * 2,       // 32px
+  6: $spacer * 3,       // 48px
+);
+
+//--------------------------------------------------------------------------
+// ブレークポイント
+//--------------------------------------------------------------------------
+$breakpoint-xs: 0;
+$breakpoint-sm: 576px;    // スマートフォン
+$breakpoint-md: 768px;    // タブレット
+$breakpoint-lg: 992px;    // PC小
+$breakpoint-xl: 1200px;   // PC大
+
+//--------------------------------------------------------------------------
+// コンポーネントサイズ
+//--------------------------------------------------------------------------
+
+// ボタン
+$btn-padding-y:        12px;
+$btn-padding-x:        24px;
+$btn-padding-sm-y:     8px;
+$btn-padding-sm-x:     16px;
+$btn-padding-lg-y:     16px;
+$btn-padding-lg-x:     32px;
+
+$btn-font-size:        $font-size-base;
+$btn-font-weight:      $font-weight-medium;
+$btn-line-height:      1.5;
+$btn-border-radius:    6px;
+
+// フォームコントロール
+$input-padding-y:      12px;
+$input-padding-x:      16px;
+$input-font-size:      $font-size-base;
+$input-line-height:    $line-height-base;
+$input-height:         46px;            // タッチ操作適切な高さ
+$input-border-width:   1px;
+$input-border-radius:  6px;
+
+// カレンダー
+$calendar-cell-size:       48px;        // PCサイズ
+$calendar-cell-size-md:    44px;        // タブレット
+$calendar-cell-size-sm:    40px;        // スマホ
+$calendar-gap:             1px;         // セル間隙間
+$calendar-header-height:   56px;        // ヘッダー高
+
+// カード
+$card-padding:         24px;
+$card-padding-sm:      16px;
+$card-border-width:    1px;
+$card-border-radius:   8px;
+$card-border-color:    $border-color;
+
+//--------------------------------------------------------------------------
+// アニメーション
+//--------------------------------------------------------------------------
+$transition-base:      all 0.2s ease;
+$transition-fade:      opacity 0.25s ease;
+$transition-slide:     transform 0.25s ease;
+
+$hover-scale:          1.02;            // ホバー時のスケール
+$active-scale:         0.98;            // アクティブ時のスケール
+
+//--------------------------------------------------------------------------
+// Z-Index管理
+//--------------------------------------------------------------------------
+$z-index-dropdown:     1000;
+$z-index-sticky:       1020;
+$z-index-fixed:        1030;
+$z-index-modal-backdrop: 1040;
+$z-index-modal:        1050;
+$z-index-popover:      1060;
+$z-index-tooltip:      1070;
+
+//--------------------------------------------------------------------------
+// フィーチャーフラグ
+//--------------------------------------------------------------------------
+$enable-rounded:       true;
+$enable-shadows:       true;
+$enable-gradients:     false;           // グラデーション不使用
+$enable-transitions:   true;

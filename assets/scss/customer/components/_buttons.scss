@@ -1,0 +1,193 @@
+//==========================================================================
+// Customer Buttons
+//==========================================================================
+
+@use '../base/variables' as var;
+
+//--------------------------------------------------------------------------
+// Calendar Navigation Buttons (e.g., "前月", "次月")
+//--------------------------------------------------------------------------
+.btn-calendar-nav {
+  background: var.$white;
+  border: 2px solid var.$clear-blue;
+  color: var.$clear-blue;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: var.$clear-blue;
+    color: var.$white;
+    transform: translateY(-1px);
+  }
+}
+
+//--------------------------------------------------------------------------
+// Availability Buttons (e.g., "予約可能", 空き状況表示)
+//--------------------------------------------------------------------------
+.btn-availability {
+  border: none;
+  padding: 8px 12px;
+  border-radius: var.$btn-border-radius;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-height: 44px; // タッチ操作対応
+
+  // 予約可能（余裕あり）
+  &.available {
+    background: var.$availability-full;
+    color: var.$white;
+    
+    &:hover {
+      background: var.$clear-green;
+      transform: translateY(-1px);
+    }
+  }
+
+  // 残りわずか
+  &.limited {
+    background: var.$availability-limited;
+    color: var.$white;
+    
+    &:hover {
+      background: var.$clear-orange;
+      transform: translateY(-1px);
+    }
+  }
+
+  // 満席
+  &.full {
+    background: var.$availability-none;
+    color: var.$white;
+    cursor: not-allowed;
+    
+    &:hover {
+      transform: none;
+    }
+  }
+
+  // 定休日
+  &.closed {
+    background: var.$availability-closed;
+    color: var.$white;
+    cursor: not-allowed;
+    
+    &:hover {
+      transform: none;
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Primary Submit Button (e.g., "予約する")
+//--------------------------------------------------------------------------
+.btn-submit {
+  background: var.$primary;
+  border: none;
+  color: var.$white;
+  padding: var.$btn-padding-lg-y var.$btn-padding-lg-x;
+  border-radius: var.$btn-border-radius;
+  font-weight: 600;
+  font-size: var.$font-size-lg;
+  transition: all 0.3s ease;
+  box-shadow: var.$shadow-medium;
+  width: 100%;
+  min-height: 56px; // タッチ操作対応
+
+  &:hover {
+    background: var.$clear-blue-dark;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+    color: var.$white;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Secondary Button (e.g., "戻る", "キャンセル")
+//--------------------------------------------------------------------------
+.btn-secondary {
+  background: var.$white;
+  border: 2px solid var.$border-medium;
+  color: var.$clear-gray;
+  padding: var.$btn-padding-y var.$btn-padding-x;
+  border-radius: var.$btn-border-radius;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: var.$gray-100;
+    border-color: var.$clear-gray;
+    color: var.$clear-gray;
+    transform: translateY(-1px);
+  }
+}
+
+//--------------------------------------------------------------------------
+// Clear Form Button (e.g., "リセット", "クリア")
+//--------------------------------------------------------------------------
+.btn-reset {
+  background: var.$white;
+  border: 2px solid var.$warning;
+  color: var.$warning;
+  padding: var.$btn-padding-y var.$btn-padding-x;
+  border-radius: var.$btn-border-radius;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: var.$warning;
+    color: var.$white;
+    transform: translateY(-1px);
+  }
+}
+
+//--------------------------------------------------------------------------
+// Action Buttons Container
+//--------------------------------------------------------------------------
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+  padding-top: 25px;
+  border-top: 2px solid var.$border-color;
+}
+
+.action-buttons-right {
+  justify-content: flex-end;
+}
+
+//--------------------------------------------------------------------------
+// Responsive Adjustments
+//--------------------------------------------------------------------------
+@media (max-width: var.$breakpoint-sm) {
+  .btn-submit {
+    padding: 16px 24px;
+    font-size: 18px;
+    min-height: 60px;
+  }
+  
+  .btn-calendar-nav,
+  .btn-secondary,
+  .btn-reset {
+    padding: 12px 16px;
+    font-size: max(16px, var.$font-size-base); // iOS zoom防止
+    min-height: 48px;
+  }
+  
+  .btn-availability {
+    min-height: 48px;
+    padding: 10px 14px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+  }
+}

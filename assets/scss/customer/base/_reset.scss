@@ -1,0 +1,335 @@
+//==========================================================================
+// Customer Reset - Clear車検予約システム顧客向け（iframe環境用）
+//==========================================================================
+
+@use 'variables' as var; // customer variablesを使用
+
+//--------------------------------------------------------------------------
+// HTML・Body基本設定（iframe環境最適化）
+//--------------------------------------------------------------------------
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var.$font-family-base;
+  font-size: var.$font-size-base;
+  line-height: var.$line-height-base;
+  color: var.$text-color;
+  background-color: var.$body-bg;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  
+  // 日本語フォント最適化
+  font-feature-settings: "palt" 1, "kern" 1; // プロポーショナルメトリクス + カーニング
+  font-variant-numeric: lining-nums; // ライニング数字
+}
+
+//--------------------------------------------------------------------------
+// ボックスモデル統一
+//--------------------------------------------------------------------------
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+//--------------------------------------------------------------------------
+// 日本語タイポグラフィ最適化
+//--------------------------------------------------------------------------
+
+// 見出し要素
+h1, h2, h3, h4, h5, h6 {
+  margin-top: 0;
+  margin-bottom: var.$spacer * 0.75;
+  font-weight: var.$headings-font-weight;
+  line-height: 1.3;
+  color: var.$headings-color;
+  letter-spacing: 0.025em; // 日本語に適した文字間隔
+  word-break: break-word; // 長い単語の適切な改行
+}
+
+// 段落
+p {
+  margin-top: 0;
+  margin-bottom: var.$spacer;
+  word-break: break-word;
+}
+
+// リンク
+a {
+  color: var.$primary;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: var.$transition-base;
+  
+  &:hover {
+    color: var.$clear-blue-light;
+    text-decoration-thickness: 2px;
+  }
+  
+  &:focus {
+    outline: 2px solid var.$clear-blue;
+    outline-offset: 2px;
+  }
+}
+
+//--------------------------------------------------------------------------
+// フォーム要素の統一（iOS zoom防止含む）
+//--------------------------------------------------------------------------
+input, select, textarea, button {
+  font-family: var.$font-family-base;
+  font-size: max(16px, var.$font-size-base); // iOS zoom防止
+  line-height: var.$line-height-base;
+}
+
+// フォームコントロール基本スタイル
+input[type="text"],
+input[type="email"], 
+input[type="tel"],
+input[type="date"],
+input[type="password"],
+select,
+textarea {
+  display: block;
+  width: 100%;
+  padding: var.$input-padding-y var.$input-padding-x;
+  font-size: var.$input-font-size;
+  line-height: var.$input-line-height;
+  color: var.$form-text;
+  background-color: var.$form-bg;
+  border: var.$input-border-width solid var.$form-border;
+  border-radius: var.$input-border-radius;
+  transition: var.$transition-base;
+  
+  &:focus {
+    border-color: var.$form-border-focus;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+  }
+  
+  &::placeholder {
+    color: var.$form-placeholder;
+    opacity: 0.7;
+  }
+  
+  &:disabled {
+    background-color: var.$form-disabled-bg;
+    color: var.$form-disabled-text;
+    cursor: not-allowed;
+  }
+}
+
+// テキストエリア
+textarea {
+  resize: vertical;
+  min-height: calc(var.$input-height * 2);
+}
+
+// セレクトボックス
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right var.$input-padding-x center;
+  background-size: 16px 12px;
+  padding-right: calc(var.$input-padding-x * 2 + 16px);
+}
+
+// ボタン基本スタイル
+button {
+  display: inline-block;
+  font-weight: var.$btn-font-weight;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  background-color: var.$primary;
+  color: var.$white;
+  border: 1px solid var.$primary;
+  border-radius: var.$btn-border-radius;
+  padding: var.$btn-padding-y var.$btn-padding-x;
+  transition: var.$transition-base;
+  text-decoration: none;
+  min-height: 44px; // タッチ操作対応
+  
+  &:hover:not(:disabled) {
+    background-color: var.$clear-blue-dark;
+    border-color: var.$clear-blue-dark;
+    transform: translateY(-1px);
+  }
+  
+  &:focus {
+    outline: 2px solid var.$clear-blue;
+    outline-offset: 2px;
+  }
+  
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+//--------------------------------------------------------------------------
+// リスト要素
+//--------------------------------------------------------------------------
+ul, ol {
+  margin-top: 0;
+  margin-bottom: var.$spacer;
+  padding-left: var.$spacer * 1.5;
+}
+
+li {
+  margin-bottom: var.$spacer * 0.25;
+}
+
+//--------------------------------------------------------------------------
+// テーブル要素
+//--------------------------------------------------------------------------
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: var.$spacer * 0.5;
+  text-align: left;
+  border-bottom: 1px solid var.$border-color;
+}
+
+th {
+  font-weight: var.$font-weight-semibold;
+  background-color: var.$gray-100;
+}
+
+//--------------------------------------------------------------------------
+// 画像・メディア要素
+//--------------------------------------------------------------------------
+img {
+  max-width: 100%;
+  height: auto;
+  vertical-align: top;
+}
+
+//--------------------------------------------------------------------------
+// レスポンシブ・タッチ操作対応
+//--------------------------------------------------------------------------
+
+// タッチターゲットサイズの確保
+button, input[type="submit"], input[type="button"], 
+a, select, input[type="checkbox"], input[type="radio"] {
+  min-height: 44px; // iOS推奨の最小タッチサイズ
+  min-width: 44px;
+}
+
+// スマートフォン用調整
+@media (max-width: var.$breakpoint-sm) {
+  body {
+    font-size: 15px; // ベースサイズを若干小さく
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    margin-bottom: var.$spacer * 0.5;
+  }
+  
+  p {
+    margin-bottom: var.$spacer * 0.75;
+  }
+  
+  // フォーム要素のタッチ最適化
+  input, select, textarea, button {
+    font-size: 16px; // iOS zoom防止
+    padding: 12px 16px;
+  }
+  
+  button, input[type="submit"], input[type="button"] {
+    min-height: 48px; // タッチしやすく
+  }
+}
+
+//--------------------------------------------------------------------------
+// アクセシビリティ強化
+//--------------------------------------------------------------------------
+
+// フォーカス表示の統一
+:focus {
+  outline: 2px solid var.$clear-blue;
+  outline-offset: 2px;
+}
+
+// 読み上げ専用テキスト
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// 高コントラストモード対応
+@media (prefers-contrast: high) {
+  body {
+    color: var.$black;
+    background-color: var.$white;
+  }
+  
+  a {
+    color: #0000ff; // 高コントラストブルー
+    
+    &:hover {
+      color: #000080; // 高コントラストネイビー
+    }
+  }
+  
+  button {
+    border-width: 2px;
+  }
+  
+  :focus {
+    outline-width: 3px;
+  }
+}
+
+// モーション軽減設定対応
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
+  }
+  
+  button:hover {
+    transform: none;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Clear車検ブランド用追加スタイル
+//--------------------------------------------------------------------------
+
+// 必須マーク
+.required::after {
+  content: " *";
+  color: var.$clear-red;
+  font-weight: var.$font-weight-bold;
+}
+
+// 無効状態の視覚改善
+:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
