@@ -1,96 +1,84 @@
 //==========================================================================
-// Customer Calendar Component Styles
+// Customer Calendar Component Styles - Clear車検予約システム顧客向け
 //==========================================================================
 
 @use '../base/variables' as var;
 
 //--------------------------------------------------------------------------
-// Calendar Container Base
+// Calendar Container
 //--------------------------------------------------------------------------
 .calendar-container {
   background: var.$white;
-  border: 2px solid var.$border-color;
+  border: 1px solid var.$border-color;
   border-radius: var.$card-border-radius;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  width: 100%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 //--------------------------------------------------------------------------
-// Calendar Header (Navigation + Title)
+// Calendar Header (Navigation)
 //--------------------------------------------------------------------------
 .calendar-header {
-  background: linear-gradient(135deg, var.$clear-blue-pale, var.$gray-100);
+  background: var.$section-bg;
   padding: var.$spacer;
+  border-bottom: 1px solid var.$border-color;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var.$border-color;
-  min-height: var.$calendar-header-height;
 }
 
-.calendar-month-title {
+.calendar-title {
   font-size: 1.2rem;
-  font-weight: 700;
-  color: var.$text-color;
+  font-weight: var.$headings-font-weight;
+  color: var.$headings-color;
   margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
-.calendar-nav {
+.calendar-nav-buttons {
   display: flex;
-  gap: 10px;
-  align-items: center;
+  gap: var.$spacer-sm;
 }
 
 //--------------------------------------------------------------------------
 // Month Calendar Styles
 //--------------------------------------------------------------------------
 .calendar-month {
-  .calendar-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var.$white;
-  }
-
-  .calendar-header-row {
-    background: var.$gray-100;
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
   }
 
   .calendar-header-cell {
-    padding: 12px 8px;
+    padding: var.$spacer-sm;
     text-align: center;
     font-weight: 600;
     font-size: 0.9rem;
     color: var.$text-color;
+    background: var.$gray-100;
     border-bottom: 1px solid var.$border-color;
-
+    
     // 日曜日
     &.sunday {
-      color: var.$clear-red;
+      color: var.$danger;
     }
-
+    
     // 土曜日  
     &.saturday {
-      color: var.$clear-blue;
+      color: var.$clear-primary;
     }
   }
 
   .calendar-cell {
-    padding: 8px 6px;
-    vertical-align: top;
+    padding: var.$spacer-sm;
     border-bottom: 1px solid var.$border-color;
     border-right: 1px solid var.$border-color;
     min-height: var.$calendar-cell-size;
     position: relative;
     background: var.$white;
     transition: var.$transition-base;
-    width: 14.28%; // 7等分
     cursor: pointer;
 
-    &:last-child {
+    &:nth-child(7n) {
       border-right: none;
     }
 
@@ -100,37 +88,21 @@
 
     // 今日
     &.today {
-      background: var.$clear-blue-pale;
-      border: 2px solid var.$clear-blue;
-      box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
-    }
-
-    &.today:hover {
-      background: var.$clear-blue-pale;
+      background: var.$calendar-available-bg;
+      border: 2px solid var.$clear-primary;
     }
 
     // 定休日
     &.holiday {
-      background: var.$gray-200;
+      background: var.$calendar-holiday-bg;
       cursor: not-allowed;
     }
 
-    &.holiday:hover {
-      background: var.$gray-300;
-    }
-
-    // 過去の日付（選択不可）
+    // 過去の日付
     &.past-date {
       background: var.$gray-100;
       cursor: not-allowed;
       opacity: 0.6;
-    }
-
-    // 範囲外の日付（6ヶ月超）
-    &.out-of-range {
-      background: var.$gray-100;
-      cursor: not-allowed;
-      opacity: 0.4;
     }
   }
 
@@ -138,22 +110,18 @@
     font-size: 0.9rem;
     font-weight: 600;
     margin-bottom: 6px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    min-height: 22px;
-
+    
     .date-number {
       // 日曜日
       &.sunday {
-        color: var.$clear-red;
+        color: var.$danger;
       }
-
+      
       // 土曜日
       &.saturday {
-        color: var.$clear-blue;
+        color: var.$clear-primary;
       }
-
+      
       // 前月・次月の日付
       &.other-month {
         color: var.$gray-500;
@@ -170,17 +138,17 @@
 
     // ○ 余裕あり
     &.available {
-      color: var.$availability-full;
+      color: var.$calendar-available-color;
     }
 
     // △ 残りわずか
     &.limited {
-      color: var.$availability-limited;
+      color: var.$calendar-limited-color;
     }
 
     // × 空きなし
     &.full {
-      color: var.$availability-none;
+      color: var.$calendar-unavailable-color;
     }
 
     // 定休日（マーク非表示）
@@ -191,7 +159,7 @@
 }
 
 //--------------------------------------------------------------------------
-// Week Calendar Styles  
+// Week Calendar Styles
 //--------------------------------------------------------------------------
 .calendar-week {
   .calendar-table {
@@ -224,24 +192,18 @@
 
     // 日曜日
     &.sunday {
-      color: var.$clear-red;
+      color: var.$danger;
     }
 
     // 土曜日
     &.saturday {
-      color: var.$clear-blue;
+      color: var.$clear-primary;
     }
 
     // 今日のヘッダー
     &.today {
-      background: var.$clear-blue-pale;
-      color: var.$clear-blue-dark;
-    }
-  }
-
-  .time-slot-row {
-    &:hover {
-      background: var.$gray-100;
+      background: var.$calendar-available-bg;
+      color: var.$clear-primary-dark;
     }
   }
 
@@ -276,13 +238,13 @@
       cursor: pointer;
 
       &:hover {
-        background: var.$availability-full;
+        background: var.$calendar-week-available-bg;
         transform: scale(var.$hover-scale);
       }
 
       .time-slot-button {
-        background: var.$availability-full;
-        color: var.$white;
+        background: var.$calendar-week-available-bg;
+        color: var.$calendar-week-available-color;
         border: none;
         padding: 8px 12px;
         border-radius: var.$btn-border-radius;
@@ -291,9 +253,10 @@
         width: 100%;
         min-height: 36px;
         transition: var.$transition-base;
+        cursor: pointer;
 
         &:hover {
-          background: var.$clear-green;
+          background: var.$success;
           transform: translateY(-1px);
         }
       }
@@ -305,11 +268,12 @@
       cursor: pointer;
 
       &:hover {
-        background: var.$availability-limited;
+        background: var.$warning;
+        color: var.$white;
       }
 
       .time-slot-button {
-        background: var.$availability-limited;
+        background: var.$warning;
         color: var.$white;
         border: none;
         padding: 8px 12px;
@@ -319,9 +283,10 @@
         width: 100%;
         min-height: 36px;
         transition: var.$transition-base;
+        cursor: pointer;
 
         &:hover {
-          background: var.$clear-orange;
+          background: darken(var.$warning, 10%);
           transform: translateY(-1px);
         }
       }
@@ -333,7 +298,7 @@
       cursor: not-allowed;
 
       .unavailable-mark {
-        color: var.$availability-none;
+        color: var.$calendar-unavailable-color;
         font-size: 1.2rem;
         font-weight: 700;
       }
@@ -341,114 +306,16 @@
 
     // 定休日
     &.closed {
-      background: var.$gray-200;
+      background: var.$calendar-holiday-bg;
       cursor: not-allowed;
 
       .closed-mark {
-        color: var.$gray-500;
+        color: var.$calendar-holiday-color;
         font-size: 0.8rem;
         font-weight: 600;
       }
     }
-
-    // 今日の列
-    &.today {
-      border-left: 3px solid var.$clear-blue;
-      border-right: 3px solid var.$clear-blue;
-    }
   }
-}
-
-//--------------------------------------------------------------------------
-// Calendar Scroll Container (Week Calendar)
-//--------------------------------------------------------------------------
-.calendar-scroll-container {
-  width: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: var.$gray-400 var.$gray-200;
-
-  &::-webkit-scrollbar {
-    height: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: var.$gray-200;
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var.$gray-400;
-    border-radius: 4px;
-
-    &:hover {
-      background: var.$gray-500;
-    }
-  }
-}
-
-//--------------------------------------------------------------------------
-// Calendar Navigation Pagination
-//--------------------------------------------------------------------------
-.calendar-pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: var.$spacer 0;
-  gap: 8px;
-  background: var.$gray-100;
-  border-top: 1px solid var.$border-color;
-}
-
-.pagination-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var.$gray-400;
-  cursor: pointer;
-  transition: var.$transition-base;
-
-  &.active {
-    background: var.$clear-blue;
-    transform: scale(1.2);
-  }
-
-  &:hover {
-    background: var.$clear-blue-light;
-  }
-}
-
-//--------------------------------------------------------------------------
-// Calendar Loading State
-//--------------------------------------------------------------------------
-.calendar-loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
-  background: var.$white;
-
-  .loading-spinner {
-    width: 32px;
-    height: 32px;
-    border: 3px solid var.$gray-300;
-    border-top: 3px solid var.$clear-blue;
-    border-radius: 50%;
-    animation: calendar-spin 1s linear infinite;
-  }
-
-  .loading-text {
-    margin-left: var.$spacer;
-    color: var.$gray-600;
-    font-size: 0.9rem;
-  }
-}
-
-@keyframes calendar-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
 }
 
 //--------------------------------------------------------------------------
@@ -460,7 +327,7 @@
   border-top: 1px solid var.$border-color;
   display: flex;
   justify-content: center;
-  gap: var.$spacer * 1.5;
+  gap: var.$spacer-lg;
   flex-wrap: wrap;
 }
 
@@ -476,19 +343,19 @@
     font-size: 1rem;
 
     &.available {
-      color: var.$availability-full;
+      color: var.$calendar-available-color;
     }
 
     &.limited {
-      color: var.$availability-limited;
+      color: var.$calendar-limited-color;
     }
 
     &.full {
-      color: var.$availability-none;
+      color: var.$calendar-unavailable-color;
     }
 
     &.closed {
-      color: var.$gray-500;
+      color: var.$calendar-holiday-color;
     }
   }
 }
@@ -504,12 +371,12 @@
     padding: var.$spacer * 0.75;
   }
 
-  .calendar-month-title {
+  .calendar-title {
     text-align: center;
     font-size: 1.1rem;
   }
 
-  .calendar-nav {
+  .calendar-nav-buttons {
     justify-content: center;
   }
 
@@ -554,80 +421,5 @@
     .legend-item {
       font-size: 0.8rem;
     }
-  }
-}
-
-@media (max-width: var.$breakpoint-sm) {
-  .calendar-header {
-    padding: var.$spacer * 0.5;
-  }
-
-  .calendar-month-title {
-    font-size: 1rem;
-  }
-
-  // 月表示調整
-  .calendar-month {
-    .calendar-cell {
-      min-height: var.$calendar-cell-size-sm;
-      padding: 4px 2px;
-    }
-
-    .calendar-date {
-      font-size: 0.75rem;
-      margin-bottom: 4px;
-    }
-
-    .availability-mark {
-      font-size: 0.9rem;
-      margin-top: 2px;
-    }
-  }
-
-  // 週表示調整
-  .calendar-week {
-    .calendar-table {
-      min-width: 500px; // より小さなデバイス対応
-    }
-
-    .calendar-header-cell,
-    .time-slot-label {
-      font-size: 0.75rem;
-      padding: 8px 4px;
-    }
-
-    .time-slot-cell {
-      min-height: var.$calendar-cell-size-sm;
-      padding: 4px;
-
-      .time-slot-button {
-        font-size: 0.7rem;
-        padding: 4px 6px;
-        min-height: 28px;
-      }
-
-      .unavailable-mark {
-        font-size: 1rem;
-      }
-
-      .closed-mark {
-        font-size: 0.7rem;
-      }
-    }
-  }
-
-  .calendar-legend {
-    flex-direction: column;
-    gap: var.$spacer * 0.5;
-    text-align: center;
-    
-    .legend-item {
-      justify-content: center;
-      font-size: 0.75rem;
-    }
-  }
-
-  .calendar-scroll-container {
-    padding-bottom: 10px; // スクロールバー分のスペース
   }
 }

@@ -1,0 +1,279 @@
+//==========================================================================
+// Customer Calendar Month Page Styles - Clear車検予約システム顧客向け
+//==========================================================================
+
+@use '../../base/variables' as var;
+
+//--------------------------------------------------------------------------
+// Calendar Month Page Container
+//--------------------------------------------------------------------------
+.calendar-month-page {
+  .page-header {
+    background: linear-gradient(135deg, var.$section-bg, var.$white);
+    border-bottom: 2px solid var.$clear-primary;
+    text-align: center;
+    padding: var.$spacer-lg;
+    
+    .page-title {
+      color: var.$clear-primary-dark;
+      font-size: 1.8rem;
+      font-weight: var.$headings-font-weight;
+      margin-bottom: var.$spacer-sm;
+      
+      .calendar-icon {
+        color: var.$clear-primary;
+        margin-right: 12px;
+      }
+    }
+    
+    .page-description {
+      color: var.$gray-600;
+      font-size: 1rem;
+      margin: 0;
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Month Navigation Section
+//--------------------------------------------------------------------------
+.month-navigation-section {
+  background: var.$white;
+  padding: var.$spacer 0;
+  border-bottom: 1px solid var.$border-color;
+  margin-bottom: var.$spacer;
+  
+  .month-nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var.$spacer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var.$spacer;
+  }
+  
+  .current-month-display {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var.$clear-primary-dark;
+    margin: 0;
+    
+    .month-icon {
+      color: var.$clear-primary;
+      margin-right: 8px;
+      font-size: 1.2rem;
+    }
+  }
+  
+  .month-nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    
+    .back-to-today {
+      color: var.$clear-primary;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border: 1px solid var.$clear-primary;
+      border-radius: 20px;
+      transition: var.$transition-base;
+      
+      &:hover {
+        background: var.$clear-primary;
+        color: var.$white;
+        text-decoration: none;
+      }
+      
+      .today-icon {
+        margin-right: 6px;
+      }
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Calendar Month Section
+//--------------------------------------------------------------------------
+.calendar-month-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var.$spacer;
+  
+  .calendar-wrapper {
+    background: var.$white;
+    border-radius: var.$card-border-radius;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    border: 1px solid var.$border-color;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Calendar Action Section
+//--------------------------------------------------------------------------
+.calendar-action-section {
+  text-align: center;
+  margin-top: var.$spacer-xl;
+  padding: var.$spacer-lg;
+  background: var.$section-bg;
+  border-radius: var.$card-border-radius;
+  border: 1px solid var.$border-color;
+  
+  .action-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var.$text-color;
+    margin-bottom: var.$spacer-sm;
+  }
+  
+  .action-description {
+    color: var.$text-muted;
+    font-size: 0.95rem;
+    margin-bottom: var.$spacer;
+    line-height: 1.5;
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: var.$spacer;
+    flex-wrap: wrap;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Calendar Loading State
+//--------------------------------------------------------------------------
+.calendar-loading-overlay {
+  position: relative;
+  min-height: 400px;
+  
+  .loading-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var.$gray-300;
+      border-top: 4px solid var.$clear-primary;
+      border-radius: 50%;
+      animation: month-calendar-spin 1s linear infinite;
+      margin-bottom: var.$spacer;
+    }
+    
+    .loading-text {
+      color: var.$text-muted;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+@keyframes month-calendar-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+//--------------------------------------------------------------------------
+// Calendar Empty State
+//--------------------------------------------------------------------------
+.calendar-empty-state {
+  text-align: center;
+  padding: var.$spacer-xl;
+  color: var.$text-muted;
+  
+  .empty-icon {
+    font-size: 3rem;
+    color: var.$gray-400;
+    margin-bottom: var.$spacer;
+  }
+  
+  .empty-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var.$spacer-sm;
+    color: var.$text-color;
+  }
+  
+  .empty-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Responsive Adjustments
+//--------------------------------------------------------------------------
+@media (max-width: var.$breakpoint-md) {
+  .calendar-month-page {
+    .page-header {
+      padding: var.$spacer;
+      
+      .page-title {
+        font-size: 1.5rem;
+      }
+      
+      .page-description {
+        font-size: 0.9rem;
+      }
+    }
+  }
+  
+  .month-navigation-section {
+    .month-nav-container {
+      flex-direction: column;
+      text-align: center;
+      gap: var.$spacer-sm;
+    }
+    
+    .current-month-display {
+      font-size: 1.2rem;
+    }
+    
+    .month-nav-buttons {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+  
+  .calendar-month-section {
+    padding: 0 var.$spacer-sm;
+  }
+  
+  .calendar-action-section {
+    margin-top: var.$spacer;
+    padding: var.$spacer;
+    
+    .action-title {
+      font-size: 1.1rem;
+    }
+    
+    .action-description {
+      font-size: 0.9rem;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+      align-items: center;
+      gap: var.$spacer-sm;
+    }
+  }
+  
+  .calendar-loading-overlay {
+    min-height: 300px;
+    
+    .loading-content {
+      .loading-spinner {
+        width: 32px;
+        height: 32px;
+        border-width: 3px;
+      }
+    }
+  }
+}

@@ -1,158 +1,152 @@
 //==========================================================================
-// Customer Form Component Styles
+// Customer Form Component Styles - Clear車検予約システム顧客向け
 //==========================================================================
 
 @use '../base/variables' as var;
 
-// General form styling
+//--------------------------------------------------------------------------
+// Form Labels
+//--------------------------------------------------------------------------
 .form-label {
   color: var.$text-color;
   font-weight: 600;
   margin-bottom: 8px;
   display: block;
   font-size: 0.9rem;
+
+  // 必須マーク
+  .required {
+    color: var.$required-color;
+    font-weight: bold;
+    margin-left: 4px;
+  }
 }
 
+//--------------------------------------------------------------------------
+// Form Controls (input, select, textarea)
+//--------------------------------------------------------------------------
 .form-control,
 .form-select {
-  border: 2px solid var.$form-border;
-  border-radius: var.$input-border-radius;
-  padding: var.$input-padding-y var.$input-padding-x;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
-  background: var.$form-bg;
-  font-size: var.$input-font-size;
-  height: var.$input-height;
+  border: 2px solid var.$form-border-color;
+  border-radius: var.$form-border-radius;
+  padding: var.$form-padding-y var.$form-padding-x;
+  transition: var.$transition-base;
+  background: var.$white;
+  font-size: var.$font-size-base;
+  width: 100%;
+  min-height: 48px; // タッチ操作対応
+
   &:focus {
-    border-color: var.$form-border-focus;
-    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.25);
-    background: var.$white;
+    border-color: var.$form-focus-border-color;
+    box-shadow: var.$form-focus-box-shadow;
+    outline: none;
+  }
+
+  &::placeholder {
+    color: var.$text-muted;
+    opacity: 0.7;
+  }
+
+  &:disabled {
+    background-color: var.$gray-100;
+    color: var.$text-muted;
+    cursor: not-allowed;
   }
 }
 
-select[multiple],
-select[size]:not([size="1"]) {
-  height: auto;
-  padding: 8px 16px;
+// セレクトボックス特有スタイル
+.form-select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23495057' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right var.$form-padding-x center;
+  background-size: 16px 12px;
+  padding-right: calc(var.$form-padding-x * 2 + 16px);
 }
 
+// テキストエリア
 textarea.form-control {
   height: auto;
+  min-height: calc(48px * 2);
   padding-top: 12px;
-  min-height: calc(var.$input-height * 2);
+  resize: vertical;
 }
 
-.form-check-input {
-  &:checked {
-    background-color: var.$clear-blue;
-    border-color: var.$clear-blue;
+//--------------------------------------------------------------------------
+// Form Groups
+//--------------------------------------------------------------------------
+.form-group {
+  margin-bottom: var.$spacer;
+
+  &:last-child {
+    margin-bottom: 0;
   }
 }
 
-// These are general flex/gap styles for checkbox groups,
-// specific grid layouts will be handled in page-specific SCSS.
-.checkbox-group {
+//--------------------------------------------------------------------------
+// Input Groups (アドオン付きinput)
+//--------------------------------------------------------------------------
+.input-group {
   display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-}
+  width: 100%;
 
-.checkbox-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+  .input-group-text {
+    background: var.$gray-100;
+    border: 2px solid var.$form-border-color;
+    border-right: none;
+    padding: var.$form-padding-y var.$form-padding-x;
+    font-size: var.$font-size-base;
+    color: var.$text-color;
+    border-radius: var.$form-border-radius 0 0 var.$form-border-radius;
+  }
 
-//--------------------------------------------------------------------------
-// Required Field Indicator
-//--------------------------------------------------------------------------
-.required {
-  color: var.$clear-red;
-  font-weight: 600;
-}
-
-//--------------------------------------------------------------------------
-// Form Sections (e.g., Customer Info, Vehicle Info)
-//--------------------------------------------------------------------------
-.form-section {
-  margin-bottom: var.$spacer * 2;
-  padding: var.$card-padding;
-  background: var.$content-bg;
-  border: 1px solid var.$border-color;
-  border-radius: var.$card-border-radius;
-}
-
-.form-section-title {
-  font-size: var.$h4-font-size;
-  font-weight: var.$headings-font-weight;
-  color: var.$clear-blue;
-  margin-bottom: var.$spacer;
-  padding-bottom: var.$spacer * 0.5;
-  border-bottom: 2px solid var.$clear-blue-pale;
+  .form-control {
+    border-left: none;
+    border-radius: 0 var.$form-border-radius var.$form-border-radius 0;
+  }
 }
 
 //--------------------------------------------------------------------------
-// Form Rows (for multi-column layouts)
+// Form Validation States
 //--------------------------------------------------------------------------
-.form-row {
-  display: flex;
-  gap: var.$spacer;
-  margin-bottom: var.$spacer;
+.was-validated .form-control:valid,
+.form-control.is-valid {
+  border-color: var.$success;
+
+  &:focus {
+    border-color: var.$success;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+  }
 }
 
-.form-group {
-  flex: 1;
+.was-validated .form-control:invalid,
+.form-control.is-invalid {
+  border-color: var.$danger;
+
+  &:focus {
+    border-color: var.$danger;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+  }
+}
+
+.valid-feedback {
+  color: var.$success;
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+.invalid-feedback {
+  color: var.$danger;
+  font-size: 0.875rem;
+  margin-top: 4px;
 }
 
 //--------------------------------------------------------------------------
-// Vehicle Number Input Group
+// レスポンシブ対応
 //--------------------------------------------------------------------------
-.vehicle-number-group {
-  display: flex;
-  gap: var.$spacer * 0.5;
-  align-items: end;
-}
-
-.vehicle-number-item {
-  display: flex;
-  flex-direction: column;
-  
-  &.region { flex: 2; }
-  &.class { flex: 1.5; }
-  &.kana { flex: 1; }
-  &.number { flex: 2; }
-}
-
-//--------------------------------------------------------------------------
-// Responsive Adjustments
-//--------------------------------------------------------------------------
-@media (max-width: var.$breakpoint-sm) {
+@media (max-width: var.$breakpoint-md) {
   .form-control,
   .form-select {
-    font-size: max(16px, var.$input-font-size); // iOS zoom防止
-    padding: 12px 16px;
-    height: 48px;
-  }
-  
-  textarea.form-control {
-    min-height: 96px;
-  }
-  
-  .form-row {
-    flex-direction: column;
-    gap: var.$spacer * 0.75;
-  }
-  
-  .vehicle-number-group {
-    flex-wrap: wrap;
-    gap: var.$spacer * 0.75;
-    
-    .vehicle-number-item {
-      flex: 1 1 45%;
-      min-width: 120px;
-    }
-  }
-  
-  .form-section {
-    padding: var.$card-padding-sm;
+    font-size: max(16px, var.$font-size-base); // iOS zoom防止
   }
 }

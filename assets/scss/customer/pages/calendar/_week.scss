@@ -1,0 +1,385 @@
+//==========================================================================
+// Customer Calendar Week Page Styles - Clear車検予約システム顧客向け
+//==========================================================================
+
+@use '../../base/variables' as var;
+
+//--------------------------------------------------------------------------
+// Calendar Week Page Container
+//--------------------------------------------------------------------------
+.calendar-week-page {
+  .page-header {
+    background: linear-gradient(135deg, var.$section-bg, var.$white);
+    border-bottom: 2px solid var.$clear-primary;
+    text-align: center;
+    padding: var.$spacer-lg;
+    
+    .page-title {
+      color: var.$clear-primary-dark;
+      font-size: 1.8rem;
+      font-weight: var.$headings-font-weight;
+      margin-bottom: var.$spacer-sm;
+      
+      .calendar-icon {
+        color: var.$clear-primary;
+        margin-right: 12px;
+      }
+    }
+    
+    .week-period-display {
+      color: var.$gray-600;
+      font-size: 1.1rem;
+      margin: 0;
+      font-weight: 600;
+      
+      .period-dates {
+        color: var.$clear-primary-dark;
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Week Navigation Section
+//--------------------------------------------------------------------------
+.week-navigation-section {
+  background: var.$white;
+  padding: var.$spacer 0;
+  border-bottom: 1px solid var.$border-color;
+  margin-bottom: var.$spacer;
+  
+  .week-nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var.$spacer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var.$spacer;
+  }
+  
+  .current-week-display {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var.$clear-primary-dark;
+    margin: 0;
+    
+    .week-icon {
+      color: var.$clear-primary;
+      margin-right: 8px;
+      font-size: 1.1rem;
+    }
+  }
+  
+  .week-nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    
+    .back-to-month {
+      color: var.$clear-primary;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 6px 12px;
+      border: 1px solid var.$clear-primary;
+      border-radius: 20px;
+      transition: var.$transition-base;
+      
+      &:hover {
+        background: var.$clear-primary;
+        color: var.$white;
+        text-decoration: none;
+      }
+      
+      .back-icon {
+        margin-right: 6px;
+      }
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Week Calendar Section
+//--------------------------------------------------------------------------
+.week-calendar-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var.$spacer;
+  
+  .week-calendar-wrapper {
+    background: var.$white;
+    border-radius: var.$card-border-radius;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    border: 1px solid var.$border-color;
+  }
+  
+  .week-calendar-scroll {
+    overflow-x: auto;
+    overflow-y: visible;
+    
+    // スクロールバースタイル
+    &::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: var.$gray-100;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: var.$gray-400;
+      border-radius: 4px;
+      
+      &:hover {
+        background: var.$gray-500;
+      }
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Time Slot Legend Section
+//--------------------------------------------------------------------------
+.time-slot-legend-section {
+  background: var.$section-bg;
+  padding: var.$spacer;
+  border-top: 1px solid var.$border-color;
+  
+  .legend-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var.$text-color;
+    margin-bottom: var.$spacer-sm;
+    text-align: center;
+  }
+  
+  .legend-grid {
+    display: flex;
+    justify-content: center;
+    gap: var.$spacer-lg;
+    flex-wrap: wrap;
+  }
+  
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var.$text-color;
+    
+    .legend-button {
+      padding: 4px 8px;
+      border-radius: var.$btn-border-radius;
+      font-size: 0.75rem;
+      font-weight: 600;
+      min-width: 60px;
+      text-align: center;
+      border: none;
+      
+      &.available {
+        background: var.$calendar-week-available-bg;
+        color: var.$calendar-week-available-color;
+      }
+      
+      &.limited {
+        background: var.$warning;
+        color: var.$white;
+      }
+      
+      &.full {
+        background: var.$calendar-week-unavailable-bg;
+        color: var.$calendar-week-unavailable-color;
+      }
+      
+      &.closed {
+        background: var.$calendar-holiday-bg;
+        color: var.$calendar-holiday-color;
+      }
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Week Calendar Action Section
+//--------------------------------------------------------------------------
+.week-calendar-action-section {
+  text-align: center;
+  margin-top: var.$spacer-xl;
+  padding: var.$spacer-lg;
+  background: var.$section-bg;
+  border-radius: var.$card-border-radius;
+  border: 1px solid var.$border-color;
+  
+  .action-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var.$text-color;
+    margin-bottom: var.$spacer-sm;
+  }
+  
+  .action-description {
+    color: var.$text-muted;
+    font-size: 0.95rem;
+    margin-bottom: var.$spacer;
+    line-height: 1.5;
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: var.$spacer;
+    flex-wrap: wrap;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Week Calendar Loading State
+//--------------------------------------------------------------------------
+.week-calendar-loading {
+  position: relative;
+  min-height: 400px;
+  
+  .loading-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var.$gray-300;
+      border-top: 4px solid var.$clear-primary;
+      border-radius: 50%;
+      animation: week-calendar-spin 1s linear infinite;
+      margin-bottom: var.$spacer;
+    }
+    
+    .loading-text {
+      color: var.$text-muted;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+@keyframes week-calendar-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+//--------------------------------------------------------------------------
+// Week Calendar Empty State
+//--------------------------------------------------------------------------
+.week-calendar-empty {
+  text-align: center;
+  padding: var.$spacer-xl;
+  color: var.$text-muted;
+  
+  .empty-icon {
+    font-size: 3rem;
+    color: var.$gray-400;
+    margin-bottom: var.$spacer;
+  }
+  
+  .empty-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var.$spacer-sm;
+    color: var.$text-color;
+  }
+  
+  .empty-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Responsive Adjustments
+//--------------------------------------------------------------------------
+@media (max-width: var.$breakpoint-md) {
+  .calendar-week-page {
+    .page-header {
+      padding: var.$spacer;
+      
+      .page-title {
+        font-size: 1.5rem;
+      }
+      
+      .week-period-display {
+        font-size: 1rem;
+      }
+    }
+  }
+  
+  .week-navigation-section {
+    .week-nav-container {
+      flex-direction: column;
+      text-align: center;
+      gap: var.$spacer-sm;
+    }
+    
+    .current-week-display {
+      font-size: 1.2rem;
+    }
+    
+    .week-nav-buttons {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+  
+  .week-calendar-section {
+    padding: 0 var.$spacer-sm;
+  }
+  
+  .time-slot-legend-section {
+    .legend-grid {
+      gap: var.$spacer;
+    }
+    
+    .legend-item {
+      font-size: 0.8rem;
+      
+      .legend-button {
+        font-size: 0.7rem;
+        min-width: 50px;
+      }
+    }
+  }
+  
+  .week-calendar-action-section {
+    margin-top: var.$spacer;
+    padding: var.$spacer;
+    
+    .action-title {
+      font-size: 1.1rem;
+    }
+    
+    .action-description {
+      font-size: 0.9rem;
+    }
+    
+    .action-buttons {
+      flex-direction: column;
+      align-items: center;
+      gap: var.$spacer-sm;
+    }
+  }
+  
+  .week-calendar-loading {
+    min-height: 300px;
+    
+    .loading-content {
+      .loading-spinner {
+        width: 32px;
+        height: 32px;
+        border-width: 3px;
+      }
+    }
+  }
+}

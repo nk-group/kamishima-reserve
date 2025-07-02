@@ -1,0 +1,367 @@
+//==========================================================================
+// Customer Reservation Form Page Styles - Clear車検予約システム顧客向け
+//==========================================================================
+
+@use '../../base/variables' as var;
+
+//--------------------------------------------------------------------------
+// Reservation Form Page Container
+//--------------------------------------------------------------------------
+.reservation-form-page {
+  .page-header {
+    background: linear-gradient(135deg, var.$section-bg, var.$white);
+    border-bottom: 2px solid var.$clear-primary;
+    text-align: center;
+    padding: var.$spacer-lg;
+    
+    .page-title {
+      color: var.$clear-primary-dark;
+      font-size: 1.8rem;
+      font-weight: var.$headings-font-weight;
+      margin-bottom: var.$spacer-sm;
+      
+      .form-icon {
+        color: var.$clear-primary;
+        margin-right: 12px;
+      }
+    }
+    
+    .page-description {
+      color: var.$gray-600;
+      font-size: 1rem;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Form Main Container
+//--------------------------------------------------------------------------
+.reservation-form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var.$spacer;
+}
+
+//--------------------------------------------------------------------------
+// Form Sections (3セクション構成)
+//--------------------------------------------------------------------------
+.form-section {
+  background: var.$white;
+  border: 1px solid var.$border-color;
+  border-radius: var.$card-border-radius;
+  margin-bottom: var.$spacer-lg;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  
+  .section-header {
+    background: var.$section-bg;
+    padding: var.$spacer;
+    border-bottom: 1px solid var.$border-color;
+    
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var.$text-color;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      
+      .section-icon {
+        color: var.$clear-primary;
+        font-size: 1.1rem;
+      }
+    }
+    
+    .section-description {
+      color: var.$text-muted;
+      font-size: 0.9rem;
+      margin: 6px 0 0;
+      line-height: 1.4;
+    }
+  }
+  
+  .section-body {
+    padding: var.$spacer-lg;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Form Row & Group Layout
+//--------------------------------------------------------------------------
+.form-row {
+  display: flex;
+  gap: var.$spacer;
+  margin-bottom: var.$spacer;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  .form-group {
+    flex: 1;
+    margin-bottom: 0;
+    
+    &.form-group-sm {
+      flex: 0 0 auto;
+      min-width: 120px;
+    }
+    
+    &.form-group-md {
+      flex: 0 0 auto;
+      min-width: 200px;
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Vehicle Number Input Group (車両ナンバー)
+//--------------------------------------------------------------------------
+.vehicle-number-group {
+  display: flex;
+  gap: var.$spacer-sm;
+  align-items: end;
+  flex-wrap: wrap;
+  
+  .vehicle-number-item {
+    display: flex;
+    flex-direction: column;
+    
+    .form-label {
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+    }
+    
+    .form-control,
+    .form-select {
+      min-height: 40px;
+    }
+    
+    &.region {
+      min-width: 80px;
+    }
+    
+    &.class {
+      min-width: 60px;
+    }
+    
+    &.kana {
+      min-width: 50px;
+    }
+    
+    &.number {
+      min-width: 80px;
+    }
+  }
+  
+  .separator {
+    align-self: end;
+    padding-bottom: 8px;
+    font-weight: bold;
+    color: var.$text-color;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Form Help Text
+//--------------------------------------------------------------------------
+.form-help {
+  font-size: 0.8rem;
+  color: var.$text-muted;
+  margin-top: 4px;
+  line-height: 1.3;
+  
+  &.form-help-info {
+    color: var.$clear-primary;
+  }
+  
+  &.form-help-warning {
+    color: var.$warning;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Required Field Indicator
+//--------------------------------------------------------------------------
+.required-indicator {
+  color: var.$required-color;
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+//--------------------------------------------------------------------------
+// Form Actions Section
+//--------------------------------------------------------------------------
+.form-actions-section {
+  background: var.$section-bg;
+  padding: var.$spacer-lg;
+  border-top: 2px solid var.$border-color;
+  margin-top: var.$spacer-xl;
+  text-align: center;
+  
+  .actions-description {
+    color: var.$text-muted;
+    font-size: 0.9rem;
+    margin-bottom: var.$spacer;
+    line-height: 1.5;
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: var.$spacer;
+    flex-wrap: wrap;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Form Validation States
+//--------------------------------------------------------------------------
+.form-group {
+  &.has-error {
+    .form-label {
+      color: var.$danger;
+    }
+    
+    .form-control,
+    .form-select {
+      border-color: var.$danger;
+      
+      &:focus {
+        border-color: var.$danger;
+        box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+      }
+    }
+  }
+  
+  &.has-success {
+    .form-label {
+      color: var.$success;
+    }
+    
+    .form-control,
+    .form-select {
+      border-color: var.$success;
+      
+      &:focus {
+        border-color: var.$success;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+      }
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// Form Loading State
+//--------------------------------------------------------------------------
+.form-loading-overlay {
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    z-index: 10;
+  }
+  
+  .loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
+    border: 3px solid var.$gray-300;
+    border-top: 3px solid var.$clear-primary;
+    border-radius: 50%;
+    animation: form-loading-spin 1s linear infinite;
+    z-index: 11;
+  }
+}
+
+@keyframes form-loading-spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+//--------------------------------------------------------------------------
+// Responsive Adjustments
+//--------------------------------------------------------------------------
+@media (max-width: var.$breakpoint-md) {
+  .reservation-form-page {
+    .page-header {
+      padding: var.$spacer;
+      
+      .page-title {
+        font-size: 1.5rem;
+      }
+      
+      .page-description {
+        font-size: 0.9rem;
+      }
+    }
+  }
+  
+  .reservation-form-container {
+    padding: var.$spacer-sm;
+  }
+  
+  .form-section {
+    margin-bottom: var.$spacer;
+    
+    .section-header {
+      padding: var.$spacer-sm;
+      
+      .section-title {
+        font-size: 1.1rem;
+      }
+    }
+    
+    .section-body {
+      padding: var.$spacer;
+    }
+  }
+  
+  .form-row {
+    flex-direction: column;
+    gap: var.$spacer-sm;
+    
+    .form-group {
+      &.form-group-sm,
+      &.form-group-md {
+        min-width: auto;
+      }
+    }
+  }
+  
+  .vehicle-number-group {
+    gap: var.$spacer-sm;
+    
+    .vehicle-number-item {
+      &.region,
+      &.class,
+      &.kana,
+      &.number {
+        min-width: 70px;
+        flex: 1;
+      }
+    }
+  }
+  
+  .form-actions-section {
+    padding: var.$spacer;
+    margin-top: var.$spacer;
+    
+    .action-buttons {
+      flex-direction: column;
+      align-items: center;
+      gap: var.$spacer-sm;
+    }
+  }
+}
