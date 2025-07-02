@@ -1,0 +1,117 @@
+//==========================================================================
+// iframe専用レイアウト調整 - 横スクロール除去・縦スクロール維持
+//==========================================================================
+
+@use '../base/variables' as var;
+
+//--------------------------------------------------------------------------
+// iframe モード時のスクロール制御（横スクロール除去、縦スクロール維持）
+//--------------------------------------------------------------------------
+.iframe-mode {
+  // 横スクロールのみ除去、縦スクロール維持
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  height: auto !important;
+  max-height: none !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  
+  // HTML・Body要素の横スクロール除去
+  html, body {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    height: auto !important;
+    scroll-behavior: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  // メインコンテンツの横スクロール制御
+  .main-content {
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    height: auto !important;
+    min-height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  // カレンダーコンテナの横スクロール制御
+  .calendar-container {
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  //------------------------------------------------------------------------
+  // テーブル要素のレスポンシブ対応
+  //------------------------------------------------------------------------
+  table {
+    width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+    box-sizing: border-box !important;
+  }
+
+  // カレンダーテーブルの親要素
+  .calendar-month,
+  .calendar-week {
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  //------------------------------------------------------------------------
+  // フォーム要素のレスポンシブ対応
+  //------------------------------------------------------------------------
+  .form-control,
+  .form-select,
+  .btn {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  // フォームコンテナ
+  .reservation-form-container,
+  .form-section {
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  //------------------------------------------------------------------------
+  // レスポンシブ調整（モバイル対応）
+  //------------------------------------------------------------------------
+  @media (max-width: 768px) {
+    // モバイルでの追加調整
+    .calendar-container,
+    .reservation-form-container {
+      padding-left: 8px !important;
+      padding-right: 8px !important;
+    }
+
+    // テーブルセルの調整
+    td, th {
+      padding: 4px !important;
+      font-size: 0.85rem !important;
+    }
+
+    // ボタンの調整
+    .btn {
+      font-size: 0.875rem !important;
+      padding: 6px 12px !important;
+    }
+  }
+}

@@ -14,16 +14,17 @@
 @use "base/typography";
 
 // Components (再利用可能なコンポーネント)
-@use "components/buttons";
+//@use "components/buttons";
 @use "components/forms";
 @use "components/calendar";
 
 // Layout (レイアウト関連)
-@use "layouts/customer-layout";
+//@use "layouts/customer-layout";
 @use "layouts/iframe";
-@use "layouts/footer";
+//@use "layouts/footer";
 
 // Page Specific Styles (ページ固有スタイル)
 @use "pages/calendar/month";
 @use "pages/calendar/week";
 @use "pages/reservation/form";
+@use "pages/error/index";

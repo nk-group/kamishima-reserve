@@ -1,0 +1,88 @@
+//==========================================================================
+// Customer Error Page Styles - Clear車検予約システム顧客向け
+//==========================================================================
+
+@use '../../base/variables' as var;
+
+//--------------------------------------------------------------------------
+// Error Page Container
+//--------------------------------------------------------------------------
+.error-page-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var.$spacer;
+}
+
+//--------------------------------------------------------------------------
+// Error Content
+//--------------------------------------------------------------------------
+.error-content {
+  text-align: center;
+  margin-bottom: var.$spacer-lg;
+  
+  .error-message {
+    font-size: 1.1rem;
+    color: var.$text-color;
+    margin-bottom: var.$spacer;
+    font-weight: 500;
+  }
+  
+  .error-help-text {
+    color: var.$text-muted;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Contact Info
+//--------------------------------------------------------------------------
+.contact-info {
+  margin-top: var.$spacer-lg;
+  padding: var.$spacer;
+  background: var.$section-bg;
+  border-radius: var.$border-radius;
+  text-align: center;
+  
+  .contact-title {
+    font-size: 1.1rem;
+    color: var.$text-color;
+    margin-bottom: var.$spacer-sm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .contact-details {
+    margin: 0;
+    line-height: 1.6;
+    color: var.$text-color;
+  }
+  
+  .phone-link {
+    color: var.$clear-primary;
+    text-decoration: none;
+    font-weight: 600;
+    
+    &:hover {
+      color: var.$clear-primary-dark;
+      text-decoration: underline;
+    }
+  }
+}
+
+//--------------------------------------------------------------------------
+// レスポンシブ対応
+//--------------------------------------------------------------------------
+@media (max-width: var.$breakpoint-md) {
+  .error-page-container {
+    padding: var.$spacer-sm;
+  }
+  
+  .error-content {
+    .error-message {
+      font-size: 1rem;
+    }
+  }
+}

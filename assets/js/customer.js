@@ -93,6 +93,9 @@ function initIframeSupport() {
         // iframe用のCSSクラスを追加
         document.body.classList.add('iframe-mode');
         
+        // 横スクロールバー除去（縦スクロール維持）
+        initScrollDisabling();
+        
         // 高さを動的に調整
         initIframeHeightAdjustment();
         
@@ -101,38 +104,110 @@ function initIframeSupport() {
 }
 
 /**
- * iframe高さ調整の初期化
+ * iframe内での横スクロールバー除去（縦スクロールは維持）
+ */
+function initScrollDisabling() {
+    // HTML・Body要素の横スクロールのみ無効化
+    const htmlElement = document.documentElement;
+    const bodyElement = document.body;
+    
+    // 横スクロールバーのみ除去、縦は自然なスクロール維持
+    htmlElement.style.overflowX = 'hidden';
+    htmlElement.style.overflowY = 'auto';
+    htmlElement.style.margin = '0';
+    htmlElement.style.padding = '0';
+    
+    bodyElement.style.overflowX = 'hidden';
+    bodyElement.style.overflowY = 'auto';
+    bodyElement.style.margin = '0';
+    bodyElement.style.padding = '0';
+    bodyElement.style.minWidth = '100%';
+    bodyElement.style.maxWidth = '100%';
+    
+    // main-contentのレスポンシブ調整
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+        mainContent.style.overflowX = 'hidden';
+        mainContent.style.overflowY = 'visible';
+        mainContent.style.width = '100%';
+        mainContent.style.maxWidth = '100%';
+        mainContent.style.boxSizing = 'border-box';
+    }
+    
+    // カレンダーコンテナのレスポンシブ調整
+    const calendarContainer = document.querySelector('.calendar-container');
+    if (calendarContainer) {
+        calendarContainer.style.overflowX = 'hidden';
+        calendarContainer.style.overflowY = 'visible';
+        calendarContainer.style.width = '100%';
+        calendarContainer.style.maxWidth = '100%';
+        calendarContainer.style.boxSizing = 'border-box';
+    }
+    
+    // テーブル要素のレスポンシブ対応
+    const tables = document.querySelectorAll('table');
+    tables.forEach(table => {
+        table.style.width = '100%';
+        table.style.maxWidth = '100%';
+        table.style.tableLayout = 'fixed';
+        
+        // 親要素にoverflow-x hiddenを適用
+        const wrapper = table.closest('.calendar-month, .calendar-week');
+        if (wrapper) {
+            wrapper.style.overflowX = 'hidden';
+            wrapper.style.width = '100%';
+        }
+    });
+    
+    console.log('Horizontal scroll disabled, vertical scroll maintained');
+}
+
+/**
+ * iframe高さ調整の初期化（縦スクロール維持版）
  */
 function initIframeHeightAdjustment() {
     function adjustIframeHeight() {
+        // 縦スクロール維持のため自然な高さを取得
         const height = Math.max(
             document.documentElement.scrollHeight,
             document.body.scrollHeight,
             400 // 最小高さ
         );
         
-        // 親フレームに高さを通知
+        // 縦スクロールが必要な場合は親フレームに通知しない
+        // iframe内で自然にスクロールさせる
         if (window.parent && window.parent.postMessage) {
+            // 高さ情報のみ送信（親フレームでの調整は任意）
             window.parent.postMessage({
-                type: 'iframe-height-update',
-                height: height
+                type: 'iframe-content-height-info',
+                height: height,
+                allowVerticalScroll: true
             }, '*');
+            
+            console.log('iframe content height info sent:', height + 'px');
         }
     }
     
-    // 初回実行
-    adjustIframeHeight();
+    // 初回実行（遅延実行で確実に）
+    setTimeout(adjustIframeHeight, 100);
     
-    // DOM変更時に再実行
-    const observer = new MutationObserver(adjustIframeHeight);
+    // DOM変更監視（軽量版）
+    const observer = new MutationObserver(() => {
+        setTimeout(adjustIframeHeight, 100);
+    });
+    
     observer.observe(document.body, {
         childList: true,
         subtree: true,
-        attributes: true
+        attributes: false // 属性変更は監視しない
     });
     
-    // リサイズ時に再実行
-    window.addEventListener('resize', adjustIframeHeight);
+    // リサイズ監視（throttling付き）
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(adjustIframeHeight, 200);
+    });
 }
 
 /**
