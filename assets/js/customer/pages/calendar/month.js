@@ -75,10 +75,8 @@ export function initCalendarMonth() {
             const calendarCell = e.target.closest('.calendar-cell');
             if (!calendarCell) return;
             
-            // クリック可能なセルかチェック
-            if (calendarCell.classList.contains('past-date') || 
-                calendarCell.classList.contains('holiday') ||
-                calendarCell.classList.contains('out-of-range')) {
+            // clickableクラスを持つセルのみクリック可能
+            if (!calendarCell.classList.contains('clickable')) {
                 return;
             }
             
@@ -120,8 +118,18 @@ export function initCalendarMonth() {
     function handleDateClick(dateStr, availability) {
         console.log('Date clicked:', dateStr, 'Availability:', availability);
         
-        // 週表示カレンダーページに遷移
-        const weekUrl = `/customer/calendar/week?date=${dateStr}`;
+        // 選択した日付から週の開始日（月曜日）を計算
+        const selectedDate = new Date(dateStr);
+        const dayOfWeek = selectedDate.getDay(); // 0: 日曜日, 1: 月曜日, ...
+        const mondayOffset = dayOfWeek === 0 ? -6 : -(dayOfWeek - 1); // 月曜日への日数差
+        const mondayDate = new Date(selectedDate);
+        mondayDate.setDate(selectedDate.getDate() + mondayOffset);
+        
+        // 週の開始日をYYYY-MM-DD形式で取得
+        const weekStart = mondayDate.toISOString().split('T')[0];
+        
+        // 週表示カレンダーページに遷移（weekパラメータを使用）
+        const weekUrl = `/customer/calendar/week?week=${weekStart}`;
         
         // iframe環境の場合は親ウィンドウに通知
         if (window.self !== window.top && window.parent.postMessage) {
@@ -173,16 +181,16 @@ export function initCalendarMonth() {
      * @param {Object} data 
      */
     function updateCalendarContent(data) {
-        // カレンダー本体の更新
-        const calendarWrapper = document.querySelector('.calendar-wrapper');
-        if (calendarWrapper && data.html) {
-            calendarWrapper.innerHTML = data.html;
+        // カレンダーテーブル本体の更新（.calendar-month内のテーブル）
+        const calendarMonth = document.querySelector('.calendar-month');
+        if (calendarMonth && data.html) {
+            calendarMonth.innerHTML = data.html;
         }
         
-        // ナビゲーション表示の更新
-        const currentMonthDisplay = document.getElementById('current-month-display');
-        if (currentMonthDisplay && data.month_display) {
-            currentMonthDisplay.textContent = data.month_display;
+        // ナビゲーション表示の更新（.calendar-title）
+        const calendarTitle = document.getElementById('calendar-title');
+        if (calendarTitle && data.month_display) {
+            calendarTitle.textContent = data.month_display;
         }
         
         // カレンダーセルのクリック処理を再設定
@@ -195,9 +203,9 @@ export function initCalendarMonth() {
      * ローディング表示
      */
     function showLoading() {
-        const calendarWrapper = document.querySelector('.calendar-wrapper');
-        if (calendarWrapper) {
-            calendarWrapper.innerHTML = `
+        const calendarMonth = document.querySelector('.calendar-month');
+        if (calendarMonth) {
+            calendarMonth.innerHTML = `
                 <div class="calendar-loading-overlay">
                     <div class="loading-content">
                         <div class="loading-spinner"></div>
@@ -213,9 +221,9 @@ export function initCalendarMonth() {
      * @param {string} message 
      */
     function showError(message) {
-        const calendarWrapper = document.querySelector('.calendar-wrapper');
-        if (calendarWrapper) {
-            calendarWrapper.innerHTML = `
+        const calendarMonth = document.querySelector('.calendar-month');
+        if (calendarMonth) {
+            calendarMonth.innerHTML = `
                 <div class="calendar-empty-state">
                     <div class="empty-icon">⚠️</div>
                     <div class="empty-title">エラーが発生しました</div>

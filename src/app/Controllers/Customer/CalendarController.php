@@ -74,7 +74,22 @@ class CalendarController extends BaseController
     public function week()
     {
         try {
-            $currentWeekStart = $this->request->getGet('week') ?? date('Y-m-d', strtotime('monday this week'));
+            // weekパラメータを優先し、dateパラメータも受け入れる（後方互換性）
+            $currentWeekStart = $this->request->getGet('week');
+            
+            if (empty($currentWeekStart)) {
+                $dateParam = $this->request->getGet('date');
+                if (!empty($dateParam)) {
+                    // dateパラメータから週の開始日（月曜日）を計算
+                    $selectedDate = new \DateTime($dateParam);
+                    $dayOfWeek = (int)$selectedDate->format('w'); // 0: 日曜日, 1: 月曜日, ...
+                    $mondayOffset = $dayOfWeek === 0 ? -6 : -(($dayOfWeek - 1)); // 月曜日への日数差
+                    $selectedDate->add(new \DateInterval('P' . $mondayOffset . 'D'));
+                    $currentWeekStart = $selectedDate->format('Y-m-d');
+                } else {
+                    $currentWeekStart = date('Y-m-d', strtotime('monday this week'));
+                }
+            }
             
             // バリデーション
             if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $currentWeekStart)) {
@@ -119,10 +134,13 @@ class CalendarController extends BaseController
         try {
             $calendarData = $this->getCustomerCalendarData($currentMonth);
 
+            // カレンダーテーブルのHTMLを生成
+            $html = $this->renderCalendarTable($calendarData);
+
             return $this->jsonResponse([
                 'success' => true,
-                'calendar_data' => $calendarData,
-                'current_month_display' => date('Y年n月', strtotime($currentMonth . '-01')),
+                'html' => $html,
+                'month_display' => date('Y年n月', strtotime($currentMonth . '-01')),
             ]);
 
         } catch (\Throwable $e) {
@@ -133,6 +151,78 @@ class CalendarController extends BaseController
                 'error' => 'カレンダーデータの取得に失敗しました。'
             ], 500);
         }
+    }
+
+    /**
+     * カレンダーテーブルのHTMLを生成
+     */
+    private function renderCalendarTable(array $calendarData): string
+    {
+        $html = '<table class="calendar-table">
+                    <thead>
+                        <tr class="calendar-header-row">
+                            <th class="calendar-header-cell sunday">日</th>
+                            <th class="calendar-header-cell">月</th>
+                            <th class="calendar-header-cell">火</th>
+                            <th class="calendar-header-cell">水</th>
+                            <th class="calendar-header-cell">木</th>
+                            <th class="calendar-header-cell">金</th>
+                            <th class="calendar-header-cell saturday">土</th>
+                        </tr>
+                    </thead>
+                    <tbody id="calendar-body">';
+
+        if (!empty($calendarData) && is_array($calendarData)) {
+            foreach ($calendarData as $week) {
+                $html .= '<tr class="calendar-row">';
+                foreach ($week as $day) {
+                    $cssClasses = implode(' ', $day['css_classes'] ?? []);
+                    $date = esc($day['date'] ?? '');
+                    $dayNum = esc($day['day'] ?? '');
+                    $dayOfWeek = $day['day_of_week'] ?? 0;
+                    $isCurrentMonth = $day['is_current_month'] ?? true;
+                    $availabilityStatus = esc($day['availability_status'] ?? 'closed');
+                    
+                    // 日付スタイルクラス
+                    $dateClass = '';
+                    if ($dayOfWeek == 0) $dateClass = 'sunday';
+                    elseif ($dayOfWeek == 6) $dateClass = 'saturday';
+                    if (!$isCurrentMonth) $dateClass .= ' other-month';
+                    
+                    $html .= '<td class="calendar-cell ' . $cssClasses . '" data-date="' . $date . '">';
+                    $html .= '<div class="calendar-date">';
+                    $html .= '<span class="date-number ' . $dateClass . '">' . $dayNum . '</span>';
+                    $html .= '</div>';
+                    
+                    if ($isCurrentMonth) {
+                        $html .= '<div class="availability-mark ' . $availabilityStatus . '">';
+                        switch ($availabilityStatus) {
+                            case 'available':
+                                $html .= '○';
+                                break;
+                            case 'limited':
+                                $html .= '△';
+                                break;
+                            case 'full':
+                                $html .= '×';
+                                break;
+                            default:
+                                $html .= '';
+                        }
+                        $html .= '</div>';
+                    }
+                    
+                    $html .= '</td>';
+                }
+                $html .= '</tr>';
+            }
+        } else {
+            $html .= '<tr><td colspan="7" class="text-center">カレンダーデータを取得中...</td></tr>';
+        }
+
+        $html .= '</tbody></table>';
+        
+        return $html;
     }
 
     /**

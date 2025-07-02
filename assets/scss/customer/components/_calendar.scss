@@ -151,9 +151,9 @@
       color: var.$calendar-unavailable-color;
     }
 
-    // 定休日（マーク非表示）
+    // 定休日（マーク非表示だが位置維持）
     &.closed {
-      display: none;
+      visibility: hidden; // display: none から visibility: hidden に変更
     }
   }
 }
