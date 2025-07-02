@@ -84,10 +84,30 @@ $routes->group('admin', ['filter' => 'sessionauth', 'namespace' => 'App\Controll
     });
 });
 
-// 利用者向けページ
-$routes->group('user', ['namespace' => 'App\Controllers\User'], static function ($routes) {
-    $routes->get('calendar', 'CalendarController::index', ['as' => 'user.calendar']);
+
+// 顧客向けページ（認証不要）
+$routes->group('customer', ['namespace' => 'App\Controllers\Customer'], static function ($routes) {
+    
+    // カレンダー機能
+    $routes->group('calendar', static function ($routes) {
+        $routes->get('month', 'CalendarController::month', ['as' => 'customer.calendar.month']);
+        $routes->get('week', 'CalendarController::week', ['as' => 'customer.calendar.week']);
+    });
+    
+    // 予約機能
+    $routes->group('reservation', static function ($routes) {
+        $routes->get('form', 'ReservationController::form', ['as' => 'customer.reservation.form']);
+        $routes->post('submit', 'ReservationController::submit', ['as' => 'customer.reservation.submit']);
+        $routes->get('status/(:segment)', 'ReservationController::status/$1', ['as' => 'customer.reservation.status']);
+        $routes->post('cancel', 'ReservationController::cancel', ['as' => 'customer.reservation.cancel']);
+    });
 });
+
+
+// // 利用者向けページ
+// $routes->group('user', ['namespace' => 'App\Controllers\User'], static function ($routes) {
+//     $routes->get('calendar', 'CalendarController::index', ['as' => 'user.calendar']);
+// });
 
 // 開発テスト用ページ（開発環境のみ）
 if (ENVIRONMENT === 'development') {
