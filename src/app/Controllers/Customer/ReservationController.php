@@ -243,19 +243,20 @@ class ReservationController extends BaseController
     }
 
     /**
-     * フォーム用データを準備
+     * フォーム用データを準備します。
+     *
+     * @param string|null $selectedDate 選択された日付 (Y-m-d形式)
+     * @param string|null $selectedTimeSlotId 選択された時間帯ID
+     * @return array フォーム表示用データの連想配列
      */
     private function prepareFormData(?string $selectedDate, ?string $selectedTimeSlotId): array
     {
-        // Clear車検用の時間帯を取得
-        $clearShakenWorkTypeId = 1; // Clear車検のID（実際の値に調整が必要）
-        
         $availableTimeSlots = [];
         if (!empty($selectedDate)) {
-            $timeSlots = $this->timeSlotModel->where('work_type_id', $clearShakenWorkTypeId)
-                                             ->where('is_active', 1)
-                                             ->orderBy('start_time', 'ASC')
-                                             ->findAll();
+            // work_type_id条件を削除し、is_activeをactiveに修正
+            $timeSlots = $this->timeSlotModel->where('active', 1)
+                                            ->orderBy('start_time', 'ASC')
+                                            ->findAll();
             
             foreach ($timeSlots as $timeSlot) {
                 $availableTimeSlots[] = [
@@ -267,9 +268,9 @@ class ReservationController extends BaseController
 
         // 車両種別を取得
         $vehicleTypes = [];
-        $vehicleTypeList = $this->vehicleTypeModel->where('is_active', 1)
-                                                 ->orderBy('sort_order', 'ASC')
-                                                 ->findAll();
+        $vehicleTypeList = $this->vehicleTypeModel->where('active', 1)
+                                                ->orderBy('sort_order', 'ASC')
+                                                ->findAll();
         
         foreach ($vehicleTypeList as $vehicleType) {
             $vehicleTypes[] = [

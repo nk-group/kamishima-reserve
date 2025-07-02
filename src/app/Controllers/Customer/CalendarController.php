@@ -326,11 +326,27 @@ class CalendarController extends BaseController
 
     /**
      * 顧客向け週表示データを取得
+     * 
+     * @param string $weekStart 週の開始日（YYYY-MM-DD形式）
+     * @param int|null $shopId 店舗ID（null の場合は Clear車検対応店舗の最小IDを自動選択）
+     * @return array 週表示用データ
      */
-    private function getCustomerWeekData(string $weekStart): array
+    private function getCustomerWeekData(string $weekStart, ?int $shopId = null): array
     {
-        // Clear車検のみ対象
-        $clearShakenWorkTypeId = 1;
+        // shop_id が未指定の場合、Clear車検対応店舗の最小IDを取得
+        if ($shopId === null) {
+            $clearReadyShops = $this->shopModel->where('is_clear_ready', 1)
+                                            ->where('active', 1)
+                                            ->orderBy('id', 'ASC')
+                                            ->findAll();
+            
+            if (empty($clearReadyShops)) {
+                // Clear車検対応店舗が見つからない場合はエラー
+                throw new \RuntimeException('Clear車検対応店舗が見つかりません。');
+            }
+            
+            $shopId = $clearReadyShops[0]->id;
+        }
 
         // 週の日付を生成（月曜日開始）
         $weekDates = [];
@@ -352,11 +368,11 @@ class CalendarController extends BaseController
             $currentDate->add(new \DateInterval('P1D'));
         }
 
-        // 時間帯データを取得
-        $timeSlots = $this->timeSlotModel->where('is_active', 1)
-                                         ->where('work_type_id', $clearShakenWorkTypeId)
-                                         ->orderBy('start_time', 'ASC')
-                                         ->findAll();
+        // 指定された店舗の時間帯データを取得
+        $timeSlots = $this->timeSlotModel->where('shop_id', $shopId)
+                                        ->where('active', 1)
+                                        ->orderBy('start_time', 'ASC')
+                                        ->findAll();
 
         $timeSlotsData = [];
         foreach ($timeSlots as $timeSlot) {
@@ -365,7 +381,7 @@ class CalendarController extends BaseController
             // 各日付の予約状況をチェック
             foreach ($weekDates as $date) {
                 $dateStr = $date['date'];
-                $isHoliday = $this->shopClosingDayModel->isClosingDay(1, $dateStr);
+                $isHoliday = $this->shopClosingDayModel->isClosingDay($shopId, $dateStr);
                 
                 if ($isHoliday || $dateStr < date('Y-m-d')) {
                     $status = 'closed';
@@ -391,6 +407,7 @@ class CalendarController extends BaseController
         return [
             'week_dates' => $weekDates,
             'time_slots' => $timeSlotsData,
+            'selected_shop_id' => $shopId, // 選択された店舗IDも返す
         ];
     }
 
