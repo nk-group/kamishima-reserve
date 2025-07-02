@@ -1,59 +1,53 @@
 //==========================================================================
-// Customer Typography
+// Customer Typography - 日本語最適化
 //==========================================================================
 
-@use "sass:color"; // Sassの組み込みモジュール `color` を読み込み
-@use 'variables' as var; // Use `var` namespace for variables
+@use 'variables' as var;
 
 //--------------------------------------------------------------------------
-// Body & HTML
+// 見出し要素
 //--------------------------------------------------------------------------
-html {
-  font-size: 100%;
-  -webkit-text-size-adjust: 100%;
-  height: 100%;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: var.$font-family-base;
-  font-size: var.$font-size-base;
-  line-height: var.$line-height-base;
-  color: var.$text-color;
-  background-color: var.$body-bg;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  // iframe環境ではスティッキーフッター不要
-}
-
-//--------------------------------------------------------------------------
-// Headings
-//--------------------------------------------------------------------------
-h1, h2, h3, h4, h5, h6 {
-  margin-top: 0;
-  margin-bottom: var.$spacer * .5;
+h1, h2, h3 {
   font-weight: var.$headings-font-weight;
-  line-height: 1.2;
-  color: inherit;
+  color: var.$headings-color;
+  line-height: 1.4;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: var.$spacer-lg;
+}
+
+h2 {
+  font-size: 20px;
+  margin-bottom: var.$spacer;
+}
+
+h3 {
+  font-size: 18px;
+  margin-bottom: var.$spacer;
 }
 
 //--------------------------------------------------------------------------
-// Links
-//--------------------------------------------------------------------------
-a {
-  color: var.$primary;
-  text-decoration: none;
-
-  &:hover {
-    color: color.adjust(var.$primary, $lightness: -10%);
-  }
-}
-
-//--------------------------------------------------------------------------
-// Paragraphs
+// テキスト要素
 //--------------------------------------------------------------------------
 p {
-  margin-top: 0;
-  margin-bottom: var.$spacer;
+  word-break: break-word;
+}
+
+.text-muted {
+  color: var.$text-muted;
+}
+
+.text-center {
+  text-align: center;
+}
+
+//--------------------------------------------------------------------------
+// 必須マーク
+//--------------------------------------------------------------------------
+.required-mark {
+  color: var.$required-color;
+  font-weight: bold;
+  margin-left: 2px;
 }
