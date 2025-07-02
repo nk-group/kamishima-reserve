@@ -55,6 +55,26 @@ class ShopModel extends Model
     }
 
     /**
+     * Clear車検対応のデフォルト店舗IDを取得します。
+     *
+     * @return int デフォルト店舗ID
+     * @throws \RuntimeException Clear車検対応店舗が見つからない場合
+     */
+    public function getDefaultClearShakenShopId(): int
+    {
+        $clearReadyShops = $this->where('is_clear_ready', 1)
+                               ->where('active', 1)
+                               ->orderBy('id', 'ASC')
+                               ->findAll();
+        
+        if (empty($clearReadyShops)) {
+            throw new \RuntimeException('Clear車検対応店舗が見つかりません。');
+        }
+        
+        return $clearReadyShops[0]->id;
+    }
+
+    /**
      * 指定された店舗IDに紐づく予約時間帯を取得します。
      * TimeSlotModel が必要です。
      *

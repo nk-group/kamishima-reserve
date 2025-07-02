@@ -22,6 +22,7 @@ export function initCalendarMonth() {
     
     // 初期データの取得
     let currentMonth = calendarData.dataset.currentMonth;
+    let shopId = calendarData.dataset.shopId; // shop_id取得
     const baseUrl = calendarData.dataset.baseUrl || '/customer/calendar/month';
     
     // イベントリスナーの設定
@@ -84,6 +85,9 @@ export function initCalendarMonth() {
             const dateStr = calendarCell.dataset.date;
             if (!dateStr) return;
             
+            // セルからshop_idを取得（data-shop-id属性から）
+            const cellShopId = calendarCell.dataset.shopId || shopId;
+            
             // 空き状況をチェック
             const availabilityMark = calendarCell.querySelector('.availability-mark');
             if (!availabilityMark) return;
@@ -92,7 +96,7 @@ export function initCalendarMonth() {
             
             // 週表示カレンダーまたは予約フォームに遷移
             if (availability === 'available' || availability === 'limited') {
-                handleDateClick(dateStr, availability);
+                handleDateClick(dateStr, availability, cellShopId);
             }
         });
     }
@@ -114,9 +118,10 @@ export function initCalendarMonth() {
      * 日付クリック処理
      * @param {string} dateStr 
      * @param {string} availability 
+     * @param {string} selectedShopId
      */
-    function handleDateClick(dateStr, availability) {
-        console.log('Date clicked:', dateStr, 'Availability:', availability);
+    function handleDateClick(dateStr, availability, selectedShopId) {
+        console.log('Date clicked:', dateStr, 'Availability:', availability, 'Shop ID:', selectedShopId);
         
         // 選択した日付から週の開始日（月曜日）を計算
         const selectedDate = new Date(dateStr);
@@ -128,8 +133,8 @@ export function initCalendarMonth() {
         // 週の開始日をYYYY-MM-DD形式で取得
         const weekStart = mondayDate.toISOString().split('T')[0];
         
-        // 週表示カレンダーページに遷移（weekパラメータを使用）
-        const weekUrl = `/customer/calendar/week?week=${weekStart}`;
+        // 週表示カレンダーページに遷移（shop_idパラメータを追加）
+        const weekUrl = `/customer/calendar/week?shop_id=${selectedShopId}&week=${weekStart}`;
         
         // iframe環境の場合は親ウィンドウに通知
         if (window.self !== window.top && window.parent.postMessage) {
@@ -137,6 +142,7 @@ export function initCalendarMonth() {
                 type: 'calendar-date-selected',
                 date: dateStr,
                 availability: availability,
+                shopId: selectedShopId,
                 nextUrl: weekUrl
             }, '*');
         } else {
@@ -152,6 +158,7 @@ export function initCalendarMonth() {
         showLoading();
         
         const params = new URLSearchParams({
+            shop_id: shopId,
             month: currentMonth,
             ajax: '1'
         });

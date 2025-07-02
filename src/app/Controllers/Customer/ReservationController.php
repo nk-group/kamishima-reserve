@@ -35,15 +35,41 @@ class ReservationController extends BaseController
             // カレンダーから選択された日時を取得
             $selectedDate = $this->request->getGet('date');
             $selectedTimeSlotId = $this->request->getGet('time_slot_id');
+            $shopId = $this->request->getGet('shop_id');
+            
+            // shop_id が未指定の場合、デフォルト店舗を選択してリダイレクト
+            if (empty($shopId)) {
+                try {
+                    $defaultShopId = $this->shopModel->getDefaultClearShakenShopId();
+                    $redirectUrl = site_url('customer/reservation/form') . '?shop_id=' . $defaultShopId;
+                    if (!empty($selectedDate)) {
+                        $redirectUrl .= '&date=' . $selectedDate;
+                    }
+                    if (!empty($selectedTimeSlotId)) {
+                        $redirectUrl .= '&time_slot_id=' . $selectedTimeSlotId;
+                    }
+                    return redirect()->to($redirectUrl);
+                } catch (\RuntimeException $e) {
+                    return $this->showError('Clear車検対応店舗が見つかりません。', 503);
+                }
+            }
+            
+            // バリデーション
+            if (!is_numeric($shopId)) {
+                return $this->showError('無効な店舗IDです。', 400);
+            }
+            
+            $shopId = (int)$shopId;
 
             // フォーム用データを準備
-            $formData = $this->prepareFormData($selectedDate, $selectedTimeSlotId);
+            $formData = $this->prepareFormData($selectedDate, $selectedTimeSlotId, $shopId);
 
             $data = [
                 'page_title' => 'Clear車検予約フォーム | 上嶋自動車',
                 'body_id' => 'page-customer-reservation-form',
                 'selected_date' => $selectedDate,
                 'selected_time_slot_id' => $selectedTimeSlotId,
+                'shop_id' => $shopId,
                 'available_time_slots' => $formData['available_time_slots'],
                 'vehicle_types' => $formData['vehicle_types'],
             ];
@@ -247,14 +273,16 @@ class ReservationController extends BaseController
      *
      * @param string|null $selectedDate 選択された日付 (Y-m-d形式)
      * @param string|null $selectedTimeSlotId 選択された時間帯ID
+     * @param int $shopId 店舗ID
      * @return array フォーム表示用データの連想配列
      */
-    private function prepareFormData(?string $selectedDate, ?string $selectedTimeSlotId): array
+    private function prepareFormData(?string $selectedDate, ?string $selectedTimeSlotId, int $shopId): array
     {
         $availableTimeSlots = [];
         if (!empty($selectedDate)) {
-            // work_type_id条件を削除し、is_activeをactiveに修正
-            $timeSlots = $this->timeSlotModel->where('active', 1)
+            // 指定された店舗の有効な時間帯のみを取得
+            $timeSlots = $this->timeSlotModel->where('shop_id', $shopId)
+                                            ->where('active', 1)
                                             ->orderBy('start_time', 'ASC')
                                             ->findAll();
             

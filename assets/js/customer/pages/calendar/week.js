@@ -22,6 +22,7 @@ export function initCalendarWeek() {
     
     // 初期データの取得
     let currentWeekStart = calendarData.dataset.currentWeekStart;
+    let shopId = calendarData.dataset.shopId; // shop_id取得
     const baseUrl = calendarData.dataset.baseUrl || '/customer/calendar/week';
     
     // イベントリスナーの設定
@@ -60,12 +61,14 @@ export function initCalendarWeek() {
         if (backToMonthBtn) {
             backToMonthBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                const monthUrl = '/customer/calendar/month';
+                // 月表示URLにshop_idを含める
+                const monthUrl = `/customer/calendar/month?shop_id=${shopId}`;
                 
                 // iframe環境の場合は親ウィンドウに通知
                 if (window.self !== window.top && window.parent.postMessage) {
                     window.parent.postMessage({
                         type: 'calendar-navigation',
+                        shopId: shopId,
                         nextUrl: monthUrl
                     }, '*');
                 } else {
@@ -113,10 +116,10 @@ export function initCalendarWeek() {
      * @param {string} timeSlotName 
      */
     function handleTimeSlotClick(dateStr, timeSlotId, timeSlotName) {
-        console.log('Time slot clicked:', { dateStr, timeSlotId, timeSlotName });
+        console.log('Time slot clicked:', { dateStr, timeSlotId, timeSlotName, shopId });
         
-        // 予約フォームページに遷移
-        const formUrl = `/customer/reservation/form?date=${dateStr}&time_slot_id=${timeSlotId}`;
+        // 予約フォームページに遷移（shop_idパラメータを追加）
+        const formUrl = `/customer/reservation/form?shop_id=${shopId}&date=${dateStr}&time_slot_id=${timeSlotId}`;
         
         // iframe環境の場合は親ウィンドウに通知
         if (window.self !== window.top && window.parent.postMessage) {
@@ -125,6 +128,7 @@ export function initCalendarWeek() {
                 date: dateStr,
                 timeSlotId: timeSlotId,
                 timeSlotName: timeSlotName,
+                shopId: shopId,
                 nextUrl: formUrl
             }, '*');
         } else {
@@ -140,7 +144,8 @@ export function initCalendarWeek() {
         showLoading();
         
         const params = new URLSearchParams({
-            week_start: currentWeekStart,
+            shop_id: shopId,
+            week: currentWeekStart,
             ajax: '1'
         });
         
@@ -177,8 +182,8 @@ export function initCalendarWeek() {
         
         // ナビゲーション表示の更新
         const currentWeekDisplay = document.getElementById('current-week-display');
-        if (currentWeekDisplay && data.week_display) {
-            currentWeekDisplay.textContent = data.week_display;
+        if (currentWeekDisplay && data.current_week_display) {
+            currentWeekDisplay.textContent = data.current_week_display;
         }
         
         // 時間帯ボタンのクリック処理を再設定

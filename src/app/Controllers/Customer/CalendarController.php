@@ -33,19 +33,40 @@ class CalendarController extends BaseController
     {
         try {
             $currentMonth = $this->request->getGet('month') ?? date('Y-m');
+            $shopId = $this->request->getGet('shop_id');
+            
+            // shop_id が未指定の場合、デフォルト店舗を選択してリダイレクト
+            if (empty($shopId)) {
+                try {
+                    $defaultShopId = $this->shopModel->getDefaultClearShakenShopId();
+                    $redirectUrl = site_url('customer/calendar/month') . '?shop_id=' . $defaultShopId;
+                    if ($currentMonth !== date('Y-m')) {
+                        $redirectUrl .= '&month=' . $currentMonth;
+                    }
+                    return redirect()->to($redirectUrl);
+                } catch (\RuntimeException $e) {
+                    return $this->showError('Clear車検対応店舗が見つかりません。', 503);
+                }
+            }
             
             // バリデーション
             if (!preg_match('/^\d{4}-\d{2}$/', $currentMonth)) {
                 return $this->showError('無効な月形式です。', 400);
             }
+            
+            if (!is_numeric($shopId)) {
+                return $this->showError('無効な店舗IDです。', 400);
+            }
+            
+            $shopId = (int)$shopId;
 
             // Ajax リクエストの場合
             if ($this->request->getGet('ajax') === '1') {
-                return $this->getMonthCalendarData($currentMonth);
+                return $this->getMonthCalendarData($currentMonth, $shopId);
             }
 
             // カレンダーデータ取得（Clear車検のみ）
-            $calendarData = $this->getCustomerCalendarData($currentMonth);
+            $calendarData = $this->getCustomerCalendarData($currentMonth, $shopId);
 
             $data = [
                 'page_title' => 'Clear車検予約カレンダー | 上嶋自動車',
@@ -53,6 +74,7 @@ class CalendarController extends BaseController
                 'current_month' => $currentMonth,
                 'current_month_display' => date('Y年n月', strtotime($currentMonth . '-01')),
                 'calendar_data' => $calendarData,
+                'shop_id' => $shopId,
             ];
 
             return $this->render('Customer/Calendar/month', $data);
@@ -76,6 +98,21 @@ class CalendarController extends BaseController
         try {
             // weekパラメータを優先し、dateパラメータも受け入れる（後方互換性）
             $currentWeekStart = $this->request->getGet('week');
+            $shopId = $this->request->getGet('shop_id');
+            
+            // shop_id が未指定の場合、デフォルト店舗を選択してリダイレクト
+            if (empty($shopId)) {
+                try {
+                    $defaultShopId = $this->shopModel->getDefaultClearShakenShopId();
+                    $redirectUrl = site_url('customer/calendar/week') . '?shop_id=' . $defaultShopId;
+                    if (!empty($currentWeekStart)) {
+                        $redirectUrl .= '&week=' . $currentWeekStart;
+                    }
+                    return redirect()->to($redirectUrl);
+                } catch (\RuntimeException $e) {
+                    return $this->showError('Clear車検対応店舗が見つかりません。', 503);
+                }
+            }
             
             if (empty($currentWeekStart)) {
                 $dateParam = $this->request->getGet('date');
@@ -95,14 +132,20 @@ class CalendarController extends BaseController
             if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $currentWeekStart)) {
                 return $this->showError('無効な日付形式です。', 400);
             }
+            
+            if (!is_numeric($shopId)) {
+                return $this->showError('無効な店舗IDです。', 400);
+            }
+            
+            $shopId = (int)$shopId;
 
             // Ajax リクエストの場合
             if ($this->request->getGet('ajax') === '1') {
-                return $this->getWeekCalendarData($currentWeekStart);
+                return $this->getWeekCalendarData($currentWeekStart, $shopId);
             }
 
             // 週表示データ取得
-            $weekData = $this->getCustomerWeekData($currentWeekStart);
+            $weekData = $this->getCustomerWeekData($currentWeekStart, $shopId);
 
             $data = [
                 'page_title' => 'Clear車検予約 週表示 | 上嶋自動車',
@@ -111,6 +154,7 @@ class CalendarController extends BaseController
                 'current_week_display' => $this->formatWeekDisplay($currentWeekStart),
                 'week_dates' => $weekData['week_dates'],
                 'time_slots' => $weekData['time_slots'],
+                'shop_id' => $shopId,
             ];
 
             return $this->render('Customer/Calendar/week', $data);
@@ -129,13 +173,13 @@ class CalendarController extends BaseController
     /**
      * 月表示カレンダーデータをAjax用に取得
      */
-    private function getMonthCalendarData(string $currentMonth): ResponseInterface
+    private function getMonthCalendarData(string $currentMonth, int $shopId): ResponseInterface
     {
         try {
-            $calendarData = $this->getCustomerCalendarData($currentMonth);
+            $calendarData = $this->getCustomerCalendarData($currentMonth, $shopId);
 
             // カレンダーテーブルのHTMLを生成
-            $html = $this->renderCalendarTable($calendarData);
+            $html = $this->renderCalendarTable($calendarData, $shopId);
 
             return $this->jsonResponse([
                 'success' => true,
@@ -156,7 +200,7 @@ class CalendarController extends BaseController
     /**
      * カレンダーテーブルのHTMLを生成
      */
-    private function renderCalendarTable(array $calendarData): string
+    private function renderCalendarTable(array $calendarData, int $shopId): string
     {
         $html = '<table class="calendar-table">
                     <thead>
@@ -189,7 +233,7 @@ class CalendarController extends BaseController
                     elseif ($dayOfWeek == 6) $dateClass = 'saturday';
                     if (!$isCurrentMonth) $dateClass .= ' other-month';
                     
-                    $html .= '<td class="calendar-cell ' . $cssClasses . '" data-date="' . $date . '">';
+                    $html .= '<td class="calendar-cell ' . $cssClasses . '" data-date="' . $date . '" data-shop-id="' . $shopId . '">';
                     $html .= '<div class="calendar-date">';
                     $html .= '<span class="date-number ' . $dateClass . '">' . $dayNum . '</span>';
                     $html .= '</div>';
@@ -228,10 +272,10 @@ class CalendarController extends BaseController
     /**
      * 週表示カレンダーデータをAjax用に取得
      */
-    private function getWeekCalendarData(string $currentWeekStart): ResponseInterface
+    private function getWeekCalendarData(string $currentWeekStart, int $shopId): ResponseInterface
     {
         try {
-            $weekData = $this->getCustomerWeekData($currentWeekStart);
+            $weekData = $this->getCustomerWeekData($currentWeekStart, $shopId);
 
             return $this->jsonResponse([
                 'success' => true,
@@ -253,7 +297,7 @@ class CalendarController extends BaseController
     /**
      * 顧客向け月カレンダーデータを取得（Clear車検のみ）
      */
-    private function getCustomerCalendarData(string $currentMonth): array
+    private function getCustomerCalendarData(string $currentMonth, int $shopId): array
     {
         // Clear車検のみ対象とする（work_type_idで制限）
         $clearShakenWorkTypeId = 1; // Clear車検のID（実際の値に調整が必要）
@@ -282,8 +326,8 @@ class CalendarController extends BaseController
                 $isToday = $dateStr === date('Y-m-d');
                 $dayOfWeek = (int)$currentDate->format('w');
 
-                // 定休日チェック
-                $isHoliday = $this->shopClosingDayModel->isClosingDay(1, $dateStr); // 店舗ID=1固定（調整が必要）
+                // 指定された店舗の定休日チェック
+                $isHoliday = $this->shopClosingDayModel->isClosingDay($shopId, $dateStr);
 
                 // 予約状況を判定
                 $availabilityStatus = 'closed';
@@ -335,17 +379,7 @@ class CalendarController extends BaseController
     {
         // shop_id が未指定の場合、Clear車検対応店舗の最小IDを取得
         if ($shopId === null) {
-            $clearReadyShops = $this->shopModel->where('is_clear_ready', 1)
-                                            ->where('active', 1)
-                                            ->orderBy('id', 'ASC')
-                                            ->findAll();
-            
-            if (empty($clearReadyShops)) {
-                // Clear車検対応店舗が見つからない場合はエラー
-                throw new \RuntimeException('Clear車検対応店舗が見つかりません。');
-            }
-            
-            $shopId = $clearReadyShops[0]->id;
+            $shopId = $this->shopModel->getDefaultClearShakenShopId();
         }
 
         // 週の日付を生成（月曜日開始）

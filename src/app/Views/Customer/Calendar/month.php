@@ -109,6 +109,7 @@
     <?php // JavaScript用データを非表示で設定 ?>
     <div id="calendar-month-data" style="display: none;"
          data-current-month="<?= esc($current_month ?? date('Y-m')) ?>"
+         data-shop-id="<?= esc($shop_id ?? '') ?>"
          data-base-url="/customer/calendar/month">
     </div>
 <?= $this->endSection() ?>

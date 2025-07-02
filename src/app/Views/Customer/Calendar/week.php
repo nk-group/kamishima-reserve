@@ -137,6 +137,7 @@
     <?php // JavaScript用データを非表示で設定 ?>
     <div id="calendar-week-data" style="display: none;"
          data-current-week-start="<?= esc($current_week_start ?? date('Y-m-d', strtotime('monday this week'))) ?>"
+         data-shop-id="<?= esc($shop_id ?? '') ?>"
          data-base-url="/customer/calendar/week">
     </div>
 <?= $this->endSection() ?>
