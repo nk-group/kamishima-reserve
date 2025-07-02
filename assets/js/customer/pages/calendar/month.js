@@ -9,8 +9,42 @@
 export function initCalendarMonth() {
     console.log('Calendar Month page initialized');
     
+    // ボタンイベントリスナー設定
+    setupButtonEvents();
+    
     // カレンダーセルのクリック処理設定
     setupCalendarCellClicks();
+}
+
+/**
+ * ボタンイベントリスナー設定
+ */
+function setupButtonEvents() {
+    // 前月ボタン
+    const prevMonthBtn = document.getElementById('prev-month-btn');
+    if (prevMonthBtn) {
+        prevMonthBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const month = this.dataset.month;
+            const shopId = this.dataset.shopId;
+            if (month && shopId) {
+                window.location.href = `/customer/calendar/month?shop_id=${shopId}&month=${month}`;
+            }
+        });
+    }
+    
+    // 次月ボタン
+    const nextMonthBtn = document.getElementById('next-month-btn');
+    if (nextMonthBtn) {
+        nextMonthBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const month = this.dataset.month;
+            const shopId = this.dataset.shopId;
+            if (month && shopId) {
+                window.location.href = `/customer/calendar/month?shop_id=${shopId}&month=${month}`;
+            }
+        });
+    }
 }
 
 /**
@@ -73,15 +107,15 @@ function handleDateClick(dateStr, availability) {
         return;
     }
     
-    // 選択した日付から週の開始日（月曜日）を計算
+    // 選択した日付から週の開始日（日曜日）を計算
     const selectedDate = new Date(dateStr);
     const dayOfWeek = selectedDate.getDay(); // 0: 日曜日, 1: 月曜日, ...
-    const mondayOffset = dayOfWeek === 0 ? -6 : -(dayOfWeek - 1); // 月曜日への日数差
-    const mondayDate = new Date(selectedDate);
-    mondayDate.setDate(selectedDate.getDate() + mondayOffset);
+    const sundayOffset = -dayOfWeek; // 日曜日への日数差
+    const sundayDate = new Date(selectedDate);
+    sundayDate.setDate(selectedDate.getDate() + sundayOffset);
     
     // 週の開始日をYYYY-MM-DD形式で取得
-    const weekStart = mondayDate.toISOString().split('T')[0];
+    const weekStart = sundayDate.toISOString().split('T')[0];
     
     // 週表示カレンダーページに遷移
     const weekUrl = `/customer/calendar/week?shop_id=${shopId}&week=${weekStart}`;

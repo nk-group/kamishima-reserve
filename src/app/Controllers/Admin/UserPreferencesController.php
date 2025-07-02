@@ -10,7 +10,7 @@ class UserPreferencesController extends BaseController
 {
     public function __construct()
     {
-        helper(['form', 'url']);
+        helper(['form', 'url', 'shop_closing_day']);
     }
 
     /**
@@ -20,10 +20,8 @@ class UserPreferencesController extends BaseController
      */
     public function index(): ResponseInterface
     {
-        if (!$this->request->isAJAX()) {
-            return $this->response->setStatusCode(400);
-        }
-
+        // AJAX判定を削除
+        
         try {
             // 現在の個人設定を取得（セッションから）
             $preferences = session('user_preferences') ?? [];
@@ -57,10 +55,8 @@ class UserPreferencesController extends BaseController
      */
     public function save(): ResponseInterface
     {
-        if (!$this->request->isAJAX()) {
-            return $this->response->setStatusCode(400);
-        }
-
+        // AJAX判定を削除
+        
         try {
             $postData = $this->request->getPost();
             
