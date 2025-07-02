@@ -3,6 +3,7 @@
 namespace App\Controllers\Customer;
 
 use CodeIgniter\HTTP\ResponseInterface;
+use App\Enums\ReserveStatusCode;
 
 /**
  * 顧客向けカレンダーコントローラー
@@ -60,13 +61,12 @@ class CalendarController extends BaseController
             
             $shopId = (int)$shopId;
 
-            // Ajax リクエストの場合
-            if ($this->request->getGet('ajax') === '1') {
-                return $this->getMonthCalendarData($currentMonth, $shopId);
-            }
-
             // カレンダーデータ取得（Clear車検のみ）
             $calendarData = $this->getCustomerCalendarData($currentMonth, $shopId);
+
+            // 前月・次月の計算
+            $prevMonth = date('Y-m', strtotime($currentMonth . '-01 -1 month'));
+            $nextMonth = date('Y-m', strtotime($currentMonth . '-01 +1 month'));
 
             $data = [
                 'page_title' => 'Clear車検予約カレンダー | 上嶋自動車',
@@ -75,6 +75,8 @@ class CalendarController extends BaseController
                 'current_month_display' => date('Y年n月', strtotime($currentMonth . '-01')),
                 'calendar_data' => $calendarData,
                 'shop_id' => $shopId,
+                'prev_month' => $prevMonth,
+                'next_month' => $nextMonth,
             ];
 
             return $this->render('Customer/Calendar/month', $data);
@@ -117,14 +119,14 @@ class CalendarController extends BaseController
             if (empty($currentWeekStart)) {
                 $dateParam = $this->request->getGet('date');
                 if (!empty($dateParam)) {
-                    // dateパラメータから週の開始日（月曜日）を計算
+                    // dateパラメータから週の開始日（日曜日）を計算
                     $selectedDate = new \DateTime($dateParam);
                     $dayOfWeek = (int)$selectedDate->format('w'); // 0: 日曜日, 1: 月曜日, ...
-                    $mondayOffset = $dayOfWeek === 0 ? -6 : -(($dayOfWeek - 1)); // 月曜日への日数差
-                    $selectedDate->add(new \DateInterval('P' . $mondayOffset . 'D'));
+                    $sundayOffset = -$dayOfWeek; // 日曜日への日数差
+                    $selectedDate->add(new \DateInterval('P' . $sundayOffset . 'D'));
                     $currentWeekStart = $selectedDate->format('Y-m-d');
                 } else {
-                    $currentWeekStart = date('Y-m-d', strtotime('monday this week'));
+                    $currentWeekStart = date('Y-m-d', strtotime('sunday this week'));
                 }
             }
             
@@ -139,13 +141,12 @@ class CalendarController extends BaseController
             
             $shopId = (int)$shopId;
 
-            // Ajax リクエストの場合
-            if ($this->request->getGet('ajax') === '1') {
-                return $this->getWeekCalendarData($currentWeekStart, $shopId);
-            }
-
             // 週表示データ取得
             $weekData = $this->getCustomerWeekData($currentWeekStart, $shopId);
+
+            // 前週・次週の計算
+            $prevWeek = date('Y-m-d', strtotime($currentWeekStart . ' -7 days'));
+            $nextWeek = date('Y-m-d', strtotime($currentWeekStart . ' +7 days'));
 
             $data = [
                 'page_title' => 'Clear車検予約 週表示 | 上嶋自動車',
@@ -155,6 +156,8 @@ class CalendarController extends BaseController
                 'week_dates' => $weekData['week_dates'],
                 'time_slots' => $weekData['time_slots'],
                 'shop_id' => $shopId,
+                'prev_week' => $prevWeek,
+                'next_week' => $nextWeek,
             ];
 
             return $this->render('Customer/Calendar/week', $data);
@@ -167,130 +170,6 @@ class CalendarController extends BaseController
             }
             
             return $this->showError('カレンダーの取得に失敗しました。再度お試しください。', 500);
-        }
-    }
-
-    /**
-     * 月表示カレンダーデータをAjax用に取得
-     */
-    private function getMonthCalendarData(string $currentMonth, int $shopId): ResponseInterface
-    {
-        try {
-            $calendarData = $this->getCustomerCalendarData($currentMonth, $shopId);
-
-            // カレンダーテーブルのHTMLを生成
-            $html = $this->renderCalendarTable($calendarData, $shopId);
-
-            return $this->jsonResponse([
-                'success' => true,
-                'html' => $html,
-                'month_display' => date('Y年n月', strtotime($currentMonth . '-01')),
-            ]);
-
-        } catch (\Throwable $e) {
-            log_message('error', '[' . __CLASS__ . '::' . __FUNCTION__ . '] Month calendar Ajax error: ' . $e->getMessage());
-            
-            return $this->jsonResponse([
-                'success' => false,
-                'error' => 'カレンダーデータの取得に失敗しました。'
-            ], 500);
-        }
-    }
-
-    /**
-     * カレンダーテーブルのHTMLを生成
-     */
-    private function renderCalendarTable(array $calendarData, int $shopId): string
-    {
-        $html = '<table class="calendar-table">
-                    <thead>
-                        <tr class="calendar-header-row">
-                            <th class="calendar-header-cell sunday">日</th>
-                            <th class="calendar-header-cell">月</th>
-                            <th class="calendar-header-cell">火</th>
-                            <th class="calendar-header-cell">水</th>
-                            <th class="calendar-header-cell">木</th>
-                            <th class="calendar-header-cell">金</th>
-                            <th class="calendar-header-cell saturday">土</th>
-                        </tr>
-                    </thead>
-                    <tbody id="calendar-body">';
-
-        if (!empty($calendarData) && is_array($calendarData)) {
-            foreach ($calendarData as $week) {
-                $html .= '<tr class="calendar-row">';
-                foreach ($week as $day) {
-                    $cssClasses = implode(' ', $day['css_classes'] ?? []);
-                    $date = esc($day['date'] ?? '');
-                    $dayNum = esc($day['day'] ?? '');
-                    $dayOfWeek = $day['day_of_week'] ?? 0;
-                    $isCurrentMonth = $day['is_current_month'] ?? true;
-                    $availabilityStatus = esc($day['availability_status'] ?? 'closed');
-                    
-                    // 日付スタイルクラス
-                    $dateClass = '';
-                    if ($dayOfWeek == 0) $dateClass = 'sunday';
-                    elseif ($dayOfWeek == 6) $dateClass = 'saturday';
-                    if (!$isCurrentMonth) $dateClass .= ' other-month';
-                    
-                    $html .= '<td class="calendar-cell ' . $cssClasses . '" data-date="' . $date . '" data-shop-id="' . $shopId . '">';
-                    $html .= '<div class="calendar-date">';
-                    $html .= '<span class="date-number ' . $dateClass . '">' . $dayNum . '</span>';
-                    $html .= '</div>';
-                    
-                    if ($isCurrentMonth) {
-                        $html .= '<div class="availability-mark ' . $availabilityStatus . '">';
-                        switch ($availabilityStatus) {
-                            case 'available':
-                                $html .= '○';
-                                break;
-                            case 'limited':
-                                $html .= '△';
-                                break;
-                            case 'full':
-                                $html .= '×';
-                                break;
-                            default:
-                                $html .= '';
-                        }
-                        $html .= '</div>';
-                    }
-                    
-                    $html .= '</td>';
-                }
-                $html .= '</tr>';
-            }
-        } else {
-            $html .= '<tr><td colspan="7" class="text-center">カレンダーデータを取得中...</td></tr>';
-        }
-
-        $html .= '</tbody></table>';
-        
-        return $html;
-    }
-
-    /**
-     * 週表示カレンダーデータをAjax用に取得
-     */
-    private function getWeekCalendarData(string $currentWeekStart, int $shopId): ResponseInterface
-    {
-        try {
-            $weekData = $this->getCustomerWeekData($currentWeekStart, $shopId);
-
-            return $this->jsonResponse([
-                'success' => true,
-                'week_dates' => $weekData['week_dates'],
-                'time_slots' => $weekData['time_slots'],
-                'current_week_display' => $this->formatWeekDisplay($currentWeekStart),
-            ]);
-
-        } catch (\Throwable $e) {
-            log_message('error', '[' . __CLASS__ . '::' . __FUNCTION__ . '] Week calendar Ajax error: ' . $e->getMessage());
-            
-            return $this->jsonResponse([
-                'success' => false,
-                'error' => 'カレンダーデータの取得に失敗しました。'
-            ], 500);
         }
     }
 
@@ -371,7 +250,7 @@ class CalendarController extends BaseController
     /**
      * 顧客向け週表示データを取得
      * 
-     * @param string $weekStart 週の開始日（YYYY-MM-DD形式）
+     * @param string $weekStart 週の開始日（YYYY-MM-DD形式、日曜日開始）
      * @param int|null $shopId 店舗ID（null の場合は Clear車検対応店舗の最小IDを自動選択）
      * @return array 週表示用データ
      */
@@ -382,7 +261,7 @@ class CalendarController extends BaseController
             $shopId = $this->shopModel->getDefaultClearShakenShopId();
         }
 
-        // 週の日付を生成（月曜日開始）
+        // 週の日付を生成（日曜日開始）
         $weekDates = [];
         $currentDate = new \DateTime($weekStart);
         
@@ -420,7 +299,7 @@ class CalendarController extends BaseController
                 if ($isHoliday || $dateStr < date('Y-m-d')) {
                     $status = 'closed';
                 } else {
-                    $status = $this->getTimeSlotAvailabilityStatus($dateStr, $timeSlot->id);
+                    $status = $this->getTimeSlotAvailabilityStatus($dateStr, $timeSlot->id, $shopId);
                 }
 
                 $slots[$dateStr] = [
@@ -432,8 +311,7 @@ class CalendarController extends BaseController
 
             $timeSlotsData[] = [
                 'time_slot_id' => $timeSlot->id,
-                'start_time_display' => $timeSlot->start_time,
-                'duration_display' => '約' . $timeSlot->duration_minutes . '分',
+                'start_time_display' => substr($timeSlot->start_time, 0, 5) . '～',
                 'slots' => $slots,
             ];
         }
@@ -458,10 +336,17 @@ class CalendarController extends BaseController
     /**
      * 指定時間帯の予約可能状況を判定
      */
-    private function getTimeSlotAvailabilityStatus(string $date, int $timeSlotId): string
+    private function getTimeSlotAvailabilityStatus(string $date, int $timeSlotId, int $shopId): string
     {
-        // 仮実装：実際のロジックは予約データを元に判定
-        return 'available';
+        $reservation = $this->reservationModel
+            ->where('desired_date', $date)
+            ->where('desired_time_slot_id', $timeSlotId)
+            ->where('shop_id', $shopId)
+            ->join('reserve_statuses', 'reserve_statuses.id = reservations.reservation_status_id')
+            ->where('reserve_statuses.code !=', ReserveStatusCode::CANCELED->value)
+            ->first();
+        
+        return $reservation ? 'full' : 'available';
     }
 
     /**

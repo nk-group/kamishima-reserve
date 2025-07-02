@@ -19,13 +19,15 @@
     <div class="calendar-week-page">
         <div class="calendar-container">
             <div class="calendar-header">
-                <button class="btn-calendar-nav" id="prev-week-btn">
+                <button class="btn-calendar-nav" id="prev-week-btn" 
+                        data-week="<?= esc($prev_week) ?>" data-shop-id="<?= esc($shop_id) ?>">
                     <i class="bi bi-chevron-left"></i> 前週
                 </button>
                 <h2 class="calendar-title" id="calendar-title">
                     <?= esc($current_week_display ?? date('Y年n月j日') . ' - ' . date('Y年n月j日', strtotime('+6 days'))) ?>
                 </h2>
-                <button class="btn-calendar-nav" id="next-week-btn">
+                <button class="btn-calendar-nav" id="next-week-btn" 
+                        data-week="<?= esc($next_week) ?>" data-shop-id="<?= esc($shop_id) ?>">
                     次週 <i class="bi bi-chevron-right"></i>
                 </button>
             </div>
@@ -35,10 +37,10 @@
                     <table class="week-calendar-table">
                         <thead>
                             <tr class="week-header-row">
-                                <th class="week-header-cell">時間</th>
+                                <th class="week-header-cell text-center">時間</th>
                                 <?php if (!empty($week_dates) && is_array($week_dates)): ?>
                                     <?php foreach ($week_dates as $date): ?>
-                                        <th class="week-header-cell <?= ($date['day_of_week'] ?? 0) == 0 ? 'sunday' : (($date['day_of_week'] ?? 0) == 6 ? 'saturday' : '') ?> <?= ($date['is_today'] ?? false) ? 'today' : '' ?>">
+                                        <th class="week-header-cell text-center <?= ($date['day_of_week'] ?? 0) == 0 ? 'sunday' : (($date['day_of_week'] ?? 0) == 6 ? 'saturday' : '') ?> <?= ($date['is_today'] ?? false) ? 'today' : '' ?>">
                                             <div class="date-info">
                                                 <div class="date-number">
                                                     <?= esc($date['day'] ?? '') ?>
@@ -50,13 +52,13 @@
                                         </th>
                                     <?php endforeach; ?>
                                 <?php else: ?>
-                                    <th class="week-header-cell">日</th>
-                                    <th class="week-header-cell">月</th>
-                                    <th class="week-header-cell">火</th>
-                                    <th class="week-header-cell">水</th>
-                                    <th class="week-header-cell">木</th>
-                                    <th class="week-header-cell">金</th>
-                                    <th class="week-header-cell">土</th>
+                                    <th class="week-header-cell text-center sunday">日</th>
+                                    <th class="week-header-cell text-center">月</th>
+                                    <th class="week-header-cell text-center">火</th>
+                                    <th class="week-header-cell text-center">水</th>
+                                    <th class="week-header-cell text-center">木</th>
+                                    <th class="week-header-cell text-center">金</th>
+                                    <th class="week-header-cell text-center saturday">土</th>
                                 <?php endif; ?>
                             </tr>
                         </thead>
@@ -64,13 +66,8 @@
                             <?php if (!empty($time_slots) && is_array($time_slots)): ?>
                                 <?php foreach ($time_slots as $timeSlot): ?>
                                     <tr class="time-slot-row">
-                                        <td class="time-slot-label-cell">
-                                            <div class="time-range">
-                                                <?= esc($timeSlot['start_time_display'] ?? '') ?>
-                                            </div>
-                                            <div class="time-duration">
-                                                <?= esc($timeSlot['duration_display'] ?? '') ?>
-                                            </div>
+                                        <td class="time-label-cell text-center">
+                                            <?= esc($timeSlot['start_time_display'] ?? '') ?>
                                         </td>
                                         <?php if (!empty($week_dates) && is_array($week_dates)): ?>
                                             <?php foreach ($week_dates as $date): ?>
@@ -87,7 +84,6 @@
                                                         </button>
                                                     <?php elseif ($status === 'full'): ?>
                                                         <div class="unavailable-mark">×</div>
-                                                        <div class="unavailable-text">満席</div>
                                                     <?php else: ?>
                                                         <div class="closed-mark">-</div>
                                                     <?php endif; ?>
@@ -113,31 +109,13 @@
                     </table>
                 </div>
             </div>
-        </div>
-
-        <div class="calendar-legend">
-            <div class="legend-title">予約状況の見方</div>
-            <div class="legend-items">
-                <span class="legend-item">
-                    <button class="time-slot-button available" disabled>予約可</button> 余裕あり
-                </span>
-                <span class="legend-item">
-                    <button class="time-slot-button limited" disabled>残りわずか</button> 残りわずか
-                </span>
-                <span class="legend-item">
-                    <span class="unavailable-mark">×</span> 満席
-                </span>
-                <span class="legend-item">
-                    <span class="closed-mark">-</span> 定休日
-                </span>
+            
+            <div class="calendar-bottom-controls">
+                <button class="btn-calendar-nav" id="back-to-month-btn" 
+                        data-shop-id="<?= esc($shop_id) ?>">
+                    <i class="bi bi-calendar3"></i> 月表示に戻る
+                </button>
             </div>
         </div>
-    </div>
-
-    <?php // JavaScript用データを非表示で設定 ?>
-    <div id="calendar-week-data" style="display: none;"
-         data-current-week-start="<?= esc($current_week_start ?? date('Y-m-d', strtotime('monday this week'))) ?>"
-         data-shop-id="<?= esc($shop_id ?? '') ?>"
-         data-base-url="/customer/calendar/week">
     </div>
 <?= $this->endSection() ?>

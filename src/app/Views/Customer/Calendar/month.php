@@ -19,13 +19,15 @@
     <div class="calendar-month-page">
         <div class="calendar-container">
             <div class="calendar-header">
-                <button class="btn-calendar-nav" id="prev-month-btn">
+                <button class="btn-calendar-nav" id="prev-month-btn" 
+                        data-month="<?= esc($prev_month) ?>" data-shop-id="<?= esc($shop_id) ?>">
                     <i class="bi bi-chevron-left"></i> 前月
                 </button>
                 <h2 class="calendar-title" id="calendar-title">
                     <?= esc($current_month_display ?? date('Y年n月')) ?>
                 </h2>
-                <button class="btn-calendar-nav" id="next-month-btn">
+                <button class="btn-calendar-nav" id="next-month-btn" 
+                        data-month="<?= esc($next_month) ?>" data-shop-id="<?= esc($shop_id) ?>">
                     次月 <i class="bi bi-chevron-right"></i>
                 </button>
             </div>
@@ -34,13 +36,13 @@
                 <table class="calendar-table">
                     <thead>
                         <tr class="calendar-header-row">
-                            <th class="calendar-header-cell sunday">日</th>
-                            <th class="calendar-header-cell">月</th>
-                            <th class="calendar-header-cell">火</th>
-                            <th class="calendar-header-cell">水</th>
-                            <th class="calendar-header-cell">木</th>
-                            <th class="calendar-header-cell">金</th>
-                            <th class="calendar-header-cell saturday">土</th>
+                            <th class="calendar-header-cell text-center sunday">日</th>
+                            <th class="calendar-header-cell text-center">月</th>
+                            <th class="calendar-header-cell text-center">火</th>
+                            <th class="calendar-header-cell text-center">水</th>
+                            <th class="calendar-header-cell text-center">木</th>
+                            <th class="calendar-header-cell text-center">金</th>
+                            <th class="calendar-header-cell text-center saturday">土</th>
                         </tr>
                     </thead>
                     <tbody id="calendar-body">
@@ -104,12 +106,5 @@
                 </span>
             </div>
         </div>
-    </div>
-
-    <?php // JavaScript用データを非表示で設定 ?>
-    <div id="calendar-month-data" style="display: none;"
-         data-current-month="<?= esc($current_month ?? date('Y-m')) ?>"
-         data-shop-id="<?= esc($shop_id ?? '') ?>"
-         data-base-url="/customer/calendar/month">
     </div>
 <?= $this->endSection() ?>

@@ -6,6 +6,7 @@ use CodeIgniter\Model;
 use App\Entities\ReservationEntity;
 use CodeIgniter\I18n\Time;
 use App\Enums\ReserveStatusCode;
+use App\Enums\WorkTypeCode;
 
 class ReservationModel extends Model
 {
@@ -90,7 +91,8 @@ class ReservationModel extends Model
     ];
     
     protected $skipValidation     = false;
-    protected $beforeInsert       = ['generateReservationNo'];
+    protected $beforeInsert       = ['generateReservationNo', 'checkClearShakenDoubleBooking'];
+    protected $beforeUpdate       = ['checkClearShakenDoubleBooking'];
 
     /**
      * 予約番号 (YYMMNNNN) を自動生成します。
@@ -115,6 +117,50 @@ class ReservationModel extends Model
             
             $data['data']['reservation_no'] = $prefix . sprintf('%04d', $nextNumber);
         }
+        return $data;
+    }
+
+    /**
+     * Clear車検のダブルブッキングチェック
+     */
+    protected function checkClearShakenDoubleBooking(array $data): array
+    {
+        $reservationData = $data['data'];
+        
+        // Clear車検以外はチェックしない
+        if (empty($reservationData['work_type_id']) || 
+            $reservationData['work_type_id'] != WorkTypeCode::CLEAR_SHAKEN->id()) {
+            return $data;
+        }
+        
+        // 必要なフィールドが揃っているかチェック
+        if (empty($reservationData['shop_id']) || 
+            empty($reservationData['desired_date']) || 
+            empty($reservationData['desired_time_slot_id'])) {
+            return $data;
+        }
+        
+        // 更新の場合は自分自身を除外
+        $excludeId = $data['id'] ?? null;
+        
+        // 既存の有効な予約をチェック
+        $builder = $this->where('shop_id', $reservationData['shop_id'])
+            ->where('desired_date', $reservationData['desired_date']) 
+            ->where('desired_time_slot_id', $reservationData['desired_time_slot_id'])
+            ->join('reserve_statuses', 'reserve_statuses.id = reservations.reservation_status_id')
+            ->where('reserve_statuses.code !=', ReserveStatusCode::CANCELED->value);
+            
+        if ($excludeId) {
+            $builder->where('reservations.id !=', $excludeId);
+        }
+        
+        $existingReservation = $builder->first();
+            
+        if ($existingReservation) {
+            $this->errors = ['double_booking' => 'この時間帯は既に予約が入っています。他の時間帯をお選びください。'];
+            return false;
+        }
+        
         return $data;
     }
 

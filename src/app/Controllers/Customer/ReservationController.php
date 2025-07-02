@@ -12,7 +12,6 @@ class ReservationController extends BaseController
 {
     protected $reservationModel;
     protected $timeSlotModel;
-    protected $vehicleTypeModel;
     protected $shopModel;
 
     public function initController(\CodeIgniter\HTTP\RequestInterface $request, \CodeIgniter\HTTP\ResponseInterface $response, \Psr\Log\LoggerInterface $logger): void
@@ -22,7 +21,6 @@ class ReservationController extends BaseController
         // モデルを初期化
         $this->reservationModel = model('App\Models\ReservationModel');
         $this->timeSlotModel = model('App\Models\TimeSlotModel');
-        $this->vehicleTypeModel = model('App\Models\VehicleTypeModel');
         $this->shopModel = model('App\Models\ShopModel');
     }
 
@@ -71,7 +69,6 @@ class ReservationController extends BaseController
                 'selected_time_slot_id' => $selectedTimeSlotId,
                 'shop_id' => $shopId,
                 'available_time_slots' => $formData['available_time_slots'],
-                'vehicle_types' => $formData['vehicle_types'],
             ];
 
             return $this->render('Customer/Reservation/form', $data);
@@ -294,22 +291,8 @@ class ReservationController extends BaseController
             }
         }
 
-        // 車両種別を取得
-        $vehicleTypes = [];
-        $vehicleTypeList = $this->vehicleTypeModel->where('active', 1)
-                                                ->orderBy('sort_order', 'ASC')
-                                                ->findAll();
-        
-        foreach ($vehicleTypeList as $vehicleType) {
-            $vehicleTypes[] = [
-                'id' => $vehicleType->id,
-                'name' => $vehicleType->name,
-            ];
-        }
-
         return [
             'available_time_slots' => $availableTimeSlots,
-            'vehicle_types' => $vehicleTypes,
         ];
     }
 

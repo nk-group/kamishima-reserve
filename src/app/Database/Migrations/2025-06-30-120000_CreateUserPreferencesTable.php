@@ -44,13 +44,13 @@ class CreateUserPreferencesTable extends Migration
                 'comment'    => '設定グループ（general, display, function等）',
             ],
             'created_at' => [
-                'type'    => 'DATETIME',
-                'default' => 'CURRENT_TIMESTAMP',
+                'type' => 'DATETIME',
+                'null' => true,
                 'comment' => '作成日時',
             ],
             'updated_at' => [
-                'type'    => 'DATETIME',
-                'default' => 'CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
+                'type' => 'DATETIME',
+                'null' => true,
                 'comment' => '更新日時',
             ],
         ]);
@@ -65,8 +65,8 @@ class CreateUserPreferencesTable extends Migration
         $this->forge->addKey(['user_id', 'preference_key'], false, true);
 
         // インデックス
-        $this->forge->addKey('user_id'); // user_idでの検索用
-        $this->forge->addKey(['user_id', 'preference_key']); // 個人設定検索の最適化
+        //$this->forge->addKey('user_id'); // user_idでの検索用
+        //$this->forge->addKey(['user_id', 'preference_key']); // 個人設定検索の最適化
 
         // テーブル作成
         $this->forge->createTable('user_preferences', true);

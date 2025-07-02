@@ -287,6 +287,68 @@
                 console.log('iframe読み込み完了');
             });
         });
+
+
+        // iframe-test.html に追加
+        window.addEventListener('message', function(event) {
+            // セキュリティチェック（必要に応じて origin を確認）
+            
+            if (event.data.type === 'calendar-date-selected') {
+                console.log('Calendar date selected:', event.data);
+                
+                // iframe のソースを変更して遷移
+                const iframe = document.getElementById('calendar-iframe'); // iframe の ID
+                if (iframe && event.data.nextUrl) {
+                    iframe.src = event.data.nextUrl;
+                }
+            }
+            
+            if (event.data.type === 'time-slot-selected') {
+                console.log('Time slot selected:', event.data);
+                
+                // 予約フォームに遷移
+                const iframe = document.getElementById('calendar-iframe');
+                if (iframe && event.data.nextUrl) {
+                    iframe.src = event.data.nextUrl;
+                }
+            }
+        }, false);
+
+        window.addEventListener('message', function(event) {
+            console.log('Received message:', event.data);
+            
+            if (event.data.type === 'calendar-date-selected') {
+                console.log('Calendar date selected:', event.data);
+                
+                // iframe要素を取得
+                const iframe = document.querySelector('iframe'); // または specific ID: document.getElementById('your-iframe-id')
+                
+                if (iframe && event.data.nextUrl) {
+                    console.log('Navigating to:', event.data.nextUrl);
+                    iframe.src = event.data.nextUrl;
+                }
+            }
+            
+            if (event.data.type === 'time-slot-selected') {
+                console.log('Time slot selected:', event.data);
+                
+                // 予約フォームに遷移
+                const iframe = document.querySelector('iframe');
+                if (iframe && event.data.nextUrl) {
+                    console.log('Navigating to reservation form:', event.data.nextUrl);
+                    iframe.src = event.data.nextUrl;
+                }
+            }
+            
+            // その他のナビゲーションメッセージ
+            if (event.data.type === 'calendar-navigation') {
+                const iframe = document.querySelector('iframe');
+                if (iframe && event.data.nextUrl) {
+                    console.log('Calendar navigation:', event.data.nextUrl);
+                    iframe.src = event.data.nextUrl;
+                }
+            }
+        }, false);
     </script>
 </body>
 </html>
