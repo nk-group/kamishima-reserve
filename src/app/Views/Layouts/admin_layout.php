@@ -32,6 +32,9 @@
 
     <?php // 個人設定モーダルをインクルード ?>
     <?= $this->include('Partials/_user_preferences_modal') ?>
+    
+    <?php // 入庫予定表印刷モーダルをインクルード ?>
+    <?= $this->include('Partials/_arrival_schedule_print_modal') ?>    
 
     <?= $this->renderSection('page_specific_scripts') ?>
 </body>

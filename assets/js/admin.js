@@ -13,6 +13,10 @@ import { initAdminUIInteractions } from './admin/common/ui-common.js';
 // 個人設定機能をインポート
 import { initUserPreferences } from './admin/common/user-preferences.js';
 
+// 入庫予定表印刷機能をインポート
+import { initArrivalSchedulePrint } from './admin/common/arrival-schedule-print.js';
+
+
 // 共通フォームバリデーションスクリプトをインポート
 import { initFormValidation } from './admin/utils/form-validation.js';
 
@@ -29,6 +33,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 個人設定機能の初期化
     initUserPreferences();
+
+    // 入庫予定表印刷機能の初期化
+    initArrivalSchedulePrint();    
 
     // --- ページ固有のスクリプトを動的インポートで読み込む ---
     // 例: 管理者ダッシュボード
