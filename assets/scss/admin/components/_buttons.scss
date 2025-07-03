@@ -290,15 +290,14 @@
   text-decoration: none;
   display: inline-block;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(var.$rainbow-green, 0.3);
+  box-shadow: 0 4px 15px rgba(var.$rainbow-green, 0.10); // 0.3 → 0.15に変更（影を薄く）
 
   &:hover {
     background: linear-gradient(135deg, var.$green-darker, var.$green-deep-dark);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(var.$rainbow-green, 0.4);
+    box-shadow: 0 6px 20px rgba(var.$rainbow-green, 0.20); // 0.4 → 0.25に変更（影を薄く）
   }
 }
-
 //--------------------------------------------------------------------------
 // Export Buttons (e.g., Clipboard, CSV Download)
 //--------------------------------------------------------------------------

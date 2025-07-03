@@ -45,7 +45,6 @@ if (auth()->loggedIn()) {
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?= $admin_reservations_url ?>">予約一覧</a></li>
                         <li><a class="dropdown-item" href="<?= site_url('admin/reservations/new') ?>">予約登録</a></li>
-                        <li><a class="dropdown-item" href="<?= $admin_dashboard_url ?>">カレンダー</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item"  href="#" id="arrivalSchedulePrintBtn">
                             <i class="bi bi-printer me-2"></i>

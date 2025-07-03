@@ -234,6 +234,9 @@ class ReservationController extends BaseController
     {
         helper(['form', 'app_form']);
 
+        // URLパラメータから初期値を取得
+        $initialValues = $this->getInitialValuesFromRequest();
+
         $data = [
             'page_title' => '新規予約作成 | 車検予約管理システム',
             'h1_title' => '新規予約作成',
@@ -241,12 +244,70 @@ class ReservationController extends BaseController
             'reservation' => null, // 新規なのでnull
             'form_action' => route_to('admin.reservations.create'),
             'is_edit' => false,
+            'initial_values' => $initialValues, // 初期値を追加
         ];
 
         // フォーム用データを準備
         $data = array_merge($data, $this->prepareFormData());
 
         return $this->render('Admin/Reservations/new', $data);
+    }
+
+    /**
+     * URLパラメータから初期値を取得・バリデーションします。
+     */
+    private function getInitialValuesFromRequest(): array
+    {
+        $request = $this->request;
+        $initialValues = [];
+
+        // 予約希望日の初期値
+        $date = $request->getGet('date');
+        if ($date && $this->isValidDate($date)) {
+            $initialValues['desired_date'] = $date;
+        }
+
+        // 作業店舗の初期値
+        $shopId = $request->getGet('shop_id');
+        if ($shopId && is_numeric($shopId) && (int)$shopId > 0) {
+            // 店舗IDの存在確認
+            $shop = $this->shopModel->find((int)$shopId);
+            if ($shop) {
+                $initialValues['shop_id'] = (int)$shopId;
+                
+                // 【追加仕様】店舗がClear車検対応ならClear車検を作業種別に設定
+                if ($shop->isClearReady()) {
+                    $clearShakenWorkType = $this->workTypeModel->findByCode(\App\Enums\WorkTypeCode::CLEAR_SHAKEN);
+                    if ($clearShakenWorkType && $clearShakenWorkType->isActive()) {
+                        $initialValues['work_type_id'] = $clearShakenWorkType->id;
+                    }
+                }
+            }
+        }
+
+        // LINE経由フラグの初期値
+        $line = $request->getGet('line');
+        if ($line !== null) {
+            // '0'の場合は明示的にfalse、'1'の場合はtrue
+            $initialValues['via_line'] = ($line === '1');
+        }
+
+        return $initialValues;
+    }
+
+    /**
+     * 日付文字列の妥当性をチェックします。
+     */
+    private function isValidDate(string $date): bool
+    {
+        // YYYY-MM-DD形式の基本チェック
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+            return false;
+        }
+
+        // 実際に有効な日付かチェック
+        $dateTime = \DateTime::createFromFormat('Y-m-d', $date);
+        return $dateTime && $dateTime->format('Y-m-d') === $date;
     }
 
     /**

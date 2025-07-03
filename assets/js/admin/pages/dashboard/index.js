@@ -448,18 +448,55 @@ export function initDashboard() {
         div.textContent = text;
         return div.innerHTML;
     }
+    
+    /**
+     * 現在選択中の店舗IDを取得
+     * グローバル変数selectedShopIdから取得（この関数内でアクセス可能）
+     */
+    function getCurrentSelectedShopId() {
+        return selectedShopId;
+    }
+    
+    // グローバルからアクセス可能にする
+    window.getCurrentSelectedShopId = getCurrentSelectedShopId;
+    
+    // createNewReservation関数をグローバルスコープに追加
+    window.createNewReservation = function(date, calendarShopId) {
+        // ダッシュボードで選択中の店舗IDを取得
+        const currentSelectedShopId = selectedShopId;
+        
+        // 全店舗選択時（空文字・null）は未選択とし、具体的な店舗IDが設定されている場合はそれを使用
+        const targetShopId = currentSelectedShopId && currentSelectedShopId !== '' ? currentSelectedShopId : null;
+        
+        // URLパラメータ構築
+        const params = new URLSearchParams({
+            date: date,
+            line: '0'  // LINE経由チェックボックスを未チェック状態にセット
+        });
+        
+        if (targetShopId) {
+            params.append('shop_id', targetShopId);
+        }
+        
+        window.location.href = `/admin/reservations/new?${params.toString()}`;
+    };
 }
 
+
 /**
- * 新規予約作成
+ * 新規予約作成（ダッシュボードで選択中の店舗を考慮）
+ * グローバル関数版は initDashboard() 内で定義されます
  */
-export function createNewReservation(date, shopId) {
+export function createNewReservation(date, calendarShopId) {
+    // この関数は直接呼び出されることはなく、グローバル版が使用されます
+    // 互換性のため残しておきます
     const params = new URLSearchParams({
-        date: date
+        date: date,
+        line: '0'
     });
     
-    if (shopId) {
-        params.append('shop_id', shopId);
+    if (calendarShopId) {
+        params.append('shop_id', calendarShopId);
     }
     
     window.location.href = `/admin/reservations/new?${params.toString()}`;
