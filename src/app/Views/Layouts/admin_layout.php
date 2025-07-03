@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <?php // CSRFトークンをメタタグに追加 ?>
+    <meta name="csrf-token-name" content="<?= csrf_token() ?>">
+    <meta name="csrf-token" content="<?= csrf_hash() ?>">
+
     <title><?= $this->renderSection('title', '管理画面 | 車検予約管理システム') ?></title>
 
     <?php // Vite アセットの読み込み (新しいエントリーポイントを指定) ?>

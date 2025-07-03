@@ -44,8 +44,17 @@ if (auth()->loggedIn()) {
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="<?= $admin_reservations_url ?>">予約一覧</a></li>
-                        <li><a class="dropdown-item" href="<?= site_url('admin/reservations/new') // あとで作成するルート ?>">予約登録</a></li>
-                        <li><a class="dropdown-item" href="<?= $admin_dashboard_url // カレンダーはダッシュボードにある想定 ?>">カレンダー</a></li>
+                        <li><a class="dropdown-item" href="<?= site_url('admin/reservations/new') ?>">予約登録</a></li>
+                        <li><a class="dropdown-item" href="<?= $admin_dashboard_url ?>">カレンダー</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">
+                            <i class="bi bi-printer me-2"></i>
+                            入庫予定表印刷
+                        </a></li>
+                        <li><a class="dropdown-item" href="#">
+                            <i class="bi bi-card-text me-2"></i>
+                            予約カード印刷
+                        </a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">

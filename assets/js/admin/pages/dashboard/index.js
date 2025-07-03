@@ -15,7 +15,6 @@ export function initDashboard() {
     const prevMonthBtn = document.getElementById('prev-month-btn');
     const nextMonthBtn = document.getElementById('next-month-btn');
     const refreshTodayBtn = document.getElementById('refresh-today-btn');
-    const refreshCalendarBtn = document.getElementById('refresh-calendar-btn');
     const toggleMoreBtn = document.getElementById('toggle-more-reservations');
     
     if (!dashboardData) {
@@ -36,12 +35,11 @@ export function initDashboard() {
      * イベントリスナーの設定
      */
     function setupEventListeners() {
-        // 店舗選択の変更
+        // 作業店舗選択の変更（カレンダー + 本日の予定 両方更新）
         if (shopSelect) {
             shopSelect.addEventListener('change', function() {
                 selectedShopId = this.value || null;
-                updateCalendar();
-                updateTodayReservations();
+                updateDashboard();
             });
         }
         
@@ -67,17 +65,10 @@ export function initDashboard() {
             });
         }
         
-        // 今日の予約更新ボタン
+        // 更新ボタン（カレンダー + 本日の予定 両方更新）
         if (refreshTodayBtn) {
             refreshTodayBtn.addEventListener('click', function() {
-                updateTodayReservations();
-            });
-        }
-        
-        // カレンダー更新ボタン
-        if (refreshCalendarBtn) {
-            refreshCalendarBtn.addEventListener('click', function() {
-                updateCalendar();
+                updateDashboard();
             });
         }
         
@@ -88,6 +79,15 @@ export function initDashboard() {
                 toggleMoreReservations();
             });
         }
+    }
+    
+    /**
+     * ダッシュボード全体の更新（カレンダー + 本日の予定 両方更新）
+     */
+    function updateDashboard() {
+        // カレンダーと本日の予定を同時に更新
+        updateCalendar();
+        updateTodayReservations();
     }
     
     /**

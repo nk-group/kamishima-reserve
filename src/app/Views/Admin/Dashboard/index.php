@@ -36,15 +36,23 @@
                     </h2>
                     <span class="section-date"><?= esc($today_date ?? date('Y年n月j日')) ?></span>
                 </div>
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn-outline-custom btn-small" id="refresh-today-btn">
+                <div class="section-controls">
+                    <label for="shopSelect" class="form-label">作業店舗</label>
+                    <select id="shopSelect" class="shop-select">
+                        <option value="">全店舗</option>
+                        <?php if (!empty($shops)): ?>
+                            <?php foreach ($shops as $shop): ?>
+                                <option value="<?= esc($shop->id) ?>" 
+                                    <?= $selected_shop_id == $shop->id ? 'selected' : '' ?>>
+                                    <?= esc($shop->name) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                    <button type="button" class="btn-outline-custom btn-small" id="refresh-calendar-btn">
                         <i class="bi bi-arrow-clockwise me-1"></i>
                         更新
                     </button>
-                    <a href="#" class="btn-entry">
-                        <i class="bi bi-printer me-2"></i>
-                        入庫予定表印刷
-                    </a>
                 </div>
             </div>
             
@@ -103,7 +111,7 @@
         <!-- Calendar Section -->
         <div class="calendar-section">
             <div class="calendar-header">
-                <div>
+                <div class="d-flex align-items-center">
                     <h2 class="section-title">
                         <i class="bi bi-calendar3"></i>
                         予約カレンダー
@@ -114,24 +122,6 @@
                         一般整備　<?= esc($statistics['general_maintenance'] ?? 0) ?>件／
                         その他　<?= esc($statistics['other'] ?? 0) ?>件
                     </div>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                    <button type="button" class="btn-outline-custom btn-small" id="refresh-calendar-btn">
-                        <i class="bi bi-arrow-clockwise me-1"></i>
-                        更新
-                    </button>
-                    <label for="shopSelect" class="form-label me-2" style="color: #1f2937; font-weight: 600;">作業店舗</label>
-                    <select id="shopSelect" class="shop-select">
-                        <option value="">全店舗</option>
-                        <?php if (!empty($shops)): ?>
-                            <?php foreach ($shops as $shop): ?>
-                                <option value="<?= esc($shop->id) ?>" 
-                                    <?= $selected_shop_id == $shop->id ? 'selected' : '' ?>>
-                                    <?= esc($shop->name) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </select>
                 </div>
             </div>
 

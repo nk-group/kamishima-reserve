@@ -16,7 +16,53 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+
+    // 作業店舗選択と更新ボタンの右側コントロール群
+    .section-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px; // 要素間の基本間隔
+      flex-wrap: wrap;
+
+      .form-label {
+        color: var.$header-bg-dark-start;
+        font-weight: 600;
+        margin: 0;
+        font-size: 0.8rem; // ボタンサイズに合わせて調整
+        line-height: 1.2;
+        display: flex;
+        align-items: center;
+        height: 100%; // 垂直中央揃え
+      }
+
+      .shop-select {
+        border: 2px solid var.$gray-text-muted; // ボタンと同じボーダー色
+        border-radius: 25px; // ボタンと同じ角丸
+        padding: 6px 12px; // btn-smallと同じパディング
+        background: white;
+        transition: all 0.3s ease;
+        min-width: 120px;
+        font-size: 0.8rem; // btn-smallと同じフォントサイズ
+        font-weight: 600; // ボタンと同じ太さ
+        height: auto; // 自動調整
+        line-height: 1.2;
+        margin-right: 1em; // 更新ボタンとの間に一文字分の余白
+
+        &:focus {
+          border-color: var.$rainbow-blue;
+          box-shadow: 0 0 0 0.2rem rgba(var.$rainbow-blue, 0.25);
+          outline: none;
+        }
+
+        &:hover {
+          border-color: var.$gray-text-muted;
+        }
+      }
+    }
   }
+
   // .section-title is styled globally below
   .schedule-card {
     background: white;
@@ -145,19 +191,6 @@
     font-size: 0.9rem;
     color: var.$gray-text-muted;
     margin-top: 8px;
-  }
-
-  .shop-select {
-    border: 2px solid var.$gray-border-light;
-    border-radius: 8px;
-    padding: 8px 15px;
-    background: white;
-    transition: all 0.3s ease;
-
-    &:focus {
-      border-color: var.$rainbow-blue;
-      box-shadow: 0 0 0 0.2rem rgba(var.$rainbow-blue, 0.25);
-    }
   }
 
   .calendar-container {
@@ -379,6 +412,19 @@
       flex-direction: column;
       align-items: stretch;
       gap: 15px;
+
+      .section-controls {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 8px;
+
+        .shop-select {
+          min-width: 100px;
+          flex: 1;
+          max-width: 200px;
+          margin-right: 0.5em; // モバイルでは余白を少し縮小
+        }
+      }
     }
   }
 
