@@ -1,0 +1,346 @@
+//==========================================================================
+// Customer Button Component Styles - Clear車検予約システム顧客向け
+//==========================================================================
+
+@use '../base/variables' as var;
+
+//--------------------------------------------------------------------------
+// 新色定義（指定されたアクセントカラー）
+//--------------------------------------------------------------------------
+$customer-accent-yellow: #ffe51d;
+$customer-accent-blue: #0b198c;
+
+//--------------------------------------------------------------------------
+// Calendar Navigation Buttons (カレンダー戻るボタン)
+// 月表示・週表示・予約フォーム共通
+//--------------------------------------------------------------------------
+.btn-calendar-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  margin: 0 var.$spacer-sm;
+  background: linear-gradient(135deg, $customer-accent-yellow, lighten($customer-accent-yellow, 8%));
+  color: $customer-accent-blue;
+  border: 2px solid $customer-accent-blue;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  font-weight: var.$btn-font-weight;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-width: 160px;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba($customer-accent-blue, 0.2);
+  
+  &:hover {
+    background: linear-gradient(135deg, $customer-accent-blue, darken($customer-accent-blue, 10%));
+    color: var.$white;
+    text-decoration: none;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba($customer-accent-blue, 0.3);
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba($customer-accent-blue, 0.25);
+  }
+  
+  &:active {
+    transform: translateY(-1px);
+  }
+  
+  .bi {
+    font-size: 1rem;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Calendar Action Buttons (前月/次月、前週/次週ボタン)
+//--------------------------------------------------------------------------
+.btn-calendar-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  background: var.$white;
+  color: $customer-accent-blue;
+  border: 2px solid $customer-accent-blue;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-width: 120px;
+  justify-content: center;
+  
+  &:hover {
+    background: $customer-accent-blue;
+    color: var.$white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba($customer-accent-blue, 0.25);
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba($customer-accent-blue, 0.25);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  .bi {
+    font-size: 0.9rem;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Form Reset Button (入力内容をリセット)
+//--------------------------------------------------------------------------
+.btn-form-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 24px;
+  background: var.$white;
+  color: var.$gray-600;
+  border: 2px solid var.$gray-400;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-width: 160px;
+  justify-content: center;
+  
+  &:hover {
+    background: var.$gray-100;
+    color: var.$gray-700;
+    border-color: var.$gray-500;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(var.$gray-400, 0.25);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  .bi {
+    font-size: 1rem;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Form Submit Button (予約を申し込む)
+//--------------------------------------------------------------------------
+.btn-form-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 32px;
+  background: linear-gradient(135deg, $customer-accent-blue, darken($customer-accent-blue, 8%));
+  color: var.$white;
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  min-width: 180px;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba($customer-accent-blue, 0.3);
+  position: relative;
+  overflow: hidden;
+  
+  // ホバー時のシャイン効果
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba($customer-accent-yellow, 0.3), transparent);
+    transition: left 0.6s ease;
+  }
+  
+  &:hover {
+    background: linear-gradient(135deg, darken($customer-accent-blue, 5%), darken($customer-accent-blue, 15%));
+    color: var.$white;
+    text-decoration: none;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba($customer-accent-blue, 0.4);
+    
+    &::before {
+      left: 100%;
+    }
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba($customer-accent-blue, 0.25);
+  }
+  
+  &:active {
+    transform: translateY(-1px);
+  }
+  
+  &:disabled {
+    background: var.$gray-400;
+    color: var.$gray-600;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    
+    &::before {
+      display: none;
+    }
+  }
+  
+  .bi {
+    font-size: 1.1rem;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Primary Button (汎用プライマリボタン)
+//--------------------------------------------------------------------------
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: var.$btn-padding-y var.$btn-padding-x;
+  background: linear-gradient(135deg, var.$btn-primary-bg, darken(var.$btn-primary-bg, 8%));
+  color: var.$btn-primary-color;
+  border: none;
+  border-radius: var.$btn-border-radius;
+  font-size: 0.9rem;
+  font-weight: var.$btn-font-weight;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  justify-content: center;
+  
+  &:hover {
+    background: linear-gradient(135deg, var.$btn-primary-hover-bg, darken(var.$btn-primary-hover-bg, 8%));
+    color: var.$white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var.$btn-primary-bg, 0.3);
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(var.$btn-primary-bg, 0.25);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  .bi {
+    font-size: 1rem;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Secondary Button (汎用セカンダリボタン)
+//--------------------------------------------------------------------------
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: var.$btn-padding-y var.$btn-padding-x;
+  background: var.$white;
+  color: var.$gray-600;
+  border: 2px solid var.$gray-300;
+  border-radius: var.$btn-border-radius;
+  font-size: 0.9rem;
+  font-weight: var.$btn-font-weight;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  justify-content: center;
+  
+  &:hover {
+    background: var.$gray-100;
+    color: var.$gray-700;
+    border-color: var.$gray-400;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(var.$gray-300, 0.25);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  .bi {
+    font-size: 1rem;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Button Group (ボタングループレイアウト)
+//--------------------------------------------------------------------------
+.btn-group-horizontal {
+  display: flex;
+  gap: var.$spacer;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-group-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: var.$spacer-sm;
+  align-items: center;
+}
+
+//--------------------------------------------------------------------------
+// Responsive Adjustments
+//--------------------------------------------------------------------------
+@media (max-width: var.$breakpoint-md) {
+  .btn-calendar-nav {
+    display: block;
+    margin: var.$spacer-sm auto;
+    min-width: 140px;
+    font-size: 0.85rem;
+    padding: 12px 20px;
+  }
+  
+  .btn-calendar-action {
+    min-width: 100px;
+    font-size: 0.8rem;
+    padding: 10px 16px;
+  }
+  
+  .btn-form-reset,
+  .btn-form-submit {
+    min-width: 140px;
+    font-size: 0.85rem;
+    padding: 12px 20px;
+  }
+  
+  .btn-group-horizontal {
+    flex-direction: column;
+    align-items: center;
+    gap: var.$spacer-sm;
+  }
+}

@@ -19,14 +19,14 @@
     <div class="calendar-week-page">
         <div class="calendar-container">
             <div class="calendar-header">
-                <button class="btn-calendar-nav" id="prev-week-btn" 
+                <button class="btn-calendar-action" id="prev-week-btn" 
                         data-week="<?= esc($prev_week) ?>" data-shop-id="<?= esc($shop_id) ?>">
                     <i class="bi bi-chevron-left"></i> 前週
                 </button>
                 <h2 class="calendar-title" id="calendar-title">
                     <?= esc($current_week_display ?? date('Y年n月j日') . ' - ' . date('Y年n月j日', strtotime('+6 days'))) ?>
                 </h2>
-                <button class="btn-calendar-nav" id="next-week-btn" 
+                <button class="btn-calendar-action" id="next-week-btn" 
                         data-week="<?= esc($next_week) ?>" data-shop-id="<?= esc($shop_id) ?>">
                     次週 <i class="bi bi-chevron-right"></i>
                 </button>
@@ -67,7 +67,7 @@
                                 <?php foreach ($time_slots as $timeSlot): ?>
                                     <tr class="time-slot-row">
                                         <td class="time-label-cell text-center">
-                                            <?= esc($timeSlot['start_time_display'] ?? '') ?>
+                                            <?= esc($timeSlot['name'] ?? '') ?>
                                         </td>
                                         <?php if (!empty($week_dates) && is_array($week_dates)): ?>
                                             <?php foreach ($week_dates as $date): ?>

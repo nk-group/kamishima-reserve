@@ -19,14 +19,14 @@
     <div class="calendar-month-page">
         <div class="calendar-container">
             <div class="calendar-header">
-                <button class="btn-calendar-nav" id="prev-month-btn" 
+                <button class="btn-calendar-action" id="prev-month-btn" 
                         data-month="<?= esc($prev_month) ?>" data-shop-id="<?= esc($shop_id) ?>">
                     <i class="bi bi-chevron-left"></i> 前月
                 </button>
                 <h2 class="calendar-title" id="calendar-title">
                     <?= esc($current_month_display ?? date('Y年n月')) ?>
                 </h2>
-                <button class="btn-calendar-nav" id="next-month-btn" 
+                <button class="btn-calendar-action" id="next-month-btn" 
                         data-month="<?= esc($next_month) ?>" data-shop-id="<?= esc($shop_id) ?>">
                     次月 <i class="bi bi-chevron-right"></i>
                 </button>

@@ -22,8 +22,79 @@ export function initReservationForm() {
     initFormValidation();
     initVehicleNumberInputs();
     initFormSubmission();
+    initCalendarNavigationButtons();
     
     console.log('Reservation form initialized successfully');
+    
+    /**
+     * カレンダー戻るボタンの初期化
+     * 週表示ページの実装パターンに準拠
+     */
+    function initCalendarNavigationButtons() {
+        const backToMonthBtn = document.getElementById('back-to-month-btn');
+        const backToWeekBtn = document.getElementById('back-to-week-btn');
+        
+        if (backToMonthBtn) {
+            backToMonthBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                handleCalendarNavigation('month', this);
+            });
+        }
+        
+        if (backToWeekBtn) {
+            backToWeekBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                handleCalendarNavigation('week', this);
+            });
+        }
+        
+        console.log('Calendar navigation buttons initialized');
+    }
+    
+    /**
+     * カレンダー遷移処理
+     * @param {string} viewType - 'month' または 'week'
+     * @param {Element} button - クリックされたボタン要素
+     */
+    function handleCalendarNavigation(viewType, button) {
+        const shopId = button.dataset.shopId;
+        
+        if (!shopId) {
+            console.warn('Shop ID not found for calendar navigation');
+            // shopIdが無い場合でも遷移を試行
+        }
+        
+        // 遷移先URLを構築
+        let targetUrl;
+        if (viewType === 'month') {
+            targetUrl = '/customer/calendar/month';
+        } else if (viewType === 'week') {
+            targetUrl = '/customer/calendar/week';
+        } else {
+            console.error('Invalid view type:', viewType);
+            return;
+        }
+        
+        // shop_idパラメータを追加
+        if (shopId) {
+            targetUrl += `?shop_id=${encodeURIComponent(shopId)}`;
+        }
+        
+        console.log(`Navigating to ${viewType} view:`, targetUrl);
+        
+        // iframe環境の場合は親ウィンドウに通知
+        if (window.self !== window.top && window.parent.postMessage) {
+            window.parent.postMessage({
+                type: 'calendar-navigation',
+                viewType: viewType,
+                shopId: shopId,
+                targetUrl: targetUrl
+            }, '*');
+        } else {
+            // 通常環境では直接遷移
+            window.location.href = targetUrl;
+        }
+    }
     
     /**
      * フォームバリデーションの初期化

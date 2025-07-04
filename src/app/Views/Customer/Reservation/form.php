@@ -17,7 +17,9 @@
 
 <?= $this->section('content') ?>
     <div class="reservation-form-page">
-        <form action="<?= site_url('customer/reservation/submit') ?>" method="post" class="needs-validation" novalidate>
+        <?= $this->include('Partials/_customer_alert_messages') ?>
+        
+        <form id="reservation-form" action="<?= site_url('customer/reservation/submit') ?>" method="post" class="needs-validation" novalidate>
             <?= csrf_field() ?>
 
             <!-- 予約日時情報 -->
@@ -193,17 +195,30 @@
             <!-- 送信ボタン -->
             <div class="form-actions-section">
                 <div class="action-buttons">
-                    <button type="reset" class="btn-reset">
+                    <button type="reset" class="btn-form-reset">
                         <i class="bi bi-arrow-clockwise"></i>
                         入力内容をリセット
                     </button>
-                    <button type="submit" class="btn-primary">
+                    <button type="submit" class="btn-form-submit">
                         <i class="bi bi-check-circle"></i>
                         予約を申し込む
                     </button>
                 </div>
             </div>
         </form>
+
+        <!-- カレンダー戻るボタン（フッター） -->
+        <div class="calendar-bottom-controls">
+            <button class="btn-calendar-nav" id="back-to-month-btn" 
+                    data-shop-id="<?= esc($shop_id ?? '') ?>">
+                <i class="bi bi-calendar3"></i> 月表示に戻る
+            </button>
+            <button class="btn-calendar-nav" id="back-to-week-btn" 
+                    data-shop-id="<?= esc($shop_id ?? '') ?>"
+                    data-selected-date="<?= esc($selected_date ?? '') ?>">                    
+                <i class="bi bi-calendar-week"></i> 週表示に戻る
+            </button>
+        </div>
     </div>
 
     <?php // JavaScript用データを非表示で設定 ?>

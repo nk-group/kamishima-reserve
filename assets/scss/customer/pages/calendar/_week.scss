@@ -141,6 +141,21 @@
 }
 
 //--------------------------------------------------------------------------
+// Calendar Bottom Controls Section (月表示戻るボタン)
+// 新しいボタンコンポーネントに統一
+//--------------------------------------------------------------------------
+.calendar-bottom-controls {
+  //max-width: 1200px;
+  margin: var.$spacer-lg auto 0;
+  padding: var.$spacer;
+  background: var.$section-bg;
+  border: 1px solid var.$border-color;
+  border-radius: var.$card-border-radius;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+//--------------------------------------------------------------------------
 // Time Slot Legend Section
 //--------------------------------------------------------------------------
 .time-slot-legend-section {
@@ -185,11 +200,11 @@
       }
       
       &.limited {
-        background: var.$warning;
-        color: var.$white;
+        background: var.$calendar-limited-bg;
+        color: var.$calendar-limited-color;
       }
       
-      &.full {
+      &.unavailable {
         background: var.$calendar-week-unavailable-bg;
         color: var.$calendar-week-unavailable-color;
       }
@@ -203,70 +218,37 @@
 }
 
 //--------------------------------------------------------------------------
-// Week Calendar Action Section
-//--------------------------------------------------------------------------
-.week-calendar-action-section {
-  text-align: center;
-  margin-top: var.$spacer-xl;
-  padding: var.$spacer-lg;
-  background: var.$section-bg;
-  border-radius: var.$card-border-radius;
-  border: 1px solid var.$border-color;
-  
-  .action-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var.$text-color;
-    margin-bottom: var.$spacer-sm;
-  }
-  
-  .action-description {
-    color: var.$text-muted;
-    font-size: 0.95rem;
-    margin-bottom: var.$spacer;
-    line-height: 1.5;
-  }
-  
-  .action-buttons {
-    display: flex;
-    justify-content: center;
-    gap: var.$spacer;
-    flex-wrap: wrap;
-  }
-}
-
-//--------------------------------------------------------------------------
 // Week Calendar Loading State
 //--------------------------------------------------------------------------
 .week-calendar-loading {
-  position: relative;
   min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var.$white;
   
   .loading-content {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     text-align: center;
+    color: var.$text-muted;
     
     .loading-spinner {
       width: 40px;
       height: 40px;
-      border: 4px solid var.$gray-300;
+      border: 4px solid var.$gray-200;
       border-top: 4px solid var.$clear-primary;
       border-radius: 50%;
-      animation: week-calendar-spin 1s linear infinite;
-      margin-bottom: var.$spacer;
+      animation: week-loading-spin 1s linear infinite;
+      margin: 0 auto var.$spacer;
     }
     
     .loading-text {
-      color: var.$text-muted;
       font-size: 0.9rem;
+      color: var.$gray-600;
     }
   }
 }
 
-@keyframes week-calendar-spin {
+@keyframes week-loading-spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
@@ -295,6 +277,39 @@
   .empty-description {
     font-size: 0.9rem;
     line-height: 1.5;
+  }
+}
+
+//--------------------------------------------------------------------------
+// Week Calendar Action Section
+//--------------------------------------------------------------------------
+.week-calendar-action-section {
+  text-align: center;
+  margin-top: var.$spacer-xl;
+  padding: var.$spacer-lg;
+  background: var.$section-bg;
+  border-radius: var.$card-border-radius;
+  border: 1px solid var.$border-color;
+  
+  .action-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var.$text-color;
+    margin-bottom: var.$spacer;
+  }
+  
+  .action-description {
+    color: var.$text-muted;
+    font-size: 0.9rem;
+    margin-bottom: var.$spacer-lg;
+    line-height: 1.5;
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: var.$spacer;
+    flex-wrap: wrap;
   }
 }
 
@@ -337,6 +352,11 @@
     padding: 0 var.$spacer-sm;
   }
   
+  .calendar-bottom-controls {
+    margin: var.$spacer auto 0;
+    padding: var.$spacer-sm;
+  }
+  
   .time-slot-legend-section {
     .legend-grid {
       gap: var.$spacer;
@@ -361,7 +381,7 @@
     }
     
     .action-description {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
     
     .action-buttons {

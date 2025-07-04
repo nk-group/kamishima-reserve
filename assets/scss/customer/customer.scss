@@ -14,7 +14,7 @@
 @use "base/typography";
 
 // Components (再利用可能なコンポーネント)
-//@use "components/buttons";
+@use "components/buttons";
 @use "components/forms";
 @use "components/calendar";
 

@@ -217,6 +217,21 @@
 }
 
 //--------------------------------------------------------------------------
+// Calendar Navigation Footer (カレンダー戻るボタン)
+// 新しいボタンコンポーネントを使用
+//--------------------------------------------------------------------------
+.calendar-bottom-controls {
+  //max-width: 800px;
+  margin: var.$spacer-lg auto 0;
+  padding: var.$spacer;
+  background: var.$section-bg;
+  border: 1px solid var.$border-color;
+  border-radius: var.$card-border-radius;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+//--------------------------------------------------------------------------
 // Form Validation States
 //--------------------------------------------------------------------------
 .form-group {
@@ -363,5 +378,11 @@
       align-items: center;
       gap: var.$spacer-sm;
     }
+  }
+  
+  // カレンダーナビゲーションのレスポンシブ対応
+  .calendar-bottom-controls {
+    margin: var.$spacer auto 0;
+    padding: var.$spacer-sm;
   }
 }
